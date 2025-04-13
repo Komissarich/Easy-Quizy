@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = ".;auth";
+
+import "google/protobuf/timestamp.proto";
+
+service AuthService {
+  // Auth
+  rpc Register (RegisterRequest) returns (RegisterResponse);
+  rpc Login (LoginRequest) returns (LoginResponse);
+  rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse);
+  
+  // Users
+  rpc GetUser (GetUserRequest) returns (UserResponse);
+  rpc GetMe (GetMeRequest) returns (UserResponse);
+  rpc UpdateMe (UpdateMeRequest) returns (UserResponse);
+  
+  // Friends
+  rpc AddFriend (AddFriendRequest) returns (FriendResponse);
+  rpc RemoveFriend (RemoveFriendRequest) returns (FriendResponse);
+  rpc GetFriends (GetFriendsRequest) returns (FriendsListResponse);
+}
+
+enum Role {
+  USER = 0;
+  ADMIN = 1;
+}
+
+message RegisterRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+  Role role = 4;
+}
+
+message RegisterResponse {
+  string user_id = 1;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string token = 1;
+  UserResponse user = 2;
+}
+
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+message ValidateTokenResponse {
+  bool valid = 1;
+  UserResponse user = 2;
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message GetMeRequest {
+  string token = 1;
+}
+
+message UpdateMeRequest {
+  string token = 1;
+  optional string username = 2;
+  optional string email = 3;
+  optional string password = 4;
+}
+
+message UserResponse {
+  string id = 1;
+  string username = 2;
+  string email = 3;
+  Role role = 4;
+  int32 quiz_score = 5;
+  int32 author_rank = 6;
+  int32 player_rank = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+message AddFriendRequest {
+  string token = 1;
+  string friend_id = 2;
+}
+
+message RemoveFriendRequest {
+  string token = 1;
+  string friend_id = 2;
+}
+
+message GetFriendsRequest {
+  string token = 1;
+}
+
+message FriendResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message FriendsListResponse {
+  repeated UserResponse friends = 1;
+}

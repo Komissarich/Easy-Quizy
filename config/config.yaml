@@ -1,0 +1,12 @@
+port: 50051
+
+jwt:
+  secret: secret
+  token_ttl: 24h
+
+db:
+  host: localhost
+  port: 5432
+  username: postgres
+  password: postgres
+  name: postgres
