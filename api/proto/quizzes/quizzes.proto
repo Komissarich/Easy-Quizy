@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "pkg/api/v1";
+
+package api;
+
+service quiz_service {
+
+}
+
+message Quiz {
+    string quiz_id = 1;
+}
