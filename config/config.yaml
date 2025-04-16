@@ -8,5 +8,11 @@ db:
   host: localhost
   port: 5432
   username: postgres
-  password: postgres
+  password: 05042007PULlup!
   name: postgres
+
+redis:
+  host: localhost
+  port: 6379
+  password:
+  db: 0

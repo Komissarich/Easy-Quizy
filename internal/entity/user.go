@@ -2,23 +2,18 @@ package entity
 
 import (
 	"errors"
+	"time"
 )
 
 type User struct {
-	ID    uint64 `json:"id"`
-	Email string `json:"email"`
-	Role  Role   `json:"role"`
+	ID       uint64 `json:"id"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
 
-	PassHash []byte
+	Password  string    `json:"-"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
-
-type Role string
-
-const (
-	UserRole  Role = "user"
-	AdminRole Role = "admin"
-	// SuperAdminRole Role = "superadmin" // ??? do we need it ???
-)
 
 var (
 	ErrUserNotFound       = errors.New("user not found")

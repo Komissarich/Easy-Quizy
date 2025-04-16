@@ -2,19 +2,28 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
-	GRPCPort string    `yaml:"grpcPort" json:"grpcPort"`
-	DB       DBConfig  `yaml:"db" json:"db"`
-	JWT      JWTConfig `yaml:"jwt" json:"jwt"`
+	GRPCPort string      `yaml:"grpcPort" json:"grpcPort"`
+	DB       DBConfig    `yaml:"db" json:"db"`
+	Redis    RedisConfig `yaml:"redis" json:"redis"`
+	JWT      JWTConfig   `yaml:"jwt" json:"jwt"`
+}
+
+type RedisConfig struct {
+	Host     string `yaml:"host" json:"host"`
+	Port     string `yaml:"port" json:"port"`
+	Password string `yaml:"password" json:"password"`
+	DB       int    `yaml:"db" json:"db"`
 }
 
 type JWTConfig struct {
-	Secret string `yaml:"secret" json:"secret"`
-	TTL    string `yaml:"token_ttl" json:"token_ttl"`
+	Secret string        `yaml:"secret" json:"secret"`
+	TTL    time.Duration `yaml:"token_ttl" json:"token_ttl"`
 }
 
 type DBConfig struct {

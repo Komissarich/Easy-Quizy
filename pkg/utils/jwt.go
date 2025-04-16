@@ -1,35 +1,46 @@
 package utils
 
 import (
-	"eazy-quizy-auth/internal/entity"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateJWT(userID string, role entity.Role, secret string) (string, error) {
-	claims := jwt.MapClaims{
-		"user_id": userID,
-		"role":    role,
-		"exp":     time.Now().Add(time.Hour * 24).Unix(),
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(secret))
+type Claims struct {
+	UserID uint64 `json:"user_id"`
+	Email  string `json:"email"`
+	jwt.RegisteredClaims
 }
 
-func ParseJWT(tokenString, secret string) (jwt.MapClaims, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(secret), nil
+func ParseJWT(tokenString, jwtSecret string) (*Claims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrSignatureInvalid
+		}
+		return []byte(jwtSecret), nil
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
 		return claims, nil
 	}
 
-	return nil, err
+	return nil, jwt.ErrTokenInvalidClaims
+}
+
+func GenerateJWT(jwtSecret string, userID uint64, Email string, expiresIn time.Duration) (string, error) {
+	claims := Claims{
+		UserID: userID,
+		Email:  Email,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expiresIn)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(jwtSecret))
 }

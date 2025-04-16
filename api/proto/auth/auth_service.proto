@@ -10,10 +10,10 @@ service AuthService {
   // Auth
   rpc Register (RegisterRequest) returns (RegisterResponse);
   rpc Login (LoginRequest) returns (LoginResponse);
+  rpc Logout (LogoutRequest) returns (LogoutResponse);
   rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse);
   
   // Users
-  rpc GetUser (GetUserRequest) returns (UserResponse);
   rpc GetMe (GetMeRequest) returns (UserResponse);
   rpc UpdateMe (UpdateMeRequest) returns (UserResponse);
   
@@ -23,16 +23,11 @@ service AuthService {
   rpc GetFriends (GetFriendsRequest) returns (FriendsListResponse);
 }
 
-enum Role {
-  USER = 0;
-  ADMIN = 1;
-}
-
+// Messages for Auth
 message RegisterRequest {
   string username = 1;
   string email = 2;
   string password = 3;
-  Role role = 4;
 }
 
 message RegisterResponse {
@@ -49,6 +44,14 @@ message LoginResponse {
   UserResponse user = 2;
 }
 
+message LogoutRequest {
+  string token = 1;
+}
+
+message LogoutResponse {
+  bool success = 1;
+}
+
 message ValidateTokenRequest {
   string token = 1;
 }
@@ -58,10 +61,7 @@ message ValidateTokenResponse {
   UserResponse user = 2;
 }
 
-message GetUserRequest {
-  string user_id = 1;
-}
-
+// Messages for Users
 message GetMeRequest {
   string token = 1;
 }
@@ -77,7 +77,7 @@ message UserResponse {
   string id = 1;
   string username = 2;
   string email = 3;
-  Role role = 4;
+  bool is_admin = 4;
   int32 quiz_score = 5;
   int32 author_rank = 6;
   int32 player_rank = 7;
@@ -85,6 +85,7 @@ message UserResponse {
   google.protobuf.Timestamp updated_at = 9;
 }
 
+// Messages for Friends
 message AddFriendRequest {
   string token = 1;
   string friend_id = 2;

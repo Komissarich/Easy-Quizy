@@ -10,8 +10,11 @@ import (
 	auth "eazy-quizy-auth/pkg/api/v1"
 	"eazy-quizy-auth/pkg/interceptors"
 	"eazy-quizy-auth/pkg/logger"
-	"log"
+	"eazy-quizy-auth/pkg/redis"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -28,6 +31,9 @@ func New(config string) *Application {
 }
 
 func (a *Application) Run(ctx context.Context) {
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
+	defer stop()
+
 	l, err := logger.Setup()
 	if err != nil {
 		l.Fatal("failed to setup logger", zap.Error(err))
@@ -48,23 +54,45 @@ func (a *Application) Run(ctx context.Context) {
 
 	l.Info("database connection established")
 
+	redisClient := redis.NewClient(cfg)
+	if err := redisClient.Ping(context.Background()); err != nil {
+		l.Fatal("Failed to connect to Redis: %v", zap.Error(err))
+	}
+
 	userRepo := repository.NewUserRepository(db.DB)
 	friendRepo := repository.NewFriendRepository(db.DB)
 
-	authService := service.NewAuthService(*userRepo, cfg.JWT.Secret)
-	friendService := service.NewFriendService(*friendRepo, *userRepo)
+	authService := service.NewAuthService(*userRepo, &cfg.JWT, l)
+	friendService := service.NewFriendService(*friendRepo, *userRepo, l)
 
-	authController := controller.NewAuthController(authService, friendService)
+	authController := controller.NewAuthController(authService, friendService, l)
+
+	authInterceptor := interceptors.NewAuthInterceptor(authService)
 
 	lis, err := net.Listen("tcp", ":"+cfg.GRPCPort)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		l.Fatal("failed to listen:", zap.Error(err))
 	}
 
-	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(interceptors.RoleInterceptor(ctx, []string{"admin", "user"})))
+	l.Info("listening on port " + cfg.GRPCPort)
+
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(authInterceptor.Unary(ctx)),
+	)
+
 	auth.RegisterAuthServiceServer(grpcServer, authController)
 
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+	go func() {
+		if err := grpcServer.Serve(lis); err != nil && err != grpc.ErrServerStopped {
+			l.Fatal("failed to serve:", zap.Error(err))
+		}
+	}()
+
+	l.Info("server started")
+
+	select {
+	case <-ctx.Done():
+		l.Info("Server graceful stopped")
+		grpcServer.GracefulStop()
 	}
 }

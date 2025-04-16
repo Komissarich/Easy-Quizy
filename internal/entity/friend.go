@@ -1,6 +1,7 @@
 package entity
 
-type Admin struct {
-	UserID uint64 `json:"userId"`
-	Email  string `json:"email"`
+type Friend struct {
+	ID       uint64 `json:"id"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
 }

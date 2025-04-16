@@ -1,4 +1,4 @@
-FROM golang:alpine as build
+FROM golang:1.24.2-alpine AS builder
 
 WORKDIR /app
 
@@ -8,14 +8,14 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o app .
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app/auth-service ./cmd/main.go
 
 FROM alpine:latest
 
 WORKDIR /app
 
-COPY --from=build /app/app .
+COPY --from=builder /app/auth-service /app/auth-service
 
-EXPOSE 8080
+EXPOSE 50051
 
-CMD ["app"]
+CMD ["./grpc-service"]
