@@ -15,7 +15,9 @@ import (
 type FriendService interface {
 	AddFriend(ctx context.Context, userID uint64, friendID string) error
 	RemoveFriend(ctx context.Context, userID uint64, friendID string) error
+
 	GetFriends(ctx context.Context, userID uint64) ([]*entity.User, error)
+
 	CheckFriendship(ctx context.Context, userID uint64, friendID string) (bool, error)
 }
 

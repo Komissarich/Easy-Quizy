@@ -18,10 +18,11 @@ import (
 type AuthService interface {
 	Register(ctx context.Context, user *entity.User) (string, error)
 	Login(ctx context.Context, email, password string) (string, *entity.User, error)
+	Logout(ctx context.Context, token string) error
 	ValidateToken(ctx context.Context, token string) (*entity.User, error)
+
 	GetUserByID(ctx context.Context, id string) (*entity.User, error)
 	UpdateUser(ctx context.Context, user *entity.User) error
-	Logout(ctx context.Context, token string) error
 }
 
 type authService struct {
