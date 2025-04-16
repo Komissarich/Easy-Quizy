@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"quiz_app/pkg/logger"
 
 	"github.com/golang-migrate/migrate"
 	_ "github.com/golang-migrate/migrate/database/postgres"
@@ -47,6 +48,13 @@ func New(ctx context.Context, config Config) (*pgxpool.Pool, error) {
 			config.Port,
 			config.Database,
 		))
+	logger.GetLoggerFromCtx(ctx).Info(ctx, fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
+		config.Username,
+		config.Password,
+		config.Host,
+		config.Port,
+		config.Database,
+	))
 	if err != nil {
 		return nil, fmt.Errorf("unable to create migrations: %w", err)
 	}

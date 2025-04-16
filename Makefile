@@ -55,7 +55,7 @@ deps:
 # Генерация .proto файлов
 proto:
 	@echo "Generating .proto files..."
-	protoc --go_out=. --go-grpc_out=. --grpc-gateway_out=. api/proto/statistics/session.proto api/proto/quizzes/quizzes.proto api/proto/users/users.proto
+	protoc --go_out=. --go-grpc_out=. --grpc-gateway_out=. api/proto/statistics/stat_service.proto
 
 # Сборка приложения
 build:

@@ -1,6 +1,6 @@
 services:
-  quiz_service: 
-    container_name: quiz_service
+  stat_service: 
+    container_name: stat_service
     environment:
       GRPC_PORT: 50051
       HTTP_PORT: 8080
