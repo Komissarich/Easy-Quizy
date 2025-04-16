@@ -25,6 +25,10 @@ type Service struct {
 	repo Repository
 }
 
+func (s *Service) New(ctx context.Context, repo Repository) *Service {
+	return &Service{repo: repo}
+}
+
 func (s *Service) UpdateStats(ctx context.Context, r *api.UpdateStatsRequest) (*api.UpdateStatsResponse, error) {
 	quiz_id, players_score, quiz_rate := r.QuizId, r.PlayersScore, r.QuizRate
 	err := s.repo.UpdateStats(ctx, quiz_id, players_score, quiz_rate)
