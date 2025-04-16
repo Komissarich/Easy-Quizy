@@ -8,11 +8,11 @@ import (
 	"os/signal"
 	"quiz_app/internal/config"
 	"quiz_app/internal/middleware"
+	"quiz_app/internal/rest"
 	"quiz_app/internal/statistics/repository"
 	"quiz_app/internal/statistics/service"
 	api "quiz_app/pkg/api/v1"
 	"quiz_app/pkg/logger"
-	"quiz_app/pkg/postgres"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -46,15 +46,6 @@ func main() {
 	}
 	log.Info(ctx, "config loaded")
 
-	// Postgres
-	pool, err := postgres.New(ctx, cfg.Postgres)
-	if err != nil {
-		log.Error(ctx, fmt.Sprint("failed to connect to postgres", zap.Error(err)))
-	} else {
-		log.Info(ctx, "connected to postgres")
-		log.Info(ctx, fmt.Sprint("pinging postgres: ", pool.Ping(ctx)))
-	}
-
 	// TCP Connection
 	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", cfg.Host, cfg.GRPCPort))
 	if err != nil {
@@ -83,7 +74,7 @@ func main() {
 	api.RegisterStatisticsServer(server, service)
 	log.Info(ctx, "gRPC service started")
 
-	// go rest.Run(ctx, cfg)
+	go rest.Run(ctx, cfg)
 
 	go func() {
 		if err := server.Serve(lis); err != nil {
@@ -93,7 +84,7 @@ func main() {
 	select {
 	case <-ctx.Done():
 		server.GracefulStop()
-		pool.Close()
+		repo.CloseConn()
 		log.Info(ctx, "server stopped")
 	}
 }

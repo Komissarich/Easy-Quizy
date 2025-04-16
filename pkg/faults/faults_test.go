@@ -1,9 +1,10 @@
-package faults
+package faults_test
 
 import (
 	"errors"
 	"fmt"
 	"math/rand/v2"
+	"quiz_app/pkg/faults"
 	"testing"
 	"time"
 )
@@ -17,7 +18,7 @@ func TestRetry(t *testing.T) {
 			return fmt.Errorf("internal operation error")
 		}
 	}
-	if Retry(operation, 5, 100) == nil {
+	if faults.Retry(operation, 5, 100) == nil {
 		t.Errorf("retry test failed")
 	}
 }
@@ -33,16 +34,16 @@ func TestTimeOut(t *testing.T) {
 		}
 	}
 
-	if TimeOut(operation, 1000) == nil {
+	if faults.TimeOut(operation, 1000) == nil {
 		t.Errorf("timeout test failed")
 	}
 }
 
 func TestProccessWithDLQ(t *testing.T) {
 	messages := []string{"msg1", "msg2", "msg3"}
-	dlq := NewDeadLetterQueue(3)
+	dlq := faults.NewDeadLetterQueue(3)
 
-	ProcessWithDLQ(messages, func(msg string) error {
+	faults.ProcessWithDLQ(messages, func(msg string) error {
 		if msg == "msg2" {
 			return errors.New("processing failed")
 		}

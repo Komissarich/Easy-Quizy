@@ -8,7 +8,7 @@ RUN go mod download
 COPY *.go ./
 
 # Build
-RUN CGO_ENABLED=0 GOOS=linux go build -o /stat_service ./cmd/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o /stat_service ./cmd/app/main.go
 
 EXPOSE 8080
 EXPOSE 50051

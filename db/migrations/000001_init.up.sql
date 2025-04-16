@@ -34,8 +34,8 @@ CREATE TABLE IF NOT EXISTS stats.authors (
 );
 
 -- Индексы для ускорения запросов
-CREATE INDEX IF NOT EXISTS idx_quiz_stats_author ON stats.quiz_stats(author_id);
-CREATE INDEX IF NOT EXISTS idx_quiz_stats_quiz ON stats.quiz_stats(quiz_id);
+CREATE INDEX IF NOT EXISTS idx_quizzes_author ON stats.quizzes(author_id);
+CREATE INDEX IF NOT EXISTS idx_quizzes_quiz ON stats.quizzes(quiz_id);
 
 -- Функция и триггеры для обновления временных меток
 CREATE OR REPLACE FUNCTION stats.update_timestamp()
@@ -46,14 +46,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER update_quiz_stats_timestamp
-BEFORE UPDATE ON stats.quiz_stats
+CREATE TRIGGER update_quizzes_timestamp
+BEFORE UPDATE ON stats.quizzes
 FOR EACH ROW EXECUTE FUNCTION stats.update_timestamp();
 
-CREATE TRIGGER update_player_stats_timestamp
-BEFORE UPDATE ON stats.player_stats
+CREATE TRIGGER update_players_timestamp
+BEFORE UPDATE ON stats.players
 FOR EACH ROW EXECUTE FUNCTION stats.update_timestamp();
 
-CREATE TRIGGER update_author_stats_timestamp
-BEFORE UPDATE ON stats.author_stats
+CREATE TRIGGER update_authors_timestamp
+BEFORE UPDATE ON stats.authors
 FOR EACH ROW EXECUTE FUNCTION stats.update_timestamp();

@@ -25,7 +25,7 @@ type Service struct {
 	repo Repository
 }
 
-func (s *Service) New(ctx context.Context, repo Repository) *Service {
+func New(ctx context.Context, repo Repository) *Service {
 	return &Service{repo: repo}
 }
 
@@ -80,7 +80,7 @@ func (s *Service) ListPlayers(ctx context.Context, r *api.ListPlayersRequest) (*
 		logger.GetLoggerFromCtx(ctx).Error(ctx, err.Error())
 		return nil, err
 	}
-	logger.GetLoggerFromCtx(ctx).Info(ctx, "quizzes listed")
+	logger.GetLoggerFromCtx(ctx).Info(ctx, "players listed")
 	return &api.ListPlayersResponse{Players: result}, nil
 }
 
@@ -102,6 +102,6 @@ func (s *Service) ListAuthors(ctx context.Context, r *api.ListAuthorsRequest) (*
 		logger.GetLoggerFromCtx(ctx).Error(ctx, err.Error())
 		return nil, err
 	}
-	logger.GetLoggerFromCtx(ctx).Info(ctx, "quizzes listed")
+	logger.GetLoggerFromCtx(ctx).Info(ctx, "authors listed")
 	return &api.ListAuthorsResponse{Authors: result}, nil
 }

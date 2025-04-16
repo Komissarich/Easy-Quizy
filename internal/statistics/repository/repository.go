@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"quiz_app/internal/config"
 	api "quiz_app/pkg/api/v1"
+	"quiz_app/pkg/logger"
 	"quiz_app/pkg/postgres"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.uber.org/zap"
 )
 
 type Repository struct {
@@ -17,11 +19,19 @@ type Repository struct {
 func NewRepository(ctx context.Context, config *config.Config) (*Repository, error) {
 	pg, err := postgres.New(ctx, config.Postgres)
 	if err != nil {
-		return nil, fmt.Errorf("unable to create a repository: %w", err)
+		logger.GetLoggerFromCtx(ctx).Error(ctx, fmt.Sprint("failed to create repository", zap.Error(err)))
+	} else {
+		logger.GetLoggerFromCtx(ctx).Info(ctx, "connected to postgres")
+		logger.GetLoggerFromCtx(ctx).Info(ctx, fmt.Sprint("pinging postgres: ", pg.Ping(ctx)))
 	}
+
 	return &Repository{
 		pg: pg,
 	}, nil
+}
+
+func (r *Repository) CloseConn() {
+	r.pg.Close()
 }
 
 func (r *Repository) UpdateStats(
@@ -312,122 +322,3 @@ func (r *Repository) ListAuthors(ctx context.Context, option api.ListAuthorsOpti
 	}
 	return results, nil
 }
-
-// func (r *Repository) GetSession(ctx context.Context, session_id string) (*api.Session, error) {
-// 	query := `SELECT
-// 				s.session_id,
-// 				s.quiz_id,
-// 				s.start_time,
-// 				s.end_time
-// 			FROM sessions s
-// 			WHERE s.session_id=$1;`
-// 	var (
-// 		quiz_id    string
-// 		start_time string
-// 		end_time   string
-// 		results    []*api.Result
-// 	)
-// 	err := r.pg.QueryRow(ctx, query, session_id).Scan(&quiz_id, &start_time, &end_time)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("unable to find session %s: %w", session_id, err)
-// 	}
-// 	query = `SELECT
-// 				ua.user_id,
-// 				array_agg(ua.answer_id) as answers
-// 			FROM user_answers ua
-// 			WHERE ua.session_id=$1
-// 			GROUP BY ua.user_id;`
-// 	rows, err := r.pg.Query(ctx, query, session_id)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("unable to find users' answers %s: %w", session_id, err)
-// 	}
-// 	defer rows.Close()
-
-// 	for rows.Next() {
-// 		var (
-// 			user_id string
-// 			answers []string
-// 		)
-// 		err = rows.Scan(&user_id, &answers)
-// 		if err != nil {
-// 			return nil, fmt.Errorf("scan failed: %w", err)
-// 		}
-// 		results = append(results,
-// 			&api.Result{
-// 				UserId:  user_id,
-// 				Answers: answers,
-// 			})
-// 	}
-
-// 	if rows.Err() != nil {
-// 		return nil, fmt.Errorf("query failed: %w", rows.Err().Error())
-// 	}
-
-// 	return &api.Session{
-// 		SessionId: session_id,
-// 		QuizId:    quiz_id,
-// 		StartTime: start_time,
-// 		EndTime:   end_time,
-// 		Results:   results,
-// 	}, nil
-// }
-
-// func (r *Repository) ListSessions(ctx context.Context) ([]*api.Session, error) {
-// 	query := `
-//         SELECT
-//     		s.session_id,
-//     		s.quiz_id::text,
-//     		s.start_time,
-//     		s.end_time,
-//     	COALESCE(
-//         	jsonb_agg(
-//             	jsonb_build_object(
-//                 	'user_id', ua.user_id::text,
-//                 	'answers', ua.answers
-//             	)
-//         	), '[]'::jsonb
-//     	) AS results
-// 		FROM sessions s
-// 		LEFT JOIN (
-//     		SELECT
-//         		session_id,
-//         		user_id,
-//         		array_agg(answer_id) AS answers
-//     		FROM user_answers ua
-//     		GROUP BY session_id, user_id
-// 		) ua ON s.session_id = ua.session_id
-// 		GROUP BY s.session_id, s.quiz_id, s.start_time, s.end_time
-// 		ORDER BY s.start_time DESC;
-// 	`
-
-// 	rows, err := r.pg.Query(ctx, query)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("query failed: %w", err)
-// 	}
-// 	defer rows.Close()
-
-// 	var sessions []*api.Session
-// 	for rows.Next() {
-// 		var session api.Session
-// 		var rawResults []byte
-
-// 		err := rows.Scan(
-// 			&session.SessionId,
-// 			&session.QuizId,
-// 			&session.StartTime,
-// 			&session.EndTime,
-// 			&rawResults,
-// 		)
-// 		if err != nil {
-// 			return nil, fmt.Errorf("scan failed: %w", err)
-// 		}
-
-// 		err = json.Unmarshal(rawResults, &session.Results)
-// 		if err != nil {
-// 			return nil, fmt.Errorf("json decoding error: %w", err)
-// 		}
-
-// 		sessions = append(sessions, &session)
-// 	}
-// 	return sessions, nil
-// }
