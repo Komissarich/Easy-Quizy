@@ -26,7 +26,8 @@ Updates statistics for a quiz session.
 message UpdateStatsRequest {
     string quiz_id = 1;               // Unique quiz identifier
     map<string, float> players_score = 2; // Map of player IDs to their scores
-    float quiz_rate = 3;              // Average quiz rating (0.0–5.0)
+    float quiz_rate = 3;             // Average quiz rating (0.0–5.0)
+}
 ```
 #### Response:
 ```protobuf
@@ -47,6 +48,7 @@ curl -X POST "http://localhost:8080/v1/stats/update" \
 Retrieves statistics for a specific quiz.
 
 **HTTP Method**: `GET /v1/stats/quiz/{quiz_id}`
+
 **gRPC Method**: `Statistics.GetQuizStat`
 
 #### Request:
@@ -74,6 +76,7 @@ curl "http://localhost:8080/v1/stats/quiz/quiz_123"
 Lists quizzes sorted by a specified option.
 
 **HTTP Method**: `GET /v1/stats/quizzes/{option}`
+
 **gRPC Method**: `Statistics.ListQuizzes`
 
 #### Options:
@@ -108,6 +111,7 @@ curl "http://localhost:8080/v1/stats/quizzes/AVG_RATE"
 Retrieves statistics for a specific player.
 
 **HTTP Method**: `GET /v1/stats/player/{user_id}`
+
 **gRPC Method**: `Statistics.GetPlayerStat`
 
 #### Request:
@@ -135,6 +139,7 @@ curl "http://localhost:8080/v1/stats/player/player_123"
 Lists players sorted by a specified option.
 
 **HTTP Method**: `GET /v1/stats/players`
+
 **gRPC Method**: `Statistics.ListPlayers`
 
 ### Options:
@@ -168,6 +173,7 @@ curl "http://localhost:8080/v1/stats/players?option=BEST_SCORE"
 Retrieves statistics for a specific author.
 
 **HTTP Method**: `GET /v1/stats/author/{user_id}`
+
 **gRPC Method**: `Statistics.GetAuthorStat`
 
 #### Request:
@@ -195,6 +201,7 @@ curl "http://localhost:8080/v1/stats/author/author_123"
 Lists authors sorted by a specified option.
 
 **HTTP Method**: `GET /v1/stats/authors`
+
 **gRPC Method**: `Statistics.ListAuthors`
 
 #### Options:
