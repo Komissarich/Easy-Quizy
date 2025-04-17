@@ -15,16 +15,25 @@ func NewFriendRepository(db *sql.DB) *FriendRepository {
 	return &FriendRepository{db: db}
 }
 
-func (r *FriendRepository) AddFriend(ctx context.Context, userID uint64, friendID string) error {
-	query := `INSERT INTO friends (user_id, friend_id) VALUES ($1, $2), ($2, $1)`
+func (r *FriendRepository) AddFriend(ctx context.Context, userID uint64, friendID uint64) error {
+	query := `INSERT INTO friends (user_id, friend_id) VALUES ($1, $2)`
+
 	_, err := r.db.ExecContext(ctx, query, userID, friendID)
-	return err
+	if err != nil {
+		return fmt.Errorf("can't add friend: %w", err)
+	}
+
+	return nil
 }
 
 func (r *FriendRepository) RemoveFriend(ctx context.Context, userID uint64, friendID string) error {
-	query := `DELETE FROM friends WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1)`
+	query := `DELETE FROM friends WHERE (user_id = $1 AND friend_id = $2)`
+
 	_, err := r.db.ExecContext(ctx, query, userID, friendID)
-	return err
+	if err != nil {
+		return fmt.Errorf("can't remove friend: %w", err)
+	}
+	return nil
 }
 
 func (r *FriendRepository) GetFriendIDs(ctx context.Context, userID uint64) ([]string, error) {
@@ -54,7 +63,7 @@ func (r *FriendRepository) CheckFriendship(ctx context.Context, userID uint64, f
 
 	err := r.db.QueryRowContext(ctx, query, userID, friendID).Scan(&count)
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("can't check friendship: %w", err)
 	}
 	return count > 0, nil
 }

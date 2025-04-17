@@ -26,6 +26,10 @@ func (l *Logger) Debug(msg string, fields ...zap.Field) {
 	l.L.Debug(msg, fields...)
 }
 
+func (l *Logger) Warn(msg string, fields ...zap.Field) {
+	l.L.Warn(msg, fields...)
+}
+
 func Setup() (*Logger, error) {
 	logger, err := zap.NewProduction()
 	if err != nil {

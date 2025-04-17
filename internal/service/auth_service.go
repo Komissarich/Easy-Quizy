@@ -2,15 +2,12 @@ package service
 
 import (
 	"context"
-	"eazy-quizy-auth/internal/config"
 	"eazy-quizy-auth/internal/entity"
 	"eazy-quizy-auth/internal/repository"
 	"eazy-quizy-auth/pkg/logger"
-	"eazy-quizy-auth/pkg/utils"
 	"errors"
 	"fmt"
 	"strconv"
-	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -19,6 +16,7 @@ type AuthService interface {
 	Register(ctx context.Context, user *entity.User) (string, error)
 	Login(ctx context.Context, email, password string) (string, *entity.User, error)
 	Logout(ctx context.Context, token string) error
+
 	ValidateToken(ctx context.Context, token string) (*entity.User, error)
 
 	GetUserByID(ctx context.Context, id string) (*entity.User, error)
@@ -27,16 +25,15 @@ type AuthService interface {
 
 type authService struct {
 	userRepo   repository.UserRepository
-	Jwt        *config.JWTConfig
 	jwtService *JWTService
 	l          *logger.Logger
 }
 
-func NewAuthService(userRepo repository.UserRepository, jwt *config.JWTConfig, l *logger.Logger) *authService {
+func NewAuthService(userRepo repository.UserRepository, jwtService *JWTService, l *logger.Logger) *authService {
 	return &authService{
-		userRepo: userRepo,
-		Jwt:      jwt,
-		l:        l,
+		userRepo:   userRepo,
+		jwtService: jwtService,
+		l:          l,
 	}
 }
 
@@ -46,7 +43,7 @@ func (s *authService) Register(ctx context.Context, user *entity.User) (string, 
 		return "", fmt.Errorf("can't hash password: %w", err)
 	}
 
-	userID, err := s.userRepo.SaveUser(ctx, user.Email, passHash)
+	userID, err := s.userRepo.SaveUser(ctx, user.Email, user.Username, passHash)
 	if err != nil {
 		if errors.Is(err, entity.ErrUserExists) {
 			return "", fmt.Errorf("can't save user: %w", err)
@@ -71,7 +68,7 @@ func (s *authService) Login(ctx context.Context, email, password string) (string
 		return "", nil, entity.ErrInvalidCredentials
 	}
 
-	token, err := utils.GenerateJWT(s.Jwt.Secret, user.ID, user.Email, 1*time.Hour)
+	token, user, err := s.jwtService.GenerateToken(ctx, user.Email, user.Password)
 	if err != nil {
 		return "", nil, fmt.Errorf("can't generate token: %w", err)
 	}

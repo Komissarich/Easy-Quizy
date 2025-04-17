@@ -6,7 +6,6 @@ import (
 	"eazy-quizy-auth/internal/repository"
 	"eazy-quizy-auth/pkg/logger"
 	"errors"
-	"log"
 	"strconv"
 
 	"go.uber.org/zap"
@@ -48,17 +47,18 @@ func (s *friendService) AddFriend(ctx context.Context, userID uint64, friendID s
 
 	alreadyFriends, err := s.friendRepo.CheckFriendship(ctx, userID, friendID)
 	if err != nil {
-		log.Printf("Error checking friendship: %v", err)
+		s.l.Error("Failed to check friendship", zap.Error(err))
 		return errors.New("failed to check friendship")
 	}
 
 	if alreadyFriends {
 		return errors.New("users are already friends")
 	}
+	friendIDUint, _ := strconv.Atoi(friendID)
 
-	err = s.friendRepo.AddFriend(ctx, userID, friendID)
+	err = s.friendRepo.AddFriend(ctx, userID, uint64(friendIDUint))
 	if err != nil {
-		log.Printf("Error adding friend: %v", err)
+		s.l.Error("Failed to add friend", zap.Error(err))
 		return errors.New("failed to add friend")
 	}
 
@@ -68,7 +68,7 @@ func (s *friendService) AddFriend(ctx context.Context, userID uint64, friendID s
 func (s *friendService) RemoveFriend(ctx context.Context, userID uint64, friendID string) error {
 	areFriends, err := s.friendRepo.CheckFriendship(ctx, userID, friendID)
 	if err != nil {
-		log.Printf("Error checking friendship: %v", err)
+		s.l.Error("Failed to check friendship", zap.Error(err))
 		return errors.New("failed to check friendship")
 	}
 
@@ -78,7 +78,7 @@ func (s *friendService) RemoveFriend(ctx context.Context, userID uint64, friendI
 
 	err = s.friendRepo.RemoveFriend(ctx, userID, friendID)
 	if err != nil {
-		log.Printf("Error removing friend: %v", err)
+		s.l.Error("Failed to remove friend", zap.Error(err))
 		return errors.New("failed to remove friend")
 	}
 

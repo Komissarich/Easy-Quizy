@@ -1,4 +1,4 @@
-port: 50051
+grpcPort: 50051
 
 jwt:
   secret: secret

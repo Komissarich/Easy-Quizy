@@ -25,9 +25,9 @@ const (
 // Messages for Auth
 type RegisterRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
-	Password      string                 `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
+	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Username      *string                `protobuf:"bytes,3,opt,name=username,proto3,oneof" json:"username,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -62,13 +62,6 @@ func (*RegisterRequest) Descriptor() ([]byte, []int) {
 	return file_auth_service_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *RegisterRequest) GetUsername() string {
-	if x != nil {
-		return x.Username
-	}
-	return ""
-}
-
 func (x *RegisterRequest) GetEmail() string {
 	if x != nil {
 		return x.Email
@@ -79,6 +72,13 @@ func (x *RegisterRequest) GetEmail() string {
 func (x *RegisterRequest) GetPassword() string {
 	if x != nil {
 		return x.Password
+	}
+	return ""
+}
+
+func (x *RegisterRequest) GetUsername() string {
+	if x != nil && x.Username != nil {
+		return *x.Username
 	}
 	return ""
 }
@@ -533,10 +533,6 @@ type UserResponse struct {
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	Email         string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
-	IsAdmin       bool                   `protobuf:"varint,4,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
-	QuizScore     int32                  `protobuf:"varint,5,opt,name=quiz_score,json=quizScore,proto3" json:"quiz_score,omitempty"`
-	AuthorRank    int32                  `protobuf:"varint,6,opt,name=author_rank,json=authorRank,proto3" json:"author_rank,omitempty"`
-	PlayerRank    int32                  `protobuf:"varint,7,opt,name=player_rank,json=playerRank,proto3" json:"player_rank,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -592,34 +588,6 @@ func (x *UserResponse) GetEmail() string {
 		return x.Email
 	}
 	return ""
-}
-
-func (x *UserResponse) GetIsAdmin() bool {
-	if x != nil {
-		return x.IsAdmin
-	}
-	return false
-}
-
-func (x *UserResponse) GetQuizScore() int32 {
-	if x != nil {
-		return x.QuizScore
-	}
-	return 0
-}
-
-func (x *UserResponse) GetAuthorRank() int32 {
-	if x != nil {
-		return x.AuthorRank
-	}
-	return 0
-}
-
-func (x *UserResponse) GetPlayerRank() int32 {
-	if x != nil {
-		return x.PlayerRank
-	}
-	return 0
 }
 
 func (x *UserResponse) GetCreatedAt() *timestamppb.Timestamp {
@@ -885,11 +853,12 @@ var File_auth_service_proto protoreflect.FileDescriptor
 
 const file_auth_service_proto_rawDesc = "" +
 	"\n" +
-	"\x12auth_service.proto\x12\x04auth\x1a\x1fgoogle/protobuf/timestamp.proto\"_\n" +
-	"\x0fRegisterRequest\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\x12\x14\n" +
-	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x03 \x01(\tR\bpassword\"+\n" +
+	"\x12auth_service.proto\x12\x04auth\x1a\x1fgoogle/protobuf/timestamp.proto\"q\n" +
+	"\x0fRegisterRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1f\n" +
+	"\busername\x18\x03 \x01(\tH\x00R\busername\x88\x01\x01B\v\n" +
+	"\t_username\"+\n" +
 	"\x10RegisterResponse\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"@\n" +
 	"\fLoginRequest\x12\x14\n" +
@@ -916,18 +885,11 @@ const file_auth_service_proto_rawDesc = "" +
 	"\bpassword\x18\x04 \x01(\tH\x02R\bpassword\x88\x01\x01B\v\n" +
 	"\t_usernameB\b\n" +
 	"\x06_emailB\v\n" +
-	"\t_password\"\xc2\x02\n" +
+	"\t_password\"\xc6\x01\n" +
 	"\fUserResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x14\n" +
-	"\x05email\x18\x03 \x01(\tR\x05email\x12\x19\n" +
-	"\bis_admin\x18\x04 \x01(\bR\aisAdmin\x12\x1d\n" +
-	"\n" +
-	"quiz_score\x18\x05 \x01(\x05R\tquizScore\x12\x1f\n" +
-	"\vauthor_rank\x18\x06 \x01(\x05R\n" +
-	"authorRank\x12\x1f\n" +
-	"\vplayer_rank\x18\a \x01(\x05R\n" +
-	"playerRank\x129\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\x129\n" +
 	"\n" +
 	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
@@ -1025,6 +987,7 @@ func file_auth_service_proto_init() {
 	if File_auth_service_proto != nil {
 		return
 	}
+	file_auth_service_proto_msgTypes[0].OneofWrappers = []any{}
 	file_auth_service_proto_msgTypes[9].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

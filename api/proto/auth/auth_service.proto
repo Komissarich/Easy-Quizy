@@ -25,9 +25,9 @@ service AuthService {
 
 // Messages for Auth
 message RegisterRequest {
-  string username = 1;
-  string email = 2;
-  string password = 3;
+  string email = 1;
+  string password = 2;
+  optional string username = 3;
 }
 
 message RegisterResponse {
@@ -77,10 +77,6 @@ message UserResponse {
   string id = 1;
   string username = 2;
   string email = 3;
-  bool is_admin = 4;
-  int32 quiz_score = 5;
-  int32 author_rank = 6;
-  int32 player_rank = 7;
   google.protobuf.Timestamp created_at = 8;
   google.protobuf.Timestamp updated_at = 9;
 }
