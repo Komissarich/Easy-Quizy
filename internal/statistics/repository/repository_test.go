@@ -4,10 +4,6 @@ import (
 	"testing"
 )
 
-func TestNewRepository(t *testing.T) {
-
-}
-
 func TestUpdateStats(t *testing.T) {
 
 }
