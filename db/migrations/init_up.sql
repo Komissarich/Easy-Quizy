@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS quizzes (
+    Quiz_ID VARCHAR(255) PRIMARY KEY NOT NULL ,
+    Name VARCHAR(255) NOT NULL ,
+    Author VARCHAR(255) NOT NULL
+);
+CREATE TABLE IF NOT EXISTS questions(
+Question_ID VARCHAR(255) PRIMARY KEY NOT NULL,
+Quiz_ID VARCHAR(255) NOT NULL,
+FOREIGN KEY (Quiz_ID) references quizzes(Quiz_ID),
+Question_text VARCHAR(255)
+);
+CREATE TABLE IF NOT EXISTS answers(
+    Answer_ID VARCHAR(255) PRIMARY KEY NOT NULL,
+    Question_ID VARCHAR(255) NOT NULL,
+    FOREIGN KEY (Question_ID) REFERENCES questions(Question_ID),
+    Answer_text VARCHAR(255),
+    Is_correct BOOLEAN
+);

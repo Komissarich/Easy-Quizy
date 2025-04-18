@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+option go_package = "pkg/api/v1";
+
+package api;
+
+import "api/google/api/annotations.proto";
+service QuizService{
+  rpc CreateQuiz(CreateQuizRequest) returns (CreateQuizResponse){
+    option(google.api.http) = {
+      post: "/v1/quiz"
+      body: "*"
+    };
+  }
+  rpc GetQuiz(GetQuizRequest) returns (GetQuizResponse){
+    option(google.api.http) = {
+      get: "/v1/quiz/{quiz_id}"
+    };
+  }
+}
+message CreateQuizRequest{
+  string name = 1;
+  string author = 2;
+  repeated CreateQuestion question = 3;
+}
+message CreateQuestion{
+  string question_text = 1;
+  repeated CreateAnswer answer = 2;
+}
+message CreateAnswer{
+  string answer_text = 1;
+  bool is_correct = 2;
+}
+message CreateQuizResponse{
+  string quiz_id = 1;
+  string message = 2;
+}
+message GetQuizRequest{
+  string quiz_id = 1;
+}
+message GetQuizResponse{
+  string name = 1;
+  string author = 2;
+  repeated CreateQuestion question = 3;
+}
