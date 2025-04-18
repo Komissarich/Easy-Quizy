@@ -1,18 +1,22 @@
-FROM golang:1.23.5
+FROM golang:1.24.2-alpine3.21 as builder
 
 WORKDIR /app
 
 COPY . .
+
 RUN go mod download
 
-COPY *.go ./
+RUN go build -o /stat_service ./cmd/app/main.go
 
-# Build
-RUN CGO_ENABLED=0 GOOS=linux go build -o /stat_service ./cmd/app/main.go
+FROM alpine:3.21
 
-EXPOSE 8080
+WORKDIR /app
+
+COPY --from=builder /stat_service .
+COPY --from=builder /app/config ./config
+COPY --from=builder /app/db/migrations ./db/migrations
+
 EXPOSE 50051
-# ENTRYPOINT [ "/cmd/bin" ]
+EXPOSE 8080
 
-# Run
-CMD ["/stat_service"]
+CMD [ "./stat_service" ]
