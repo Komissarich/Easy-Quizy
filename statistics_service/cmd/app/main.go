@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"quiz_app/internal/config"
 	"quiz_app/internal/middleware"
-	"quiz_app/internal/rest"
+
 	"quiz_app/internal/statistics/repository"
 	"quiz_app/internal/statistics/service"
 	api "quiz_app/pkg/api/v1"
@@ -74,7 +74,7 @@ func main() {
 	api.RegisterStatisticsServer(server, service)
 	log.Info(ctx, "gRPC service started")
 
-	go rest.Run(ctx, cfg)
+	//go rest.Run(ctx, cfg)
 
 	go func() {
 		if err := server.Serve(lis); err != nil {
