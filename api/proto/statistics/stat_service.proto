@@ -1,0 +1,161 @@
+syntax = "proto3";
+
+option go_package = "pkg/api/v1";
+
+package api;
+
+import "api/google/api/annotations.proto";
+
+service Statistics {
+    
+    //  Updating
+    rpc UpdateStats(UpdateStatsRequest) returns (UpdateStatsResponse) {
+        option (google.api.http) = {
+            post: "/v1/stats/update"
+            body: "*"
+        };
+    };
+
+    //  Quizzes
+    rpc GetQuizStat(GetQuizStatRequest) returns (GetQuizStatResponse) {
+        option (google.api.http) = {
+            get: "/v1/stats/quiz/{quiz_id}"
+        };
+    };
+
+    rpc ListQuizzes(ListQuizzesRequest) returns (ListQuizzesResponse) {
+        option (google.api.http) = {
+            get: "/v1/stats/quizzes/{option}"
+        };
+    };
+
+    //  Players
+    rpc GetPlayerStat(GetPlayerStatRequest) returns (GetPlayerStatResponse) {
+        option (google.api.http) = {
+            get: "/v1/stats/player/{user_id}"
+        };
+    };
+
+    rpc ListPlayers(ListPlayersRequest) returns (ListPlayersResponse) {
+        option (google.api.http) = {
+            get: "/v1/stats/players"
+        };
+    };
+
+    //  Authors
+    rpc GetAuthorStat(GetAuthorStatRequest) returns (GetAuthorStatResponse) {
+        option (google.api.http) = {
+            get: "/v1/stats/author/{user_id}"
+        };
+    }; 
+
+    rpc ListAuthors(ListAuthorsRequest) returns (ListAuthorsResponse) {
+        option (google.api.http) = {
+            get: "/v1/stats/authors"
+        };
+    };
+}
+//  Sessions
+message UpdateStatsRequest {
+    string quiz_id = 1;
+    map<string, float> players_score = 2;
+    float quiz_rate = 3;
+}
+
+message UpdateStatsResponse {}
+
+// Quizzes
+
+message QuizStat {
+    string quiz_id = 1;
+    string author_id = 2;
+
+    int32 num_sessions = 3;
+    float avg_rate = 4;
+}
+
+message GetQuizStatRequest {
+    string quiz_id = 1;
+}
+
+message GetQuizStatResponse {
+    QuizStat quiz = 1;
+}
+
+enum ListQuizzesOption {
+    AVG_RATE = 0;
+    NUM_SESSIONS = 1;
+}
+
+message ListQuizzesRequest {
+    ListQuizzesOption option = 1; 
+}
+
+message ListQuizzesResponse {
+    repeated QuizStat quizzes = 1; 
+}
+
+
+//  Players 
+
+message PlayerStat {
+    string user_id = 1;
+    float total_score = 2;
+    float best_score = 3;
+    float avg_score = 4;
+    int32 num_sessions = 5;
+}
+
+message GetPlayerStatRequest {
+    string user_id = 1;
+}
+
+message GetPlayerStatResponse {
+    PlayerStat player = 1;
+}
+
+enum ListPlayersOption {
+    TOTAL_SCORE = 0;
+    BEST_SCORE = 1;
+    AVG_SCORE = 2;
+}
+
+message ListPlayersRequest {
+    ListPlayersOption option = 1;
+}
+
+message ListPlayersResponse {
+    repeated PlayerStat players = 1;
+}
+
+
+//  Authors 
+
+message AuthorStat {
+    string user_id = 1;
+    int32 num_quizzes = 2;
+    float avg_quiz_rate = 3;
+    float best_quiz_rate = 4;
+}
+
+message GetAuthorStatRequest {
+    string user_id = 1;
+}
+
+message GetAuthorStatResponse {
+    AuthorStat author = 1;
+}
+
+enum ListAuthorsOption {
+    NUM_QUIZZES = 0;
+    AVG_QUIZ_RATE = 1;
+    BEST_QUIZ_RATE = 2;
+}
+
+message ListAuthorsRequest {
+    ListAuthorsOption option = 1;
+}
+
+message ListAuthorsResponse {
+    repeated AuthorStat authors = 1;
+}
