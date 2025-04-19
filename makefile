@@ -1,11 +1,10 @@
 APP_NAME=auth-service
 BINARY=$(APP_NAME)
+DB_URL=postgres://postgres:05042007PULlup!@auth-db:5432/postgres?sslmode=disable
 
 all: generate build
 
-
-
-# generate gRPC 
+# Генерация gRPC кода
 generate:
 	protoc \
 		--proto_path=./api/proto/auth \
@@ -15,33 +14,34 @@ generate:
 		--go-grpc_opt=paths=source_relative \
 		./api/proto/auth/auth_service.proto
 
-# прогонка миграций
+# Миграции в Docker-окружении
 migrations-up:
-	migrate -path migrations -database 'postgres://postgres:pass@localhost:5432/postgres?sslmode=disable' up
+	docker-compose up -d postgres
+
+	docker-compose run --rm auth-service migrate -path /app/migrations -database '$(DB_URL)' up
 
 migrations-down:
-	migrate -path migrations -database 'postgres://postgres:pass@localhost:5432/postgres?sslmode=disable' down
+	docker-compose run --rm auth-service migrate -path /app/migrations -database '$(DB_URL)' down
 
-
-# сборка приложения
+# Сборка приложения
 build:
 	go build -o $(APP_NAME) cmd/main.go
-	docker build -t auth-service .
-	
+	docker-compose build
 
-# запуск приложения
-run: build
-	./$(BINARY)
+# Запуск приложения
+run: build migrations-up
+	docker-compose up auth-service
 
-# тестирование
-# test: 
-
-# интеграционное тестирование
+# Тестирование
 test-integration:
-	go test -v -tags=integration ./tests/integration/auth...
+	docker-compose run --rm auth-service go test -v -tags=integration ./tests/integration/auth...
 
-# юнит тестирование
 test:
-	go test -v -short ./...
+	docker-compose run --rm auth-service go test -v -short ./...
 
-.PHONY: all generate run-migrations build run test-integration test
+# Очистка
+clean:
+	docker-compose down -v
+	rm -f $(BINARY)
+
+.PHONY: all generate migrations-up migrations-down build run test-integration test clean
