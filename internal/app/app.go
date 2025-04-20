@@ -1,20 +1,21 @@
 package app
 
 import (
-	"awesomeProject2/internal/config"
-	"awesomeProject2/internal/quizzes/quizzes/service"
-	"awesomeProject2/internal/quizzes/repository"
-	v1 "awesomeProject2/pkg/api/v1"
-	"awesomeProject2/pkg/logger"
 	"context"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 	"os"
 	"os/signal"
+	"quizzes/internal/config"
+	"quizzes/internal/quizzes/quizzes/service"
+	"quizzes/internal/quizzes/repository"
+	v1 "quizzes/pkg/api/v1"
+	"quizzes/pkg/logger"
 	"strconv"
 	"syscall"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 type Application struct {

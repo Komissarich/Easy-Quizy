@@ -1,12 +1,13 @@
 package repository
 
 import (
-	"awesomeProject2/internal/config"
-	"awesomeProject2/pkg/api/v1"
-	"awesomeProject2/pkg/logger"
-	"awesomeProject2/pkg/postgres"
 	"context"
 	"fmt"
+	"quizzes/internal/config"
+	v1 "quizzes/pkg/api/v1"
+	"quizzes/pkg/logger"
+	"quizzes/pkg/postgres"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -19,9 +20,11 @@ type Repository struct {
 
 func NewRepository(ctx context.Context, config *config.Config) *Repository {
 	pg, err := postgres.New(ctx, config.Postgres)
+	//	fmt.Println(err.Error())
 	if err != nil {
 		logger.GetLoggerFromCtx(ctx).Error(ctx, fmt.Sprint("failed to create repository", zap.Error(err)))
 	} else {
+		postgres.InitTables(ctx, pg)
 		logger.GetLoggerFromCtx(ctx).Info(ctx, "connected to postgres")
 		logger.GetLoggerFromCtx(ctx).Info(ctx, fmt.Sprint("pinging postgres: ", pg.Ping(ctx)))
 	}
@@ -36,6 +39,8 @@ func (r *Repository) CreateQuiz(
 	ctx context.Context,
 	name string,
 	author string,
+	image_id *string,
+	description *string,
 	questions []*v1.CreateQuestion,
 ) (string, error) {
 	tx, err := r.pool.Begin(ctx)
@@ -47,16 +52,16 @@ func (r *Repository) CreateQuiz(
 	quizID := uuid.New().String()
 
 	_, err = tx.Exec(ctx,
-		"INSERT INTO quizzes (Quiz_ID, Name, Author) VALUES ($1, $2, $3)",
-		quizID, name, author)
+		"INSERT INTO quizzes (Quiz_ID, Name, Author, Image_ID, Description) VALUES ($1, $2, $3, $4, $5)",
+		quizID, name, author, &image_id, &description)
 	if err != nil {
 		return "", fmt.Errorf("failed to insert quiz: %w", err)
 	}
 	for _, q := range questions {
 		questionID := uuid.New().String()
 		_, err = tx.Exec(ctx,
-			"INSERT INTO questions (Question_ID, Quiz_ID, Question_text) VALUES ($1, $2, $3)",
-			questionID, quizID, q.QuestionText)
+			"INSERT INTO questions (Question_ID, Quiz_ID, Question_text, Image_ID) VALUES ($1, $2, $3, $4)",
+			questionID, quizID, q.QuestionText, &q.ImageId)
 		if err != nil {
 			return "", fmt.Errorf("failed to insert question: %w", err)
 		}
@@ -84,10 +89,10 @@ func (r *Repository) GetQuiz(
 	ctx context.Context,
 	quizID string,
 ) (*v1.GetQuizResponse, error) {
-	var name, author string
+	var name, author, image_id, description string
 	err := r.pool.QueryRow(ctx,
-		"SELECT Name, Author FROM quizzes WHERE Quiz_ID = $1",
-		quizID).Scan(&name, &author)
+		"SELECT Name, Author, Image_ID, Description FROM quizzes WHERE Quiz_ID = $1",
+		quizID).Scan(&name, &author, &image_id, &description)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, fmt.Errorf("quiz not found")
@@ -96,7 +101,7 @@ func (r *Repository) GetQuiz(
 	}
 
 	rows, err := r.pool.Query(ctx,
-		"SELECT Question_ID, Question_text FROM questions WHERE Quiz_ID = $1",
+		"SELECT Question_ID, Question_text, Image_ID FROM questions WHERE Quiz_ID = $1",
 		quizID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get questions: %w", err)
@@ -105,8 +110,8 @@ func (r *Repository) GetQuiz(
 
 	var questions []*v1.CreateQuestion
 	for rows.Next() {
-		var questionID, questionText string
-		err = rows.Scan(&questionID, &questionText)
+		var questionID, questionText, imageID string
+		err = rows.Scan(&questionID, &questionText, &imageID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan question: %w", err)
 		}
@@ -138,16 +143,19 @@ func (r *Repository) GetQuiz(
 
 		questions = append(questions, &v1.CreateQuestion{
 			QuestionText: questionText,
+			ImageId:      &imageID,
 			Answer:       answers,
 		})
 	}
 	if rows.Err() != nil {
 		return nil, fmt.Errorf("error iterating questions: %w", rows.Err())
 	}
-
+	fmt.Println(name, author, image_id, description, questions)
 	return &v1.GetQuizResponse{
-		Name:     name,
-		Author:   author,
-		Question: questions,
+		Name:        name,
+		Author:      author,
+		ImageId:     &image_id,
+		Description: &description,
+		Question:    questions,
 	}, nil
 }

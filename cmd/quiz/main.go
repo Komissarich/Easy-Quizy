@@ -1,8 +1,9 @@
 package main
 
 import (
-	"awesomeProject2/internal/app"
 	"context"
+
+	"quizzes/internal/app"
 )
 
 const (

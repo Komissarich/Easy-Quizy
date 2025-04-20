@@ -1,8 +1,8 @@
 package config
 
 import (
-	"awesomeProject2/pkg/postgres"
 	"path/filepath"
+	"quizzes/pkg/postgres"
 	"runtime"
 
 	"github.com/ilyakaznacheev/cleanenv"
