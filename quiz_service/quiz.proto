@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+option go_package = "pkg/api/v1";
+
+package api;
+
+service QuizService{
+  rpc CreateQuiz(CreateQuizRequest) returns (CreateQuizResponse);
+  rpc GetQuiz(GetQuizRequest) returns (GetQuizResponse);
+}
+message CreateQuizRequest{
+  string name = 1;
+  string author = 2;
+  optional string image_id = 3;
+  optional string description = 4;
+  repeated CreateQuestion question = 5;
+}
+message CreateQuestion{
+  string question_text = 1;
+  optional string image_id = 2;
+  repeated CreateAnswer answer = 3;
+}
+message CreateAnswer{
+  string answer_text = 1;
+  bool is_correct = 2;
+}
+message CreateQuizResponse{
+  string quiz_id = 1;
+  string message = 2;
+}
+message GetQuizRequest{
+  string quiz_id = 1;
+}
+message GetQuizResponse{
+  string name = 1;
+  string author = 2;
+  optional string image_id = 3;
+  optional string description = 4;
+  repeated CreateQuestion question = 5;
+}
