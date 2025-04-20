@@ -119,14 +119,6 @@ func (c *AuthController) UpdateMe(ctx context.Context, req *v1.UpdateMeRequest) 
 
 	c.l.Info("Updating user", zap.Uint64("user_id", user.ID))
 
-	// if req.Username != nil {
-	// 	if *req.Username == "" {
-	// 		c.l.Warn("Empty username provided")
-	// 		return nil, status.Error(codes.InvalidArgument, "username cannot be empty")
-	// 	}
-	// 	user.Username = *req.Username
-	// 	c.l.Info("Updating username", zap.String("username", *req.Username))
-	// }
 	if req.Email != nil {
 		if !isValidEmail(*req.Email) {
 			c.l.Warn("Invalid email", zap.String("email", *req.Email))
@@ -138,7 +130,6 @@ func (c *AuthController) UpdateMe(ctx context.Context, req *v1.UpdateMeRequest) 
 	if req.Password != nil {
 		if len(*req.Password) < 8 {
 			c.l.Warn("Invalid password", zap.Int("password_length", len(*req.Password)))
-			// CHANGED: Validate password
 			return nil, status.Error(codes.InvalidArgument, "password must be at least 8 characters")
 		}
 		user.Password = *req.Password

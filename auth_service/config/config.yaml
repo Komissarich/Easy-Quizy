@@ -5,14 +5,14 @@ jwt:
   token_ttl: 24h
 
 db:
-  host: localhost
+  host: postgres
   port: 5432
   username: postgres
   password: 05042007PULlup!
   name: postgres
 
 redis:
-  host: localhost
+  host: redis
   port: 6379
-  password:
+  password: ""
   db: 0
