@@ -6,6 +6,17 @@
         <div class="welcome-header">
         <h1>Добро пожаловать на<br>Easy-quizy!</h1>
       </div>
+      <div class="form-group">
+          <label for="login">Почта</label>
+          <input 
+            type="text" 
+            id="login" 
+             v-model="email"
+            placeholder="Введите почту"
+            required
+          >
+        </div>
+
         <div class="form-group">
           <label for="login">Логин</label>
           <input 
@@ -68,6 +79,7 @@ export default {
     },
   data() {
     return {
+        email: '',
         username: '',
         password: '',
         errorMessage: ''
@@ -77,10 +89,10 @@ export default {
     async handleLogin() {
         this.errorMessage = ''
         if (this.username !== ""  && this.password !== "") {
-          let user = {username: this.username, password: this.password}
+          let user = {email: this.email, password: this.password, username: this.username}
           let json = JSON.stringify(user)
         
-          let data = await axios.post("http://localhost:8080/test", json) 
+          let data = await axios.post("http://localhost:8085/v1/users/register", json) 
         
           if (data.data !== "error") {
            

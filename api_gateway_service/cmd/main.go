@@ -20,6 +20,27 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+func allowCORS(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Разрешаем запросы с любых источников (для production укажите конкретные домены)
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		// Разрешаем необходимые методы
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+
+		// Разрешаем необходимые заголовки
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		// Для предварительных OPTIONS-запросов
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		h.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -61,7 +82,7 @@ func main() {
 
 	// 2. Создаём Gateway-маршрутизатор
 	mux := runtime.NewServeMux()
-
+	corsMux := allowCORS(mux)
 	// 3. Регистрируем обработчики для обоих сервисов
 
 	if err := quiz_service.RegisterQuizServiceHandler(ctx, mux, quizConn); err != nil {
@@ -78,7 +99,7 @@ func main() {
 	// 4. Настраиваем HTTP-сервер
 	srv := &http.Server{
 		Addr:    ":8085",
-		Handler: mux,
+		Handler: corsMux,
 	}
 
 	// Graceful shutdown
