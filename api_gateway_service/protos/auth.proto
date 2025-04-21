@@ -11,22 +11,22 @@ service AuthService {
   // Auth
   rpc Register (RegisterRequest) returns (RegisterResponse) {
     option (google.api.http) = {
-      post: "/v1/auth/register"
+      post: "/v1/users/register"
     };
   }
   rpc Login (LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
-      post: "/v1/auth/login"
+      post: "/v1/users/login"
     };
   }
   rpc Logout (LogoutRequest) returns (LogoutResponse) {
     option (google.api.http) = {
-      post: "/v1/auth/logout"
+      post: "/v1/users/logout"
     };
   }
   rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse) {
     option (google.api.http) = {
-      post: "/v1/auth/validate"
+      post: "/v1/users/validate"
     };
   }
   
@@ -45,12 +45,12 @@ service AuthService {
   // Friends
   rpc AddFriend (AddFriendRequest) returns (FriendResponse) {
     option (google.api.http) = {
-      post: "/v1/friends/add"
+      post: "/v1/users/friends/add"
     };
   }
   rpc RemoveFriend (RemoveFriendRequest) returns (FriendResponse) {
     option (google.api.http) = {
-      post: "/v1/friends/remove"
+      post: "/v1/users/friends/remove"
     };
   }
   rpc GetFriends (GetFriendsRequest) returns (FriendsListResponse) {
