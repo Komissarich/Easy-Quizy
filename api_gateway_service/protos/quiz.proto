@@ -17,6 +17,7 @@ service QuizService{
       get: "/v1/quizzes/{quiz_id}"
     };
   }
+  
 }
 message CreateQuizRequest{
   string name = 1;

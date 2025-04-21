@@ -4,23 +4,32 @@ import (
 	"api_gateway/gen/auth_service"
 	"api_gateway/gen/quiz_service"
 	"api_gateway/gen/stat_service"
+	logger "api_gateway/pkg"
 	"context" // для QuizService
 
 	// для StatsService
-	"log"
+
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	l, err := logger.Setup()
+
+	if err != nil {
+		l.Fatal("failed to setup logger", zap.Error(err))
+	}
 
 	// 1. Подключаемся к gRPC-сервисам
 	quizConn, err := grpc.NewClient(
@@ -28,7 +37,7 @@ func main() {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Fatalf("failed to connect to Quiz gRPC service: %v", err)
+		l.Fatal("failed to connect to Quiz gRPC service", zap.Error(err))
 	}
 	defer quizConn.Close()
 
@@ -37,7 +46,7 @@ func main() {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Fatalf("failed to connect to Stats gRPC service: %v", err)
+		l.Fatal("failed to connect to Stats gRPC service", zap.Error(err))
 	}
 	defer statsConn.Close()
 
@@ -46,7 +55,7 @@ func main() {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Fatalf("failed to connect to Auth gRPC service: %v", err)
+		l.Fatal("failed to connect to Auth gRPC service", zap.Error(err))
 	}
 	defer authConn.Close()
 
@@ -56,14 +65,14 @@ func main() {
 	// 3. Регистрируем обработчики для обоих сервисов
 
 	if err := quiz_service.RegisterQuizServiceHandler(ctx, mux, quizConn); err != nil {
-		log.Fatalf("failed to register Quiz gateway: %v", err)
+		l.Fatal("failed to register Quiz gateway", zap.Error(err))
 	}
 	if err := stat_service.RegisterStatisticsHandler(ctx, mux, statsConn); err != nil {
-		log.Fatalf("failed to register Stats gateway: %v", err)
+		l.Fatal("failed to register Stats gateway", zap.Error(err))
 	}
 
 	if err := auth_service.RegisterAuthServiceHandler(ctx, mux, authConn); err != nil {
-		log.Fatalf("failed to register Stats gateway: %v", err)
+		l.Fatal("failed to register Auth gateway", zap.Error(err))
 	}
 
 	// 4. Настраиваем HTTP-сервер
@@ -79,13 +88,13 @@ func main() {
 		<-sigint
 
 		if err := srv.Shutdown(ctx); err != nil {
-			log.Printf("HTTP server shutdown error: %v", err)
+			l.Info("HTTP server shutdown error", zap.Error(err))
 		}
 	}()
 
 	// 5. Запускаем REST-сервер
-	log.Println("Starting HTTP gateway on :8085 (serving both Quiz and Stats services)")
+	l.Info("Starting HTTP gateway on :8085 (serving both Quiz and Stats services)")
 	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-		log.Fatalf("HTTP server failed: %v", err)
+		l.Fatal("HTTP server failed", zap.Error(err))
 	}
 }

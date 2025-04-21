@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package api;
+option go_package = "./gen/gateway_service";
+
+import "google/api/annotations.proto";
+import "auth.proto";      // Импортируем существующие proto-файлы
+import "quiz.proto";
+import "stat.proto";
+
+// Сервис агрегации в Gateway
+service GatewayService {
+  // Получить профиль пользователя (агрегированные данные)
+//   rpc GetUserProfile(GetUserProfileRequest) returns (GetUserProfileResponse) {
+//     option (google.api.http) = {
+//       get: "/v1/users/me"  // REST-эндпоинт
+//     };
+//   }
+
+  rpc GetQuizInfo(GetQuizInfoRequest) returns (GetQuizInfoResponse) {
+    option (google.api.http) = {
+      get: "/v1/quizzes/{quiz_id}"  // REST-эндпоинт
+    };
+  }
+}
+
+// Запрос
+message GetUserProfileRequest {
+  string user_id = 1;
+}
+
+// Ответ (агрегирует данные из 3 сервисов)
+// message GetUserProfileResponse {
+    
+//   users.User user_info = 1;          // Данные из users.proto
+//   repeated quizzes.Quiz quizzes = 2; // Данные из quizzes.proto
+//   stats.UserStats stats = 3;         // Данные из stats.proto
+// }
+message GetQuizInfoRequest {
+    string quiz_id = 1;
+  }
+  
+  message GetQuizInfoResponse {
+    
+    quiz.GetQuizResponse quiz = 1;      // Данные из quiz.proto
+    stat.GetQuizStatResponse stats = 2; // Данные из stat.proto
+  }
