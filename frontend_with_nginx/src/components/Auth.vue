@@ -6,6 +6,17 @@
         <div class="welcome-header">
         <h1>Добро пожаловать на<br>Easy-quizy!</h1>
       </div>
+      <div class="form-group">
+          <label for="login">Почта</label>
+          <input 
+            type="text" 
+            id="login" 
+             v-model="email"
+            placeholder="Введите почту"
+            required
+          >
+        </div>
+
         <div class="form-group">
           <label for="login">Логин</label>
           <input 
@@ -68,6 +79,7 @@ export default {
     },
   data() {
     return {
+        email: '',
         username: '',
         password: '',
         errorMessage: ''
