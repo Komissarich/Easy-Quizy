@@ -12,8 +12,8 @@ import (
 type Config struct {
 	Host     string `yaml:"POSTGRES_HOST" env:"POSTGRES_HOST" env-default:"127.0.0.1"`
 	Port     uint16 `yaml:"POSTGRES_PORT" env:"POSTGRES_PORT" env-default:"5432"`
-	Username string `yaml:"POSTGRES_USER" env:"POSTGRES_USERT" env-default:"root"`
-	Password string `yaml:"POSTGRES_PASS" env:"POSTGRES_PASS" env-default:"1234"`
+	Username string `yaml:"POSTGRES_USER" env:"POSTGRES_USERT" env-default:"postgres"`
+	Password string `yaml:"POSTGRES_PASS" env:"POSTGRES_PASS" env-default:"root"`
 	Database string `yaml:"POSTGRES_DB" env:"POSTGRES_DB" env-default:"postgres"`
 
 	MinConns int32 `yaml:"POSTGRES_MIN_CONN" env:"POSTGRES_MIN_CONN" env-default:"1"`
@@ -21,13 +21,19 @@ type Config struct {
 }
 
 func New(ctx context.Context, config Config) (*pgxpool.Pool, error) {
-	connString := "postgres://postgres:root@postgres:5432/postgres"
-	fmt.Println("ZZVZVVZVZVZVZVZVZVVZVZVZVZVVZVZVZVZV")
+	connString := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable&pool_max_conns=%d&pool_min_conns=%d",
+		config.Username,
+		config.Password,
+		config.Host,
+		config.Port,
+		config.Database,
+		config.MaxConns,
+		config.MinConns,
+	)
 	conn, err := pgxpool.New(ctx, connString)
 	if err != nil {
 		return nil, fmt.Errorf("unable to connect to database: %w", err)
 	}
-	fmt.Println("ZZVZVVZVZVZVZVZVZVVZVZVZVZVVZVZVZVZV")
 	// migration, err := migrate.New(
 	// 	"file://db/migrations",
 	// 	fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
