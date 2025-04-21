@@ -16,19 +16,18 @@ services:
     networks:
       - app_network
 
-    api_gateway:
-      build: ./api_gateway_service
-      ports:
-        - "8085:8085"
+  api_gateway:
+    build: ./api_gateway_service
+    ports:
+      - "8085:8085"
 
-      depends_on:
-        - auth_service
-        - stat_service
-        - quiz_service
-      
-      networks:
-        - app_network
-
+    depends_on:
+      - auth_service
+      - stat_service
+      - quiz_service
+    
+    networks:
+      - app_network
 
   stat_service: 
     container_name: stat_service
@@ -106,6 +105,21 @@ services:
       start_period: 10s
     restart: unless-stopped
 
+  redis_container:
+    container_name: redis_container
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - redis_data:/data
+    networks:
+      - app_network
+
   quiz_service:
     build: ./quiz_service
     expose:
@@ -139,6 +153,7 @@ volumes:
   stat_postgres:
   auth_postgres:
   quiz_postgres:
+  redis_data:
 
 
 networks:

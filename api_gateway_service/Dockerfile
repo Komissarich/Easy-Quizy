@@ -6,14 +6,14 @@ COPY . .
 
 RUN go mod download
 
-RUN go build -o /service ./cmd/quiz/main.go
+RUN go build -o /service ./cmd/main.go
 
 FROM alpine:3.21
 
 WORKDIR /app
 
 COPY --from=builder /service .
-COPY --from=builder /app/config ./config
+#COPY --from=builder /app/config ./config
 
 
 EXPOSE 8085

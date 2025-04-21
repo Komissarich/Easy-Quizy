@@ -13,6 +13,6 @@ WORKDIR /app
 COPY --from=builder /app/auth-service .
 COPY --from=builder /go/bin/migrate /usr/local/bin/migrate
 COPY --from=builder /app/migrations ./migrations
-
+COPY --from=builder /app/config ./config
 EXPOSE 50051
 CMD ["./auth-service"]

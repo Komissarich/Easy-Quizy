@@ -21,13 +21,17 @@ type Config struct {
 }
 
 func New(ctx context.Context, config Config) (*pgxpool.Pool, error) {
-	connString := "postgres://postgres:root@postgres:5432/postgres"
-	fmt.Println("ZZVZVVZVZVZVZVZVZVVZVZVZVZVVZVZVZVZV")
+	connString := "postgres://postgres:root@quiz_postgres:5432/postgres"
+
 	conn, err := pgxpool.New(ctx, connString)
 	if err != nil {
+		fmt.Println("ERRROR ERRRROROROOROE ROROROEOR")
 		return nil, fmt.Errorf("unable to connect to database: %w", err)
 	}
-	fmt.Println("ZZVZVVZVZVZVZVZVZVVZVZVZVZVVZVZVZVZV")
+	err = conn.Ping(ctx)
+	if err != nil {
+		fmt.Println("ERROR PINGING")
+	}
 	// migration, err := migrate.New(
 	// 	"file://db/migrations",
 	// 	fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
