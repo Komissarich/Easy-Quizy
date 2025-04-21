@@ -33,6 +33,7 @@ func NewAuthController(authService service.AuthService, friendService service.Fr
 }
 
 func (c *AuthController) Register(ctx context.Context, req *v1.RegisterRequest) (*v1.RegisterResponse, error) {
+	c.l.Warn("Fields of json: ", zap.String("email", req.Email), zap.String("password", req.Password))
 	if req.Email == "" || !isValidEmail(req.Email) {
 		c.l.Warn("Invalid or empty email", zap.String("email", req.Email))
 		return nil, status.Error(codes.InvalidArgument, "invalid or empty email")

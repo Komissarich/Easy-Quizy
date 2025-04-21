@@ -90,10 +90,13 @@ export default {
         this.errorMessage = ''
         if (this.username !== ""  && this.password !== "") {
           let user = {email: this.email, password: this.password, username: this.username}
+          
           let json = JSON.stringify(user)
-        
-          let data = await axios.post("http://localhost:8085/v1/users/register", json) 
-        
+          console.log(json)
+          let data = await axios.post("http://localhost:8085/v1/users/register", json, { headers: {
+           'Content-Type': 'application/json'
+           }}) 
+         
           if (data.data !== "error") {
            
               localStorage.setItem("auth", "true")

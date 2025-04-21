@@ -12,11 +12,13 @@ service AuthService {
   rpc Register (RegisterRequest) returns (RegisterResponse) {
     option (google.api.http) = {
       post: "/v1/users/register"
+      body: "*"
     };
   }
   rpc Login (LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
       post: "/v1/users/login"
+      body: "*"
     };
   }
   rpc Logout (LogoutRequest) returns (LogoutResponse) {

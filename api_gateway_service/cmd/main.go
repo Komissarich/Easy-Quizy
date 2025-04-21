@@ -5,7 +5,12 @@ import (
 	"api_gateway/gen/quiz_service"
 	"api_gateway/gen/stat_service"
 	logger "api_gateway/pkg"
+	"bytes"
 	"context" // для QuizService
+	"encoding/json"
+	"fmt"
+	"io"
+	"log"
 
 	// для StatsService
 
@@ -18,6 +23,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func allowCORS(h http.Handler) http.Handler {
@@ -29,7 +35,7 @@ func allowCORS(h http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 
 		// Разрешаем необходимые заголовки
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		// Для предварительных OPTIONS-запросов
 		if r.Method == "OPTIONS" {
@@ -41,6 +47,46 @@ func allowCORS(h http.Handler) http.Handler {
 	})
 }
 
+func HealthHeandler(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Fprint(w, "Service is healthy!")
+}
+
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "OPTIONS" {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		// Читаем тело ОДИН раз
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Error reading body", http.StatusBadRequest)
+			return
+		}
+
+		// Восстанавливаем тело для следующих обработчиков
+		r.Body = io.NopCloser(bytes.NewBuffer(body))
+
+		// Логируем
+		log.Printf("Raw request body: %s", string(body))
+
+		// Проверяем Content-Type
+		if r.Header.Get("Content-Type") != "application/json" {
+			http.Error(w, "Invalid Content-Type", http.StatusBadRequest)
+			return
+		}
+
+		// Проверяем JSON (теперь body доступен)
+		if !json.Valid(body) {
+			http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
 func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -63,7 +109,7 @@ func main() {
 	defer quizConn.Close()
 
 	statsConn, err := grpc.NewClient(
-		"stats_service:50052",
+		"stats_service:50051",
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
@@ -72,7 +118,7 @@ func main() {
 	defer statsConn.Close()
 
 	authConn, err := grpc.NewClient(
-		"stats_service:50051",
+		"auth_service:50052",
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
@@ -81,25 +127,73 @@ func main() {
 	defer authConn.Close()
 
 	// 2. Создаём Gateway-маршрутизатор
-	mux := runtime.NewServeMux()
-	corsMux := allowCORS(mux)
+
+	rootMux := http.NewServeMux()
+
+	rootMux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
+
+	jsonMarshaler := &runtime.JSONPb{
+		MarshalOptions: protojson.MarshalOptions{
+			UseProtoNames:   true,
+			EmitUnpopulated: true,
+		},
+		UnmarshalOptions: protojson.UnmarshalOptions{
+			DiscardUnknown: true,
+		},
+	}
+
+	grpcGatewayMux := runtime.NewServeMux(
+		runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonMarshaler),
+	)
+
 	// 3. Регистрируем обработчики для обоих сервисов
 
-	if err := quiz_service.RegisterQuizServiceHandler(ctx, mux, quizConn); err != nil {
+	if err := quiz_service.RegisterQuizServiceHandler(ctx, grpcGatewayMux, quizConn); err != nil {
 		l.Fatal("failed to register Quiz gateway", zap.Error(err))
 	}
-	if err := stat_service.RegisterStatisticsHandler(ctx, mux, statsConn); err != nil {
+	if err := stat_service.RegisterStatisticsHandler(ctx, grpcGatewayMux, statsConn); err != nil {
 		l.Fatal("failed to register Stats gateway", zap.Error(err))
 	}
 
-	if err := auth_service.RegisterAuthServiceHandler(ctx, mux, authConn); err != nil {
+	if err := auth_service.RegisterAuthServiceHandler(ctx, grpcGatewayMux, authConn); err != nil {
 		l.Fatal("failed to register Auth gateway", zap.Error(err))
 	}
+	fmt.Println(authConn.GetState().String())
+	rootMux.Handle("/", grpcGatewayMux)
+	// corsHandler := allowCORS(rootMux)
 
+	//handler := loggingMiddleware(rootMux)
+
+	mux := http.NewServeMux()
+
+	// 2. Тестовый endpoint без gRPC
+	mux.HandleFunc("/v1/users/register", func(w http.ResponseWriter, r *http.Request) {
+		body, _ := io.ReadAll(r.Body)
+		log.Printf("Raw body: %s", string(body))
+
+		// Проверяем JSON
+		var data map[string]interface{}
+		if err := json.Unmarshal(body, &data); err != nil {
+			log.Printf("Invalid JSON: %v", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		w.Write([]byte("Valid JSON received"))
+	})
+
+	// srv := &http.Server{
+	// 	Addr:    ":8085",
+	// 	Handler: rootMux, // Пока без middleware
+	// }
 	// 4. Настраиваем HTTP-сервер
 	srv := &http.Server{
 		Addr:    ":8085",
-		Handler: corsMux,
+		Handler: mux,
 	}
 
 	// Graceful shutdown
@@ -114,6 +208,7 @@ func main() {
 	}()
 
 	// 5. Запускаем REST-сервер
+
 	l.Info("Starting HTTP gateway on :8085 (serving both Quiz and Stats services)")
 	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
 		l.Fatal("HTTP server failed", zap.Error(err))
