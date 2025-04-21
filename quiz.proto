@@ -7,6 +7,7 @@ package api;
 service QuizService{
   rpc CreateQuiz(CreateQuizRequest) returns (CreateQuizResponse);
   rpc GetQuiz(GetQuizRequest) returns (GetQuizResponse);
+  rpc GetQuizByAuthor (GetQuizByAuthorRequest) returns (GetQuizByAuthorResponse);
 }
 message CreateQuizRequest{
   string name = 1;
@@ -37,4 +38,10 @@ message GetQuizResponse{
   optional string image_id = 3;
   optional string description = 4;
   repeated CreateQuestion question = 5;
+}
+message GetQuizByAuthorRequest{
+  string author = 1;
+}
+message GetQuizByAuthorResponse{
+  repeated GetQuizResponse quizzes = 1;
 }
