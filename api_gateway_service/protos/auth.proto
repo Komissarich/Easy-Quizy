@@ -1,0 +1,143 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "./gen/auth_service";
+
+import "google/api/annotations.proto";
+import "google/api/timestamp.proto";
+
+service AuthService {
+  // Auth
+  rpc Register (RegisterRequest) returns (RegisterResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/register"
+    };
+  }
+  rpc Login (LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/login"
+    };
+  }
+  rpc Logout (LogoutRequest) returns (LogoutResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/logout"
+    };
+  }
+  rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/validate"
+    };
+  }
+  
+  // Users
+  rpc GetMe (GetMeRequest) returns (UserResponse) {
+    option (google.api.http) = {
+      post: "/v1/users/me"
+    };
+  }
+  rpc UpdateMe (UpdateMeRequest) returns (UserResponse) {
+    option (google.api.http) = {
+      patch: "/v1/users/me"
+    };
+  }
+  
+  // Friends
+  rpc AddFriend (AddFriendRequest) returns (FriendResponse) {
+    option (google.api.http) = {
+      post: "/v1/friends/add"
+    };
+  }
+  rpc RemoveFriend (RemoveFriendRequest) returns (FriendResponse) {
+    option (google.api.http) = {
+      post: "/v1/friends/remove"
+    };
+  }
+  rpc GetFriends (GetFriendsRequest) returns (FriendsListResponse) {
+    option (google.api.http) = {
+      post: "/v1/friends"
+    };
+  }
+}
+
+// Messages for Auth
+message RegisterRequest {
+  string email = 1;
+  string password = 2;
+  optional string username = 3;
+}
+
+message RegisterResponse {
+  string user_id = 1;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string token = 1;
+  UserResponse user = 2;
+}
+
+message LogoutRequest {
+  string token = 1;
+}
+
+message LogoutResponse {
+  bool success = 1;
+}
+
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+message ValidateTokenResponse {
+  bool valid = 1;
+  UserResponse user = 2;
+}
+
+// Messages for Users
+message GetMeRequest {
+  string token = 1;
+}
+
+message UpdateMeRequest {
+  string token = 1;
+  optional string username = 2;
+  optional string email = 3;
+  optional string password = 4;
+}
+
+message UserResponse {
+  string id = 1;
+  string username = 2;
+  string email = 3;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+// Messages for Friends
+message AddFriendRequest {
+  string token = 1;
+  string friend_id = 2;
+}
+
+message RemoveFriendRequest {
+  string token = 1;
+  string friend_id = 2;
+}
+
+message GetFriendsRequest {
+  string token = 1;
+}
+
+message FriendResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message FriendsListResponse {
+  repeated UserResponse friends = 1;
+}
