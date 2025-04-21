@@ -82,7 +82,8 @@ services:
     networks:
       - app_network
     depends_on:
-      - auth_postgres
+      auth_postgres:
+        condition: service_healthy
 
   auth_postgres:
     container_name: auth_postgres
@@ -124,8 +125,11 @@ services:
     build: ./quiz_service
     expose:
       - "50053"              # gRPC порт
+    networks:
+      - app_network
     depends_on:
-      - quiz_postgres
+      quiz_postgres:
+        condition: service_healthy
 
   quiz_postgres:
     container_name: quiz_postgres

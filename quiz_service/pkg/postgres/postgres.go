@@ -21,7 +21,8 @@ type Config struct {
 }
 
 func New(ctx context.Context, config Config) (*pgxpool.Pool, error) {
-	connString := "postgres://postgres:root@quiz_postgres:5432/postgres"
+
+	connString := "postgres://root:1234@quiz_postgres:5432/postgres"
 
 	conn, err := pgxpool.New(ctx, connString)
 	if err != nil {
@@ -30,7 +31,7 @@ func New(ctx context.Context, config Config) (*pgxpool.Pool, error) {
 	}
 	err = conn.Ping(ctx)
 	if err != nil {
-		fmt.Println("ERROR PINGING")
+		fmt.Println("ERROR PINGING", err.Error())
 	}
 	// migration, err := migrate.New(
 	// 	"file://db/migrations",

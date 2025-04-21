@@ -59,6 +59,7 @@ func (a *Application) Run(ctx context.Context) {
 	if err := redisClient.Ping(context.Background()); err != nil {
 		l.Fatal("Failed to connect to Redis: %v", zap.Error(err))
 	}
+	l.Info("redis connection established")
 	userRepo := repository.NewUserRepository(db.DB)
 	friendRepo := repository.NewFriendRepository(db.DB)
 	jwtService := service.NewJWTService(*userRepo, redisClient, &cfg.JWT, l)
