@@ -19,15 +19,18 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_Register_FullMethodName      = "/auth.AuthService/Register"
-	AuthService_Login_FullMethodName         = "/auth.AuthService/Login"
-	AuthService_Logout_FullMethodName        = "/auth.AuthService/Logout"
-	AuthService_ValidateToken_FullMethodName = "/auth.AuthService/ValidateToken"
-	AuthService_GetMe_FullMethodName         = "/auth.AuthService/GetMe"
-	AuthService_UpdateMe_FullMethodName      = "/auth.AuthService/UpdateMe"
-	AuthService_AddFriend_FullMethodName     = "/auth.AuthService/AddFriend"
-	AuthService_RemoveFriend_FullMethodName  = "/auth.AuthService/RemoveFriend"
-	AuthService_GetFriends_FullMethodName    = "/auth.AuthService/GetFriends"
+	AuthService_Register_FullMethodName           = "/auth.AuthService/Register"
+	AuthService_Login_FullMethodName              = "/auth.AuthService/Login"
+	AuthService_Logout_FullMethodName             = "/auth.AuthService/Logout"
+	AuthService_ValidateToken_FullMethodName      = "/auth.AuthService/ValidateToken"
+	AuthService_GetMe_FullMethodName              = "/auth.AuthService/GetMe"
+	AuthService_UpdateMe_FullMethodName           = "/auth.AuthService/UpdateMe"
+	AuthService_AddFriend_FullMethodName          = "/auth.AuthService/AddFriend"
+	AuthService_RemoveFriend_FullMethodName       = "/auth.AuthService/RemoveFriend"
+	AuthService_GetFriends_FullMethodName         = "/auth.AuthService/GetFriends"
+	AuthService_AddFavoriteQuiz_FullMethodName    = "/auth.AuthService/AddFavoriteQuiz"
+	AuthService_RemoveFavoriteQuiz_FullMethodName = "/auth.AuthService/RemoveFavoriteQuiz"
+	AuthService_GetFavoriteQuizzes_FullMethodName = "/auth.AuthService/GetFavoriteQuizzes"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -46,6 +49,10 @@ type AuthServiceClient interface {
 	AddFriend(ctx context.Context, in *AddFriendRequest, opts ...grpc.CallOption) (*FriendResponse, error)
 	RemoveFriend(ctx context.Context, in *RemoveFriendRequest, opts ...grpc.CallOption) (*FriendResponse, error)
 	GetFriends(ctx context.Context, in *GetFriendsRequest, opts ...grpc.CallOption) (*FriendsListResponse, error)
+	// Quizzez
+	AddFavoriteQuiz(ctx context.Context, in *AddFavoriteQuizRequest, opts ...grpc.CallOption) (*FavoriteQuizResponse, error)
+	RemoveFavoriteQuiz(ctx context.Context, in *RemoveFavoriteQuizRequest, opts ...grpc.CallOption) (*FavoriteQuizResponse, error)
+	GetFavoriteQuizzes(ctx context.Context, in *GetFavoriteQuizzesRequest, opts ...grpc.CallOption) (*FavoriteQuizzesResponse, error)
 }
 
 type authServiceClient struct {
@@ -146,6 +153,36 @@ func (c *authServiceClient) GetFriends(ctx context.Context, in *GetFriendsReques
 	return out, nil
 }
 
+func (c *authServiceClient) AddFavoriteQuiz(ctx context.Context, in *AddFavoriteQuizRequest, opts ...grpc.CallOption) (*FavoriteQuizResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FavoriteQuizResponse)
+	err := c.cc.Invoke(ctx, AuthService_AddFavoriteQuiz_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) RemoveFavoriteQuiz(ctx context.Context, in *RemoveFavoriteQuizRequest, opts ...grpc.CallOption) (*FavoriteQuizResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FavoriteQuizResponse)
+	err := c.cc.Invoke(ctx, AuthService_RemoveFavoriteQuiz_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) GetFavoriteQuizzes(ctx context.Context, in *GetFavoriteQuizzesRequest, opts ...grpc.CallOption) (*FavoriteQuizzesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FavoriteQuizzesResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetFavoriteQuizzes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -162,6 +199,10 @@ type AuthServiceServer interface {
 	AddFriend(context.Context, *AddFriendRequest) (*FriendResponse, error)
 	RemoveFriend(context.Context, *RemoveFriendRequest) (*FriendResponse, error)
 	GetFriends(context.Context, *GetFriendsRequest) (*FriendsListResponse, error)
+	// Quizzez
+	AddFavoriteQuiz(context.Context, *AddFavoriteQuizRequest) (*FavoriteQuizResponse, error)
+	RemoveFavoriteQuiz(context.Context, *RemoveFavoriteQuizRequest) (*FavoriteQuizResponse, error)
+	GetFavoriteQuizzes(context.Context, *GetFavoriteQuizzesRequest) (*FavoriteQuizzesResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -198,6 +239,15 @@ func (UnimplementedAuthServiceServer) RemoveFriend(context.Context, *RemoveFrien
 }
 func (UnimplementedAuthServiceServer) GetFriends(context.Context, *GetFriendsRequest) (*FriendsListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFriends not implemented")
+}
+func (UnimplementedAuthServiceServer) AddFavoriteQuiz(context.Context, *AddFavoriteQuizRequest) (*FavoriteQuizResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddFavoriteQuiz not implemented")
+}
+func (UnimplementedAuthServiceServer) RemoveFavoriteQuiz(context.Context, *RemoveFavoriteQuizRequest) (*FavoriteQuizResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveFavoriteQuiz not implemented")
+}
+func (UnimplementedAuthServiceServer) GetFavoriteQuizzes(context.Context, *GetFavoriteQuizzesRequest) (*FavoriteQuizzesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFavoriteQuizzes not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -382,6 +432,60 @@ func _AuthService_GetFriends_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_AddFavoriteQuiz_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddFavoriteQuizRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).AddFavoriteQuiz(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_AddFavoriteQuiz_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).AddFavoriteQuiz(ctx, req.(*AddFavoriteQuizRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_RemoveFavoriteQuiz_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveFavoriteQuizRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).RemoveFavoriteQuiz(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_RemoveFavoriteQuiz_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).RemoveFavoriteQuiz(ctx, req.(*RemoveFavoriteQuizRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_GetFavoriteQuizzes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetFavoriteQuizzesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetFavoriteQuizzes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_GetFavoriteQuizzes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetFavoriteQuizzes(ctx, req.(*GetFavoriteQuizzesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -424,6 +528,18 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetFriends",
 			Handler:    _AuthService_GetFriends_Handler,
+		},
+		{
+			MethodName: "AddFavoriteQuiz",
+			Handler:    _AuthService_AddFavoriteQuiz_Handler,
+		},
+		{
+			MethodName: "RemoveFavoriteQuiz",
+			Handler:    _AuthService_RemoveFavoriteQuiz_Handler,
+		},
+		{
+			MethodName: "GetFavoriteQuizzes",
+			Handler:    _AuthService_GetFavoriteQuizzes_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

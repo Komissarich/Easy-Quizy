@@ -45,6 +45,7 @@ func (r *FriendRepository) GetFriendIDs(ctx context.Context, userID uint64) ([]s
 	defer rows.Close()
 
 	var friendIDs []string
+
 	for rows.Next() {
 		var friendID string
 		if err := rows.Scan(&friendID); err != nil {
