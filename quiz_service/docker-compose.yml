@@ -6,11 +6,11 @@ services:
     ports:
       - "50051:50051" 
     depends_on:
-      - postgres
+      - quiz_postgres
     networks:
       - quiz-network
 
-  postgres:
+  quiz_postgres:
       container_name: postgres_container_goida
       image: postgres
       environment:

@@ -12,7 +12,7 @@ import (
 type Config struct {
 	Host     string `yaml:"POSTGRES_HOST" env:"POSTGRES_HOST" env-default:"127.0.0.1"`
 	Port     uint16 `yaml:"POSTGRES_PORT" env:"POSTGRES_PORT" env-default:"5432"`
-	Username string `yaml:"POSTGRES_USER" env:"POSTGRES_USERT" env-default:"postgres"`
+	Username string `yaml:"POSTGRES_USER" env:"POSTGRES_USER" env-default:"postgres"`
 	Password string `yaml:"POSTGRES_PASS" env:"POSTGRES_PASS" env-default:"root"`
 	Database string `yaml:"POSTGRES_DB" env:"POSTGRES_DB" env-default:"postgres"`
 
