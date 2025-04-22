@@ -30,7 +30,6 @@ func New(ctx context.Context, username string, password string, host string, por
 			password VARCHAR(255) NOT NULL,
 			username VARCHAR(255) NULL,
 			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
 	`)
 	if err != nil {
