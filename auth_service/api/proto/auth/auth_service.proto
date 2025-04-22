@@ -42,9 +42,21 @@ service AuthService {
   }
   
   // Friends
-  rpc AddFriend (AddFriendRequest) returns (FriendResponse);
-  rpc RemoveFriend (RemoveFriendRequest) returns (FriendResponse);
-  rpc GetFriends (GetFriendsRequest) returns (FriendsListResponse);
+  rpc AddFriend (AddFriendRequest) returns (FriendResponse) {
+    option (google.api.http) = {
+      post: "/v1/users/friends/add"
+    };
+  }
+  rpc RemoveFriend (RemoveFriendRequest) returns (FriendResponse) {
+    option (google.api.http) = {
+      post: "/v1/users/friends/remove"
+    };
+  }
+  rpc GetFriends (GetFriendsRequest) returns (FriendsListResponse) {
+    option (google.api.http) = {
+      post: "/v1/user/friends"
+    };
+  }
 
   // Quizzez
   rpc AddFavoriteQuiz (AddFavoriteQuizRequest) returns (FavoriteQuizResponse);
