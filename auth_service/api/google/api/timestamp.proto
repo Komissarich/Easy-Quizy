@@ -30,7 +30,7 @@
 
 syntax = "proto3";
 
-package google.protobuf;
+package google.api;
 
 option cc_enable_arenas = true;
 option go_package = "google.golang.org/protobuf/types/known/timestamppb";

@@ -19,21 +19,23 @@ import (
 
 type AuthController struct {
 	v1.UnimplementedAuthServiceServer
-	authService   service.AuthService
-	friendService service.FriendService
-	l             *logger.Logger
+	authService    service.AuthService
+	friendService  service.FriendService
+	quizzesService service.QuizzesService
+
+	l *logger.Logger
 }
 
-func NewAuthController(authService service.AuthService, friendService service.FriendService, l *logger.Logger) *AuthController {
+func NewAuthController(authService service.AuthService, friendService service.FriendService, quizzesService service.QuizzesService, l *logger.Logger) *AuthController {
 	return &AuthController{
-		authService:   authService,
-		friendService: friendService,
-		l:             l,
+		authService:    authService,
+		friendService:  friendService,
+		quizzesService: quizzesService,
+		l:              l,
 	}
 }
 
 func (c *AuthController) Register(ctx context.Context, req *v1.RegisterRequest) (*v1.RegisterResponse, error) {
-	c.l.Warn("Fields of json: ", zap.String("email", req.Email), zap.String("password", req.Password))
 	if req.Email == "" || !isValidEmail(req.Email) {
 		c.l.Warn("Invalid or empty email", zap.String("email", req.Email))
 		return nil, status.Error(codes.InvalidArgument, "invalid or empty email")
@@ -95,6 +97,27 @@ func (c *AuthController) Login(ctx context.Context, req *v1.LoginRequest) (*v1.L
 	return &v1.LoginResponse{
 		Token: token,
 		User:  convertUserToProto(user),
+	}, nil
+}
+
+func (c *AuthController) ValidateToken(ctx context.Context, req *v1.ValidateTokenRequest) (*v1.ValidateTokenResponse, error) {
+	if req.Token == "" {
+		c.l.Warn("token is required")
+		return nil, status.Error(codes.InvalidArgument, "token is required")
+	}
+
+	c.l.Info("Trying to validate token", zap.String("token", req.Token))
+
+	user, err := c.authService.ValidateToken(ctx, req.Token)
+	if err != nil {
+		c.l.Error("Failed to validate token", zap.Error(err))
+		return nil, status.Error(codes.Unauthenticated, "invalid token")
+	}
+
+	c.l.Info("Token validated successfully", zap.Uint64("user_id", user.ID))
+
+	return &v1.ValidateTokenResponse{
+		User: convertUserToProto(user),
 	}, nil
 }
 
@@ -223,6 +246,49 @@ func (c *AuthController) GetFriends(ctx context.Context, req *v1.GetFriendsReque
 	return &v1.FriendsListResponse{Friends: protoFriends}, nil
 }
 
+func (c *AuthController) AddFavoriteQuiz(ctx context.Context, req *v1.AddFavoriteQuizRequest) (*v1.FavoriteQuizResponse, error) {
+	userID, ok := utils.GetUser(ctx)
+	if !ok {
+		c.l.Warn("user not found in context")
+		return nil, status.Error(codes.Unauthenticated, "user not found in context")
+	}
+
+	if err := c.quizzesService.AddFavoriteQuiz(userID.ID, req.QuizId); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to add favorite quiz: %v", err)
+	}
+
+	return &v1.FavoriteQuizResponse{Success: true, Message: "Quiz added to favorites"}, nil
+}
+
+func (c *AuthController) GetFavoriteQuizzes(ctx context.Context, req *v1.GetFavoriteQuizzesRequest) (*v1.FavoriteQuizzesResponse, error) {
+	userID, ok := utils.GetUser(ctx)
+	if !ok {
+		c.l.Warn("user not found in context")
+		return nil, status.Error(codes.Unauthenticated, "user not found in context")
+	}
+
+	favoriteQuizzes, err := c.quizzesService.GetFavoriteQuizzes(userID.ID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get favorite quizzes: %v", err)
+	}
+
+	return &v1.FavoriteQuizzesResponse{QuizIds: favoriteQuizzes}, nil
+}
+
+func (c *AuthController) RemoveFavoriteQuiz(ctx context.Context, req *v1.RemoveFavoriteQuizRequest) (*v1.FavoriteQuizResponse, error) {
+	userID, ok := utils.GetUser(ctx)
+	if !ok {
+		c.l.Warn("user not found in context")
+		return nil, status.Error(codes.Unauthenticated, "user not found in context")
+	}
+
+	if err := c.quizzesService.RemoveFavoriteQuiz(userID.ID, req.QuizId); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to remove favorite quiz: %v", err)
+	}
+
+	return &v1.FavoriteQuizResponse{Success: true, Message: "Quiz removed from favorites"}, nil
+}
+
 func (c *AuthController) Logout(ctx context.Context, req *v1.LogoutRequest) (*v1.LogoutResponse, error) {
 	if err := c.authService.Logout(ctx, req.Token); err != nil {
 		return nil, status.Error(codes.Internal, "logout failed")
@@ -235,12 +301,9 @@ func convertUserToProto(user *entity.User) *v1.UserResponse {
 	userID := strconv.FormatUint(user.ID, 10)
 
 	return &v1.UserResponse{
-		Id:       userID,
-		Username: user.Username,
-		Email:    user.Email,
-		// QuizScore:  user.QuizScore,
-		// AuthorRank: user.AuthorRank,
-		// PlayerRank: user.PlayerRank,
+		Id:        userID,
+		Username:  user.Username,
+		Email:     user.Email,
 		CreatedAt: timestamppb.New(user.CreatedAt),
 		UpdatedAt: timestamppb.New(user.UpdatedAt),
 	}

@@ -38,7 +38,7 @@ func (s *JWTService) GenerateToken(ctx context.Context, email, password string) 
 
 	token, err := utils.GenerateJWT(s.Jwt.Secret, user.ID, user.Email)
 	if err != nil {
-		return "", nil, err
+		return "", nil, fmt.Errorf("can't generate token: %w", err)
 	}
 
 	return token, user, nil
@@ -74,7 +74,7 @@ func (s *JWTService) ValidateToken(ctx context.Context, authHeader string) (*ent
 func (s *JWTService) InvalidateToken(ctx context.Context, token string) error {
 	claims, err := utils.ParseJWT(token, s.Jwt.Secret)
 	if err != nil {
-		return err
+		return fmt.Errorf("invalid token: %w", err)
 	}
 
 	remainingTTL := time.Until(claims.ExpiresAt.Time)

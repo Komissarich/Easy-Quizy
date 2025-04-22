@@ -10,57 +10,111 @@ import "google/api/timestamp.proto";
 service AuthService {
   // Auth
   rpc Register (RegisterRequest) returns (RegisterResponse) {
-    option (google.api.http) = {
+    option(google.api.http) = {
       post: "/v1/users/register"
       body: "*"
     };
   }
+
   rpc Login (LoginRequest) returns (LoginResponse) {
-    option (google.api.http) = {
+    option(google.api.http) = {
       post: "/v1/users/login"
       body: "*"
     };
   }
   rpc Logout (LogoutRequest) returns (LogoutResponse) {
-    option (google.api.http) = {
+    option(google.api.http) = {
       post: "/v1/users/logout"
+      body: "*"
     };
   }
   rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse) {
-    option (google.api.http) = {
+    option(google.api.http) = {
       post: "/v1/users/validate"
+      body: "*"
     };
   }
   
   // Users
   rpc GetMe (GetMeRequest) returns (UserResponse) {
-    option (google.api.http) = {
+    option(google.api.http) = {
       post: "/v1/users/me"
+      body: "*"
     };
   }
   rpc UpdateMe (UpdateMeRequest) returns (UserResponse) {
     option (google.api.http) = {
       patch: "/v1/users/me"
+      body: "*"
     };
   }
   
   // Friends
   rpc AddFriend (AddFriendRequest) returns (FriendResponse) {
     option (google.api.http) = {
-      post: "/v1/friends/add"
+      post: "/v1/users/friends/add"
+      body: "*"
     };
   }
   rpc RemoveFriend (RemoveFriendRequest) returns (FriendResponse) {
     option (google.api.http) = {
-      post: "/v1/friends/remove"
+      post: "/v1/users/friends/remove"
+      body: "*"
     };
   }
   rpc GetFriends (GetFriendsRequest) returns (FriendsListResponse) {
     option (google.api.http) = {
-      post: "/v1/friends"
+      post: "/v1/user/friends"
+      body: "*"
+    };
+  }
+
+  // Quizzez
+  rpc AddFavoriteQuiz (AddFavoriteQuizRequest) returns (FavoriteQuizResponse) {
+    option(google.api.http) = {
+      post: "/v1/users/favorites/quizzes/add"
+      body: "*"
+    };
+  }
+
+  rpc GetFavoriteQuizzes (GetFavoriteQuizzesRequest) returns (FavoriteQuizzesResponse) {
+    option(google.api.http) = {
+      post: "/v1/users/favorites/quizzes"
+    };
+  }
+
+  rpc RemoveFavoriteQuiz (RemoveFavoriteQuizRequest) returns (FavoriteQuizResponse) {
+    option(google.api.http) = {
+      post: "/v1/users/favorites/quizzes/remove"
+      body: "*"
     };
   }
 }
+
+// Messages for Favorites quizzes
+message AddFavoriteQuizRequest {
+  string token = 1;
+  string quiz_id = 2;
+}
+
+message RemoveFavoriteQuizRequest {
+  string token = 1;
+  string quiz_id = 2;
+}
+
+message GetFavoriteQuizzesRequest {
+  string token = 1;
+}
+
+message FavoriteQuizResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message FavoriteQuizzesResponse {
+  repeated string quiz_ids = 1;
+}
+
 
 // Messages for Auth
 message RegisterRequest {
