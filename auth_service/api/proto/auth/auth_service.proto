@@ -4,18 +4,42 @@ package auth;
 
 option go_package = ".;auth";
 
-import "google/protobuf/timestamp.proto";
+import "google/api/timestamp.proto";
 
 service AuthService {
   // Auth
-  rpc Register (RegisterRequest) returns (RegisterResponse);
-  rpc Login (LoginRequest) returns (LoginResponse);
-  rpc Logout (LogoutRequest) returns (LogoutResponse);
-  rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse);
+  rpc Register (RegisterRequest) returns (RegisterResponse) {
+    option (google.api.http) = {
+      post: "/v1/users/register"
+    };
+  }
+  rpc Login (LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/v1/users/login"
+    };
+  }
+  rpc Logout (LogoutRequest) returns (LogoutResponse) {
+    option (google.api.http) = {
+      post: "/v1/users/logout"
+    };
+  }
+  rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse) {
+    option (google.api.http) = {
+      post: "/v1/users/validate"
+    };
+  }
   
   // Users
-  rpc GetMe (GetMeRequest) returns (UserResponse);
-  rpc UpdateMe (UpdateMeRequest) returns (UserResponse);
+  rpc GetMe (GetMeRequest) returns (UserResponse) {
+    option (google.api.http) = {
+      post: "/v1/users/me"
+    };
+  }
+  rpc UpdateMe (UpdateMeRequest) returns (UserResponse) {
+    option (google.api.http) = {
+      patch: "/v1/users/me"
+    };
+  }
   
   // Friends
   rpc AddFriend (AddFriendRequest) returns (FriendResponse);
@@ -52,6 +76,7 @@ message FavoriteQuizResponse {
 message FavoriteQuizzesResponse {
   repeated string quiz_ids = 1;
 }
+
 
 // Messages for Auth
 message RegisterRequest {
