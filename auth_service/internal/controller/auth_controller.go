@@ -305,7 +305,6 @@ func convertUserToProto(user *entity.User) *v1.UserResponse {
 		Username:  user.Username,
 		Email:     user.Email,
 		CreatedAt: timestamppb.New(user.CreatedAt),
-		UpdatedAt: timestamppb.New(user.UpdatedAt),
 	}
 }
 

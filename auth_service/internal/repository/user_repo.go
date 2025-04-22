@@ -21,7 +21,7 @@ func (u *UserRepository) SaveUser(ctx context.Context, email, username string, p
 }
 
 func (u *UserRepository) doSaveUser(ctx context.Context, email, username string, passHash []byte) (uint64, error) {
-	sql := `INSERT INTO users (email, username, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id`
+	sql := `INSERT INTO users (email, username, password, created_at) VALUES ($1, $2, $3, $4) RETURNING id`
 
 	var id uint64
 	err := u.db.QueryRowContext(
@@ -30,7 +30,6 @@ func (u *UserRepository) doSaveUser(ctx context.Context, email, username string,
 		email,
 		username,
 		passHash,
-		time.Now(),
 		time.Now(),
 	).Scan(&id)
 	if err != nil {
@@ -66,7 +65,7 @@ func (u *UserRepository) User(ctx context.Context, email string) (*entity.User, 
 func (r *UserRepository) FindByID(ctx context.Context, id uint64) (*entity.User, error) {
 	query := `
         SELECT id, email, COALESCE(username, '') as username, password, 
-               created_at, updated_at 
+               created_at
         FROM users 
         WHERE id = $1`
 
@@ -78,7 +77,6 @@ func (r *UserRepository) FindByID(ctx context.Context, id uint64) (*entity.User,
 		&user.Username,
 		&user.Password,
 		&user.CreatedAt,
-		&user.UpdatedAt,
 	)
 
 	if err != nil {
@@ -108,8 +106,7 @@ func (u *UserRepository) UpdateUser(ctx context.Context, user *entity.User) erro
             email = COALESCE($1, email),
             username = COALESCE($2, username),
             password = COALESCE($3, password),
-            updated_at = $4
-        WHERE id = $5
+        WHERE id = $4
     `
 
 	var email *string
@@ -131,7 +128,6 @@ func (u *UserRepository) UpdateUser(ctx context.Context, user *entity.User) erro
 		email,
 		username,
 		password,
-		time.Now(),
 		user.ID,
 	)
 
