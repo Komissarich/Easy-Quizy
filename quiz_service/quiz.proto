@@ -4,14 +4,24 @@ option go_package = "pkg/api/v1";
 
 package api;
 
+import "api/google/api/annotations.proto";
 service QuizService{
-  rpc CreateQuiz(CreateQuizRequest) returns (CreateQuizResponse) {
-    option (google.api.http) = {
-      post: "/v1/users/register"
-      body: "email,password,username"
+  rpc CreateQuiz(CreateQuizRequest) returns (CreateQuizResponse){
+    option(google.api.http) = {
+      post: "/v1/quiz"
+      body: "*"
     };
-  };
-  rpc GetQuiz(GetQuizRequest) returns (GetQuizResponse);
+  }
+  rpc GetQuiz(GetQuizRequest) returns (GetQuizResponse){
+    option(google.api.http) = {
+      get: "/v1/quiz/{quiz_id}"
+    };
+  }
+  rpc GetQuizByAuthor (GetQuizByAuthorRequest) returns (GetQuizByAuthorResponse){
+    option(google.api.http) = {
+      get: "v1/quiz/{author}"
+    };
+  }
 }
 message CreateQuizRequest{
   string name = 1;
@@ -42,4 +52,10 @@ message GetQuizResponse{
   optional string image_id = 3;
   optional string description = 4;
   repeated CreateQuestion question = 5;
+}
+message GetQuizByAuthorRequest{
+  string author = 1;
+}
+message GetQuizByAuthorResponse{
+  repeated GetQuizResponse quizzes = 1;
 }

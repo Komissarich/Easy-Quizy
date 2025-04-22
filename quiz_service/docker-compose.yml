@@ -11,7 +11,7 @@ services:
       - quiz-network
 
   postgres:
-      container_name: postgres_container_ya
+      container_name: postgres_container_goida
       image: postgres
       environment:
         POSTGRES_USER: postgres

@@ -11,6 +11,7 @@ import (
 type Repository interface {
 	CreateQuiz(context.Context, string, string, *string, *string, []*v1.CreateQuestion) (string, error)
 	GetQuiz(context.Context, string) (*v1.GetQuizResponse, error)
+	GetQuizByAuthor(context.Context, string) (*v1.GetQuizByAuthorResponse, error)
 }
 type QuizService struct {
 	api.QuizServiceServer
@@ -35,6 +36,15 @@ func (s *QuizService) CreateQuiz(ctx context.Context, req *api.CreateQuizRequest
 }
 func (s *QuizService) GetQuiz(ctx context.Context, req *api.GetQuizRequest) (*api.GetQuizResponse, error) {
 	resp, err := s.repo.GetQuiz(ctx, req.QuizId)
+	if err != nil {
+		//		logger.GetLoggerFromCtx(ctx).Error(ctx, err.Error())
+		return nil, err
+	}
+	//	logger.GetLoggerFromCtx(ctx).Info(ctx, fmt.Sprintf("got quiz: %s", req.QuizId))
+	return resp, nil
+}
+func (s *QuizService) GetQuizByAuthor(ctx context.Context, req *api.GetQuizByAuthorRequest) (*api.GetQuizByAuthorResponse, error) {
+	resp, err := s.repo.GetQuizByAuthor(ctx, req.Author)
 	if err != nil {
 		//		logger.GetLoggerFromCtx(ctx).Error(ctx, err.Error())
 		return nil, err

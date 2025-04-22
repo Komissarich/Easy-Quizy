@@ -150,7 +150,6 @@ func (r *Repository) GetQuiz(
 	if rows.Err() != nil {
 		return nil, fmt.Errorf("error iterating questions: %w", rows.Err())
 	}
-	fmt.Println(name, author, image_id, description, questions)
 	return &v1.GetQuizResponse{
 		Name:        name,
 		Author:      author,
@@ -158,4 +157,34 @@ func (r *Repository) GetQuiz(
 		Description: &description,
 		Question:    questions,
 	}, nil
+}
+
+func (r *Repository) GetQuizByAuthor(
+	ctx context.Context,
+	author string,
+) (*v1.GetQuizByAuthorResponse, error) {
+	rows, err := r.pool.Query(ctx,
+		"SELECT Quiz_ID, Name, Image_ID, Description FROM quizzes WHERE Author = $1", author)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get questions: %w", err)
+	}
+	defer rows.Close()
+	var quizzes []*v1.GetQuizResponse
+	for rows.Next() {
+		var quiz_ids, name, image_id, description string
+		err = rows.Scan(&quiz_ids, &name, &image_id, &description)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan quiz: %w", err)
+		}
+		quiz, err := r.GetQuiz(ctx, quiz_ids)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get quiz: %w", err)
+		}
+		quizzes = append(quizzes, quiz)
+	}
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("error iterating questions: %w", rows.Err())
+	}
+
+	return &v1.GetQuizByAuthorResponse{Quizzes: quizzes}, nil
 }
