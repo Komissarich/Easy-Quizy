@@ -1164,21 +1164,21 @@ const file_auth_service_proto_rawDesc = "" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\"C\n" +
 	"\x13FriendsListResponse\x12,\n" +
-	"\afriends\x18\x01 \x03(\v2\x12.auth.UserResponseR\afriends2\x95\x06\n" +
-	"\vAuthService\x129\n" +
-	"\bRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\x120\n" +
-	"\x05Login\x12\x12.auth.LoginRequest\x1a\x13.auth.LoginResponse\x123\n" +
-	"\x06Logout\x12\x13.auth.LogoutRequest\x1a\x14.auth.LogoutResponse\x12H\n" +
-	"\rValidateToken\x12\x1a.auth.ValidateTokenRequest\x1a\x1b.auth.ValidateTokenResponse\x12/\n" +
-	"\x05GetMe\x12\x12.auth.GetMeRequest\x1a\x12.auth.UserResponse\x125\n" +
-	"\bUpdateMe\x12\x15.auth.UpdateMeRequest\x1a\x12.auth.UserResponse\x129\n" +
-	"\tAddFriend\x12\x16.auth.AddFriendRequest\x1a\x14.auth.FriendResponse\x12?\n" +
-	"\fRemoveFriend\x12\x19.auth.RemoveFriendRequest\x1a\x14.auth.FriendResponse\x12@\n" +
+	"\afriends\x18\x01 \x03(\v2\x12.auth.UserResponseR\afriends2\xad\x06\n" +
+	"\vAuthService\x12;\n" +
+	"\bRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\"\x00\x122\n" +
+	"\x05Login\x12\x12.auth.LoginRequest\x1a\x13.auth.LoginResponse\"\x00\x125\n" +
+	"\x06Logout\x12\x13.auth.LogoutRequest\x1a\x14.auth.LogoutResponse\"\x00\x12J\n" +
+	"\rValidateToken\x12\x1a.auth.ValidateTokenRequest\x1a\x1b.auth.ValidateTokenResponse\"\x00\x121\n" +
+	"\x05GetMe\x12\x12.auth.GetMeRequest\x1a\x12.auth.UserResponse\"\x00\x127\n" +
+	"\bUpdateMe\x12\x15.auth.UpdateMeRequest\x1a\x12.auth.UserResponse\"\x00\x12;\n" +
+	"\tAddFriend\x12\x16.auth.AddFriendRequest\x1a\x14.auth.FriendResponse\"\x00\x12A\n" +
+	"\fRemoveFriend\x12\x19.auth.RemoveFriendRequest\x1a\x14.auth.FriendResponse\"\x00\x12B\n" +
 	"\n" +
-	"GetFriends\x12\x17.auth.GetFriendsRequest\x1a\x19.auth.FriendsListResponse\x12K\n" +
-	"\x0fAddFavoriteQuiz\x12\x1c.auth.AddFavoriteQuizRequest\x1a\x1a.auth.FavoriteQuizResponse\x12Q\n" +
-	"\x12RemoveFavoriteQuiz\x12\x1f.auth.RemoveFavoriteQuizRequest\x1a\x1a.auth.FavoriteQuizResponse\x12T\n" +
-	"\x12GetFavoriteQuizzes\x12\x1f.auth.GetFavoriteQuizzesRequest\x1a\x1d.auth.FavoriteQuizzesResponseB\bZ\x06.;authb\x06proto3"
+	"GetFriends\x12\x17.auth.GetFriendsRequest\x1a\x19.auth.FriendsListResponse\"\x00\x12M\n" +
+	"\x0fAddFavoriteQuiz\x12\x1c.auth.AddFavoriteQuizRequest\x1a\x1a.auth.FavoriteQuizResponse\"\x00\x12S\n" +
+	"\x12RemoveFavoriteQuiz\x12\x1f.auth.RemoveFavoriteQuizRequest\x1a\x1a.auth.FavoriteQuizResponse\"\x00\x12V\n" +
+	"\x12GetFavoriteQuizzes\x12\x1f.auth.GetFavoriteQuizzesRequest\x1a\x1d.auth.FavoriteQuizzesResponse\"\x00B\bZ\x06.;authb\x06proto3"
 
 var (
 	file_auth_service_proto_rawDescOnce sync.Once
