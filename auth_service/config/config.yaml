@@ -1,18 +1,18 @@
-grpcPort: 50051
+grpcPort: 50052
 
 jwt:
   secret: secret
   token_ttl: 24h
 
 db:
-  host: postgres
+  host: auth_postgres
   port: 5432
   username: postgres
   password: 05042007PULlup!
   name: postgres
 
 redis:
-  host: redis
+  host: redis_container
   port: 6379
   password: ""
   db: 0
