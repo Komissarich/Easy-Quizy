@@ -23,9 +23,52 @@ func New(ctx context.Context, username string, password string, host string, por
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
+	// Migrate the database schema
+	_, err = db.ExecContext(ctx, `
+		CREATE TABLE IF NOT EXISTS users (
+			id SERIAL PRIMARY KEY,
+			email VARCHAR(255) UNIQUE NOT NULL,
+			password VARCHAR(255) NOT NULL,
+			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+		);
+	`)
+	if err != nil {
+		return nil, fmt.Errorf("failed to migrate database schema: %w", err)
+	}
+
+	_, err = db.ExecContext(ctx, `
+		CREATE TABLE IF NOT EXISTS friends (
+			id SERIAL PRIMARY KEY,
+			user_id INTEGER NOT NULL,
+			friend_id INTEGER NOT NULL,
+			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (user_id) REFERENCES users (id),
+			FOREIGN KEY (friend_id) REFERENCES users (id)
+		);
+	`)
+	if err != nil {
+		return nil, fmt.Errorf("failed to migrate database schema: %w", err)
+
+	}
+
+	_, err = db.ExecContext(ctx, `
+		CREATE TABLE IF NOT EXISTS favorite_quizzes (
+			user_id BIGINT NOT NULL,
+			quiz_id VARCHAR(255) NOT NULL,
+			created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+			PRIMARY KEY (user_id, quiz_id),
+			CONSTRAINT fk_favorite_quizzes_user
+				FOREIGN KEY (user_id) 
+				REFERENCES users(id)
+				ON DELETE CASCADE
+		);
+	`)
+	if err != nil {
+		return nil, fmt.Errorf("failed to migrate database schema: %w", err)
+	}
+
 	return &DB{DB: db}, nil
 }
-
 func (db *DB) Close(ctx context.Context) (err error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
