@@ -6,6 +6,17 @@
         <div class="welcome-header">
         <h1>Регистрация</h1>
       </div>
+      <div class="form-group">
+          <label for="email">Почта</label>
+          <input 
+            type="text" 
+            id="login" 
+             v-model="email"
+            placeholder="Введите почту"
+            required
+          >
+        </div>
+
         <div class="form-group">
           <label for="login">Логин</label>
           <input 
@@ -58,6 +69,7 @@ export default {
     },
   data() {
     return {
+      email: '',
         username: '',
         password: '',
         errorMessage: ''
@@ -67,13 +79,21 @@ export default {
     async handleLogin() {
         this.errorMessage = ''
         if (this.username !== ""  && this.password !== "") {
-          let user = {username: this.username, password: this.password}
-          let json = JSON.stringify(user)
-        
-          let data = await axios.post("http://localhost:8080/test_reg", json) 
-       //   console.log(data.data)
+          const data = await axios.post(
+            'http://localhost:8085/v1/users/register',
+            {
+              email: 'egorkart1@gmail.com',
+              password: 'aaaabbbbb'
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json', // Важно явно указать!
+              },
+            }
+          );
+          console.log(data, data.data)
           if (data.data !== "error") {
-            //  console.log(100)
+              console.log(data.data)
               localStorage.setItem("auth", "true")
               localStorage.setItem("username", this.username)
               this.authState.isLoggedIn = true

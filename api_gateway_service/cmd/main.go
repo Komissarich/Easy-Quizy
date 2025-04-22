@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
 
 	// для StatsService
 
@@ -23,7 +24,6 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func allowCORS(h http.Handler) http.Handler {
@@ -52,6 +52,19 @@ func HealthHeandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Service is healthy!")
 }
 
+func repairJSON(body []byte) ([]byte, error) {
+	// Простейший ремонт (для вашего случая)
+	str := string(body)
+	fmt.Println(str)
+
+	str = strings.ReplaceAll(str, "email:", `"email":`)
+	str = strings.ReplaceAll(str, "password:", `"password":`)
+	str = strings.ReplaceAll(str, "username:", `"username":`)
+	fmt.Println(str)
+	return []byte(str), nil
+
+	// return body, nil
+}
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "OPTIONS" {
@@ -61,6 +74,7 @@ func loggingMiddleware(next http.Handler) http.Handler {
 
 		// Читаем тело ОДИН раз
 		body, err := io.ReadAll(r.Body)
+		repaired, _ := repairJSON(body)
 		if err != nil {
 			http.Error(w, "Error reading body", http.StatusBadRequest)
 			return
@@ -70,7 +84,7 @@ func loggingMiddleware(next http.Handler) http.Handler {
 		r.Body = io.NopCloser(bytes.NewBuffer(body))
 
 		// Логируем
-		log.Printf("Raw request body: %s", string(body))
+		log.Printf("Raw request body: %s", string(repaired))
 
 		// Проверяем Content-Type
 		if r.Header.Get("Content-Type") != "application/json" {
@@ -79,7 +93,7 @@ func loggingMiddleware(next http.Handler) http.Handler {
 		}
 
 		// Проверяем JSON (теперь body доступен)
-		if !json.Valid(body) {
+		if !json.Valid(repaired) {
 			http.Error(w, "Invalid JSON format", http.StatusBadRequest)
 			return
 		}
@@ -136,18 +150,11 @@ func main() {
 		w.Write([]byte("OK"))
 	})
 
-	jsonMarshaler := &runtime.JSONPb{
-		MarshalOptions: protojson.MarshalOptions{
-			UseProtoNames:   true,
-			EmitUnpopulated: true,
-		},
-		UnmarshalOptions: protojson.UnmarshalOptions{
-			DiscardUnknown: true,
-		},
-	}
-
 	grpcGatewayMux := runtime.NewServeMux(
-		runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonMarshaler),
+		runtime.WithErrorHandler(func(ctx context.Context, mux *runtime.ServeMux, m runtime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {
+			log.Printf("Gateway error: %v", err)
+			runtime.DefaultHTTPErrorHandler(ctx, mux, m, w, r, err)
+		}),
 	)
 
 	// 3. Регистрируем обработчики для обоих сервисов
@@ -166,34 +173,25 @@ func main() {
 	rootMux.Handle("/", grpcGatewayMux)
 	// corsHandler := allowCORS(rootMux)
 
-	//handler := loggingMiddleware(rootMux)
-
-	mux := http.NewServeMux()
-
 	// 2. Тестовый endpoint без gRPC
-	mux.HandleFunc("/v1/users/register", func(w http.ResponseWriter, r *http.Request) {
-		body, _ := io.ReadAll(r.Body)
-		log.Printf("Raw body: %s", string(body))
+	// rootMux.HandleFunc("/v1/users/register", func(w http.ResponseWriter, r *http.Request) {
+	// 	body, _ := io.ReadAll(r.Body)
+	// 	repaired, _ := repairJSON(body)
+	// 	log.Printf("Raw body: %s", string(body))
+	// 	log.Printf("Repaired body: %s", string(repaired))
+	// 	client := auth_service.NewAuthServiceClient(authConn)
+	// 	resp, err := client.Register(r.Context(), &auth_service.RegisterRequest{
+	// 		Email:    "egorkart1@gmail.com", // Заполните из body
+	// 		Password: "aaaabbbbb",
+	// 	})
 
-		// Проверяем JSON
-		var data map[string]interface{}
-		if err := json.Unmarshal(body, &data); err != nil {
-			log.Printf("Invalid JSON: %v", err)
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+	// 	log.Println(resp, err)
+	// })
+	corsHandler := allowCORS(loggingMiddleware(rootMux))
 
-		w.Write([]byte("Valid JSON received"))
-	})
-
-	// srv := &http.Server{
-	// 	Addr:    ":8085",
-	// 	Handler: rootMux, // Пока без middleware
-	// }
-	// 4. Настраиваем HTTP-сервер
 	srv := &http.Server{
 		Addr:    ":8085",
-		Handler: mux,
+		Handler: corsHandler,
 	}
 
 	// Graceful shutdown

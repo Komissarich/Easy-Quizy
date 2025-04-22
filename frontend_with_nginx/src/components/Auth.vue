@@ -17,16 +17,7 @@
           >
         </div>
 
-        <div class="form-group">
-          <label for="login">Логин</label>
-          <input 
-            type="text" 
-            id="login" 
-             v-model="username"
-            placeholder="Введите ваш логин"
-            required
-          >
-        </div>
+    
         
         <div class="form-group">
           <label for="password">Пароль</label>
@@ -80,7 +71,6 @@ export default {
   data() {
     return {
         email: '',
-        username: '',
         password: '',
         errorMessage: ''
     }
@@ -89,14 +79,19 @@ export default {
     async handleLogin() {
         this.errorMessage = ''
         if (this.username !== ""  && this.password !== "") {
-          let user = {email: this.email, password: this.password, username: this.username}
-          
-          let json = JSON.stringify(user)
-          console.log(json)
-          let data = await axios.post("http://localhost:8085/v1/users/register", json, { headers: {
-           'Content-Type': 'application/json'
-           }}) 
-         
+          const data = await axios.post(
+            'http://localhost:8085/v1/users/login',
+            {
+              email: 'egorkart1@gmail.com',
+              password: 'aaaabbbbb'
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json', // Важно явно указать!
+              },
+            }
+          );
+          console.log(data.data)
           if (data.data !== "error") {
            
               localStorage.setItem("auth", "true")

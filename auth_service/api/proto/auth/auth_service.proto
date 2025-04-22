@@ -10,8 +10,8 @@ service AuthService {
   // Auth
   rpc Register (RegisterRequest) returns (RegisterResponse) {
     option (google.api.http) = {
-      post: "/v1/users/register",
-      body: "*"
+      post: "/v1/users/register"
+      body: "email,password,username"
     };
   }
   rpc Login (LoginRequest) returns (LoginResponse) {

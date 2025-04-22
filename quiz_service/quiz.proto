@@ -5,7 +5,12 @@ option go_package = "pkg/api/v1";
 package api;
 
 service QuizService{
-  rpc CreateQuiz(CreateQuizRequest) returns (CreateQuizResponse);
+  rpc CreateQuiz(CreateQuizRequest) returns (CreateQuizResponse) {
+    option (google.api.http) = {
+      post: "/v1/users/register"
+      body: "email,password,username"
+    };
+  };
   rpc GetQuiz(GetQuizRequest) returns (GetQuizResponse);
 }
 message CreateQuizRequest{

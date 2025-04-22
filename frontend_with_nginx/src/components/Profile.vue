@@ -44,9 +44,10 @@
   </template>
   
 <script>
-    
+import axios from 'axios'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+
     export default {
     name: 'Auth',
   data() {
@@ -72,6 +73,7 @@ import { useRoute } from 'vue-router'
 
     onMounted(async () => {
       try {
+        
         const response = await axios.get("http://localhost:8080/get_me", {
           params: { quiz_id: route.params.username }
         })
