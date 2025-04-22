@@ -23,13 +23,14 @@ func New(ctx context.Context, username string, password string, host string, por
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	// Migrate the database schema
 	_, err = db.ExecContext(ctx, `
 		CREATE TABLE IF NOT EXISTS users (
 			id SERIAL PRIMARY KEY,
 			email VARCHAR(255) UNIQUE NOT NULL,
 			password VARCHAR(255) NOT NULL,
+			username VARCHAR(255) NOT NULL,
 			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
 	`)
 	if err != nil {
