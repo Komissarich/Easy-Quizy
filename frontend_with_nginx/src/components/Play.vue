@@ -47,11 +47,12 @@ export default {
       if (this.quiz_id !== "") {
         this.errorMessage = ''
       try {
-        console.log(this.quiz_id)
-        let data = await axios.get(`http://localhost:8085/v1/quiz/${encodeURIComponent(this.quiz_id)}`)
-        localStorage.setItem("isPlay", "true")
        
-        this.$router.push("/play/" + data.data.quiz_id) 
+        let data = await axios.get(`http://localhost:8085/v1/quiz/${this.quiz_id}`)
+        
+        localStorage.setItem("isPlay", "true")
+        localStorage.setItem("quizId", this.quiz_id)
+        this.$router.push("/play/" + this.quiz_id) 
       } catch (error) {
        
         this.errorMessage = 'Викторина с таким id не найдена'

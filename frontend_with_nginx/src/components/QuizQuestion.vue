@@ -1,11 +1,11 @@
 <template>
     <div class="question-container">
       <h2>Вопрос {{ questionNumber }} из {{ totalQuestions }}</h2>
-      <p class="question-text">{{ question.text }}</p>
+      <p class="question-text">{{ question.question_text }}</p>
       
       <div class="answers-list">
         <div 
-          v-for="(answer, index) in question.answers" 
+          v-for="(answer, index) in question.answer" 
           :key="index" 
           class="answer-option"
         >
@@ -18,7 +18,7 @@
             class="answer-input"
           >
           <label :for="'answer-' + index" class="answer-label">
-            {{ answer.text }}
+            {{ answer.answerText }}
           </label>
         </div>
       </div>

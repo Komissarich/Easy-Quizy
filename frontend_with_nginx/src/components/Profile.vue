@@ -1,13 +1,13 @@
 <template>
   <div class="profile-container">
     <div class="profile-header">
-      <div class="avatar-container">
+      <!-- <div class="avatar-container">
         <img :src="user.avatar || defaultAvatar" class="avatar" />
         <button class="edit-avatar-btn" @click="changeAvatar">✎</button>
-      </div>
+      </div> -->
       <h1 class="username">{{ user.username }}</h1>
       <p class="user-email">{{ user.email }}</p>
-      <button class="edit-btn" @click="editProfile">Редактировать профиль</button>
+      <!-- <button class="edit-btn" @click="editProfile">Редактировать профиль</button> -->
     </div>
 
     <div class="divider"></div>
@@ -124,13 +124,13 @@ import { useRoute } from 'vue-router'
     return {
       activeTab: 'tests',
       showAddFriendModal: false,
-      defaultAvatar: '/default-avatar.png',
+     // defaultAvatar: '/default-avatar.png',
       friendSearchQuery: '',
       searchResults: [],
       user: {
         id: 1,
-        username: 'Иван Иванов',
-        email: 'ivan@example.com',
+        username: localStorage.getItem("username"),
+        email: localStorage.getItem("email"),
         avatar: null
       },
       userQuizzes: [],
@@ -182,18 +182,14 @@ import { useRoute } from 'vue-router'
 
     onMounted(async () => {
       try {
-        const token = localStorage.getItem('token');
-        console.log(token)
-        // const data = await axios.get(
-        //     'http://localhost:8085/v1/users/me',
-        //     {
-        //       headers: {
-        //         'Authorization': `Bearer ${token}`,
-        //         'Content-Type': 'application/json', // Важно явно указать!
-        //       },
-        //     }
-        //   );
-        //   console.log(data.data)
+       
+       
+        let data = await axios.get(`http://localhost:8085/v1/quiz/author/${localStorage.getItem('username')}`,  {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              },
+            })
+          console.log(data.data)
       } catch (error) {
         console.error('Ошибка загрузки профиля:', error)
       } finally {

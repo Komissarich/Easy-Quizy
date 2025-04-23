@@ -4,7 +4,7 @@
     <div class="navbar-actions">
       <button class = "btn play" @click="$router.push('/play')">Играть </button>
       <button class="btn create-test" @click="$router.push('/create-test')">Создать тест</button>
-      <button class="btn login" @click="$router.push('/profile')">Профиль</button>
+      <button class="btn login" @click="goToProfile">Профиль</button>
      
       <button 
         class="btn" 
@@ -26,11 +26,21 @@ import { useRouter } from 'vue-router'
 
 export default {
   name: 'TheNavbar',
+  methods: {
+    goToProfile() {
+    
+      this.$router.push('/profile/' + localStorage.getItem('username'));
+    }
+  },
+
   setup() {
     
     const authState = inject('authState')
     const router = useRouter()
     //Sconsole.log("log", authState.isLoggedIn)
+    const gotoProfile = () => {
+      this.$router.push('/profile/' + localStorage.getItem('username'));
+    }
     const handleLogout = () => {
       authState.logout()
       router.push('/auth')
@@ -40,7 +50,12 @@ export default {
       handleLogout,
       router
     }
-  }
+  },
+  
+    goToProfile() {
+      this.$router.push('/profile/' + localStorage.getItem('username'));
+    }
+  
   }
 
 </script>

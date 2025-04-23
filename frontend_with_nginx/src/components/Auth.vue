@@ -91,16 +91,17 @@ export default {
               },
             }
           );
-          console.log(data.data.user.username)
+          
           
           console.log("Succesfully auth")
           localStorage.setItem("auth", "true")
           localStorage.setItem("username", data.data.user.username)
-      
+          localStorage.setItem("email", data.data.user.email)
           localStorage.setItem('token', data.data.token);
           
           this.authState.isLoggedIn = true
-          this.$router.push("/profile/" + this.username) 
+        
+          this.$router.push("/profile/" + data.data.user.username) 
          } catch (error) {
          
           this.errorMessage = 'Пользователь с таким логином или паролем не найден'

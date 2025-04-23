@@ -102,7 +102,7 @@ const uploadToImgBB = async (imageFile) => {
         }
       }
     );
-    console.log(res.data.data.url);
+    return res.data.data.url;
   } catch (error) {
     console.error('Upload failed:', error);
     throw error;
@@ -111,22 +111,26 @@ const uploadToImgBB = async (imageFile) => {
 
   const goToQuestions = async () => {
 
-   uploadToImgBB(coverImage.value)
-
-    const testData = {
-      cover: coverImage.value,
+   uploadToImgBB(coverImage.value).then(data => {
+    if (data) {
+      const testData = {
+      cover: data,
       title: testTitle.value,
       description: testDescription.value
     }
     console.log('Данные теста:', testData)
-   // router.push('/auth')
-    // Переходим к созданию вопросов
+    console.log(data)
     router.push({path:'/create-test/questions', query: {
       title: testTitle.value,
       description: testDescription.value,
-      cover: coverImage.value
+      cover: data
     }})
+    }
+    
+    });
+    
   }
+
   </script>
   
   <style scoped>

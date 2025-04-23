@@ -34,7 +34,7 @@ func allowCORS(h http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 
 		// Разрешаем необходимые заголовки
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 		// Для предварительных OPTIONS-запросов
 		if r.Method == "OPTIONS" {
@@ -106,7 +106,7 @@ func main() {
 	defer quizConn.Close()
 
 	statsConn, err := grpc.NewClient(
-		"stats_service:50051",
+		"stat_service:50051",
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
