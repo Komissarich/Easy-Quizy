@@ -79,7 +79,7 @@ export default {
     async handleLogin() {
         this.errorMessage = ''
         if (this.username !== ""  && this.password !== "") {
-          const data = await axios.post(
+         try { const data = await axios.post(
             'http://localhost:8085/v1/users/login',
             {
               email: this.email,
@@ -92,20 +92,21 @@ export default {
             }
           );
           console.log(data.data)
-          if (data.data !== "error") {
-           
-              localStorage.setItem("auth", "true")
-              localStorage.setItem("username", this.username)
-              
-              this.authState.isLoggedIn = true
-
-              
-              this.$router.push("/profile/" + this.username) 
-          }
-          else {
-             
-              this.errorMessage = 'Пользователь с таким логином или паролем не найден'
-          }
+          
+          console.log("Succesfully auth")
+          localStorage.setItem("auth", "true")
+          localStorage.setItem("username", this.username)
+      
+          localStorage.setItem('token', data.data.token);
+          
+          this.authState.isLoggedIn = true
+          this.$router.push("/profile/" + this.username) 
+         } catch (error) {
+         
+          this.errorMessage = 'Пользователь с таким логином или паролем не найден'
+          
+         }
+        
         }
         else {
             this.errorMessage = 'Пожалуйста, заполните все поля'

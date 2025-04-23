@@ -56,7 +56,7 @@ const addQuestion = () => {
   });
 };
 
-  const SendQuiz = () =>{
+  const SendQuiz = async () =>{
     
     const quizData = {
     quiz_id: "1",
@@ -74,12 +74,36 @@ const addQuestion = () => {
   };
 
   // Преобразуем в JSON
-  const jsonData = JSON.stringify(quizData, null, 2)
+  // const jsonData = JSON.stringify(quizData, null, 2)
   
-  // Выводим результат (можно заменить на отправку на сервер)
-  console.log(jsonData)
+  // // Выводим результат (можно заменить на отправку на сервер)
+  // console.log(jsonData)
 
-  axios.post("http://localhost:8080/create_quiz", jsonData) 
+  try {
+    const id = Math.random().toString(36).substring(2, 2 + length).toUpperCase()
+    console.log(questions.value)
+    const data = await axios.post(
+      'http://localhost:8085/v1/quiz',
+        {
+          quiz_id: id,
+          title: testTitle.value,
+          image_id: "",
+          description: testDescription.value,
+          question: questions.value
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json', // Важно явно указать!
+          },
+        }
+      );
+      console.log("Succesfully created quiz")
+      } catch (error) {
+        console.log(error.status, error)
+        if (error.status == 400) {
+          this.errorMessage = 'Проверьте почту и пароль; пароль не менее 8 символов'
+        }
+      }
   };
   
   const removeQuestion = (index) => {

@@ -78,7 +78,7 @@ export default {
   methods: {
     async handleLogin() {
         this.errorMessage = ''
-        if (this.username !== ""  && this.password !== "") {
+        if (this.username !== ""  && this.password !== "" && this.email !== "") {
           try {
           const data = await axios.post(
             'http://localhost:8085/v1/users/register',
@@ -96,9 +96,11 @@ export default {
           console.log("Succesfully registered")
           } catch (error) {
             console.log("HELLO WORLD", error.status, error)
-            if (error.status === 400) {
+            if (error.status == 400) {
               this.errorMessage = 'Проверьте почту и пароль; пароль не менее 8 символов'
             }
+              
+            
           }
           
         }
