@@ -28,7 +28,7 @@ func New(ctx context.Context, username string, password string, host string, por
 			id SERIAL PRIMARY KEY,
 			email VARCHAR(255) UNIQUE NOT NULL,
 			password VARCHAR(255) NOT NULL,
-			username VARCHAR(255) NULL,
+			username VARCHAR(255) NOT NULL,
 			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
 	`)
