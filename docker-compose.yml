@@ -44,7 +44,8 @@ services:
     networks:
       - app_network
     depends_on:
-      - stat_postgres
+      stat_postgres:
+        condition: service_healthy
 
   stat_postgres:
     container_name: stat_postgres
