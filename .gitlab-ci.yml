@@ -3,26 +3,30 @@ stages:
   - lint
 
 variables:
-  COMPOSE_PROJECT_NAME: $CI_PROJECT_NAME-$CI_PIPELINE_ID
   DOCKER_HOST: tcp://docker:2375
-  DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: ""
 
 services:
-  - docker:dind
-
+  - name: docker:dind
+    alias: docker
+    command: ["--tls=false", "--host=tcp://0.0.0.0:2375"]
 
 lint:
   stage: lint
   image: golangci/golangci-lint:latest
   allow_failure: true
   script:
-    - golangci-lint run /stat_service /quiz_service /auth_service /api_gateway_service
+    - golangci-lint run ./stat_service ./quiz_service ./auth_service ./api_gateway_service
 
 build:
   stage: build
-  image: docker/compose:latest
+  image: docker:24.0
+  before_script:
+    - apk add --no-cache docker-compose
+    - docker info
   script:
     - docker-compose config
-    - docker-compose up -d --build
+    - docker-compose build
+    - docker-compose up -d
     - docker-compose ps
+  after_script:
+    - docker-compose down -v
