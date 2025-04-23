@@ -24,6 +24,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 func allowCORS(h http.Handler) http.Handler {
@@ -154,6 +155,16 @@ func main() {
 		runtime.WithErrorHandler(func(ctx context.Context, mux *runtime.ServeMux, m runtime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {
 			log.Printf("Gateway error: %v", err)
 			runtime.DefaultHTTPErrorHandler(ctx, mux, m, w, r, err)
+		}),
+		runtime.WithMetadata(func(ctx context.Context, req *http.Request) metadata.MD {
+			// Переносим Authorization header в gRPC метаданные
+			token := req.Header.Get("Authorization")
+			if token != "" {
+				return metadata.New(map[string]string{
+					"authorization": token,
+				})
+			}
+			return nil
 		}),
 	)
 

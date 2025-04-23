@@ -81,6 +81,7 @@ import { useRoute } from 'vue-router'
             },
             {
               headers: {
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json', // Важно явно указать!
               },
             }
