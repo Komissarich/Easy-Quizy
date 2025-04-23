@@ -59,7 +59,7 @@
   import { provide, ref } from 'vue'
   import { RouterView } from 'vue-router'
   import { useRouter } from 'vue-router'
-  
+  import axios from 'axios'
   const router = useRouter()
   const fileInput = ref(null)
   const coverImage = ref(null)
@@ -86,54 +86,37 @@
   description: testDescription.value
 })
 
-function authorizeImgur() {
-  const clientId = '414e796021c50a0'
-  const redirectUri = encodeURIComponent('http://localhost:5173/imgur-callback')
-  window.location.href = `https://api.imgur.com/oauth2/authorize?client_id=${clientId}&response_type=token&redirect_uri=${redirectUri}`
-}
 
-// После редиректа извлекаем токен
-function getAccessToken() {
-  const hash = window.location.hash.substring(1)
-  const params = new URLSearchParams(hash)
-  return params.get('access_token')
-}
-const uploadImage = async () => {
-  console.log(fileInput.value)
-  authorizeImgur()
-  let accessToken = getAccessToken()
-  //if (!fileInput.value || !accessToken.value) return
-  
-  uploading.value = true
-  error.value = ''
-  
-  const formData = new FormData()
-  formData.append('image', selectedFile.value)
-  
+const uploadToImgBB = async (imageFile) => {
+  const pureBase64 = imageFile.replace(/^data:image\/\w+;base64,/, '');
+  const formData = new FormData();
+  formData.append('image', pureBase64); // Передаем файл напрямую, не конвертируя в base64
+
   try {
-    const response = await axios.post('https://api.imgur.com/3/image', formData, {
-      headers: {
-        'Authorization': `Bearer ${accessToken.value}`,
-        'Content-Type': 'multipart/form-data'
+    const res = await axios.post(
+      'https://api.imgbb.com/1/upload?key=e31b2ba286ca280d76c0c3d2bfa314e9',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data' // Важно!
+        }
       }
-    })
-    
-    imageUrl.value = response.data.data.link
-  } catch (err) {
-    console.error('Ошибка загрузки:', err)
-    error.value = err.response?.data?.data?.error || 'Не удалось загрузить изображение'
-  } finally {
-    uploading.value = false
+    );
+    console.log(res.data.data.url);
+  } catch (error) {
+    console.error('Upload failed:', error);
+    throw error;
   }
 }
 
-  const goToQuestions = () => {
-    uploadImage(fileInput.value, parseTokenFromRedirect)
+  const goToQuestions = async () => {
+
+   uploadToImgBB(coverImage.value)
+
     const testData = {
       cover: coverImage.value,
       title: testTitle.value,
-      description: testDescription.value,
-      type: testType.value
+      description: testDescription.value
     }
     console.log('Данные теста:', testData)
    // router.push('/auth')

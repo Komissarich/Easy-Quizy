@@ -38,10 +38,10 @@ service AuthService {
   // Users
   rpc GetMe (GetMeRequest) returns (UserResponse) {
     option(google.api.http) = {
-      post: "/v1/users/me"
-      body: "*"
+      get: "/v1/users/me"
     };
-  }
+}
+
   rpc UpdateMe (UpdateMeRequest) returns (UserResponse) {
     option (google.api.http) = {
       patch: "/v1/users/me"
@@ -56,12 +56,14 @@ service AuthService {
       body: "*"
     };
   }
+
   rpc RemoveFriend (RemoveFriendRequest) returns (FriendResponse) {
     option (google.api.http) = {
       post: "/v1/users/friends/remove"
       body: "*"
     };
   }
+
   rpc GetFriends (GetFriendsRequest) returns (FriendsListResponse) {
     option (google.api.http) = {
       post: "/v1/user/friends"

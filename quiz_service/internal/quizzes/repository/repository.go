@@ -8,10 +8,14 @@ import (
 	"quizzes/pkg/logger"
 	"quizzes/pkg/postgres"
 
+	pb "quizzes/pkg/authapi/v1"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Repository struct {
@@ -185,6 +189,23 @@ func (r *Repository) GetQuizByAuthor(
 	if rows.Err() != nil {
 		return nil, fmt.Errorf("error iterating questions: %w", rows.Err())
 	}
-
+	conn, err := grpc.NewClient("auth_service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to auth: %w", err)
+	}
+	defer conn.Close()
+	client := pb.NewAuthServiceClient(conn)
+	a := &pb.GetFavoriteQuizzesRequest{Token: author}
+	response, err := client.GetFavoriteQuizzes(ctx, a)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get quiz: %w", err)
+	}
+	for _, i := range response.QuizIds {
+		quiz, err := r.GetQuiz(ctx, i)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get quiz: %w", err)
+		}
+		quizzes = append(quizzes, quiz)
+	}
 	return &v1.GetQuizByAuthorResponse{Quizzes: quizzes}, nil
 }

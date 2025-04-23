@@ -91,11 +91,11 @@ export default {
               },
             }
           );
-          console.log(data.data)
+          console.log(data.data.user.username)
           
           console.log("Succesfully auth")
           localStorage.setItem("auth", "true")
-          localStorage.setItem("username", this.username)
+          localStorage.setItem("username", data.data.user.username)
       
           localStorage.setItem('token', data.data.token);
           

@@ -9,7 +9,7 @@
           <input 
             type="text" 
             id="quiz_id" 
-             v-model="quiz_id"
+            v-model="quiz_id"
             placeholder="Введите id игры"
           >
         </div>
@@ -43,10 +43,12 @@ export default {
   methods: {
 
     async startQuiz() {
+      console.log("Current quiz_id:", this.quiz_id)
       if (this.quiz_id !== "") {
         this.errorMessage = ''
       try {
-        let data = await axios.get("http://localhost:8080/get_quiz",  {params: {quiz_id: this.quiz_id}})
+        console.log(this.quiz_id)
+        let data = await axios.get(`http://localhost:8085/v1/quiz/${encodeURIComponent(this.quiz_id)}`)
         localStorage.setItem("isPlay", "true")
        
         this.$router.push("/play/" + data.data.quiz_id) 

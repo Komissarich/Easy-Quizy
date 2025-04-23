@@ -15,6 +15,6 @@ WORKDIR /app
 COPY --from=builder /service .
 COPY --from=builder /app/config ./config
 
-EXPOSE 50051
+EXPOSE 50053
 EXPOSE 8080
 CMD [ "./service" ]
