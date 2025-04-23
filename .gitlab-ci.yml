@@ -10,7 +10,7 @@ lint:
     - golangci-lint run /stat_service /quiz_service /auth_service /api_gateway_service
 
 build:
-  stage: lint
+  stage: build
   image: docker/compose
   script:
-    - docker compose up
+    - docker-compose up
