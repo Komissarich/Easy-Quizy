@@ -11,6 +11,8 @@ lint:
 
 build:
   stage: build
-  image: docker/compose
+  image: docker/compose:latest
   script:
-    - docker-compose up
+    - docker-compose config
+    - docker-compose up -d --build
+    - docker-compose ps
