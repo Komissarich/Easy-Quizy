@@ -87,7 +87,7 @@ func (r *UserRepository) FindByID(ctx context.Context, id uint64) (*entity.User,
 }
 
 func (u *UserRepository) FindByEmail(ctx context.Context, email string) (*entity.User, error) {
-	sql := `SELECT id, email, username, password FROM users WHERE email = $1`
+	sql := `SELECT id, username, email, password FROM users WHERE email = $1`
 
 	var user entity.User
 
