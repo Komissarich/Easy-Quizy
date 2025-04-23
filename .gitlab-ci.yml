@@ -5,5 +5,8 @@ lint:
   stage: lint
   image: golangci/golangci-lint:latest
   script:
-    - go mod tidy
+    - cd stat_service | go mod tidy | cd ..
+    - cd quiz_service | go mod tidy | cd ..
+    - cd auth_service | go mod tidy | cd ..
+    - cd api_gateway_service | go mod tidy | cd ..
     - golangci-lint run /stat_service /quiz_service /auth_service /api_gateway_service
