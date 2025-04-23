@@ -58,17 +58,17 @@ func (s *authService) Register(ctx context.Context, user *entity.User) (string, 
 }
 
 func (s *authService) Login(ctx context.Context, email, password string) (string, *entity.User, error) {
-	user, err := s.userRepo.User(ctx, email)
+	users, err := s.userRepo.User(ctx, email)
 	if err != nil {
 		return "", nil, fmt.Errorf("can't find user: %w", err)
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	err = bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(password))
 	if err != nil {
 		return "", nil, entity.ErrInvalidCredentials
 	}
 
-	token, user, err := s.jwtService.GenerateToken(ctx, user.Email, user.Password)
+	token, user, err := s.jwtService.GenerateToken(ctx, users.Email, users.Password)
 	if err != nil {
 		return "", nil, fmt.Errorf("can't generate token: %w", err)
 	}
