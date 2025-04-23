@@ -13,4 +13,4 @@ build:
   stage: lint
   image: golang:1.24.2-alpine3.21
   script:
-    - go build -o ./easy-quizy/stat_service ./stat_service/cmd/app/main.go
+    - go build -o ./easy-quizy/auth_service ./auth_service/cmd/main.go
