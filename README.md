@@ -46,7 +46,7 @@ graph TD
 
 ### Authentification service
 
-Read more on [Authentification service]("https://gitlab.crja72.ru/golang/2025/spring/course/projects/go14/easy-quizy/-/blob/main/auth_service/README.md")
+Read more on [Authentification service](/auth_service/README.md)
 
 #### Methods
 
@@ -74,7 +74,7 @@ Read more on [Authentification service]("https://gitlab.crja72.ru/golang/2025/sp
 
 ### Quiz service
 
-Read more on [Quiz service]("https://gitlab.crja72.ru/golang/2025/spring/course/projects/go14/easy-quizy/-/blob/main/quiz_service/README.md")
+Read more on [Quiz service](/quiz_service/README.md)
 
 #### Methods
 
@@ -106,7 +106,7 @@ message Answer {
 
 ### [Statistics service]("https://gitlab.crja72.ru/golang/2025/spring/course/projects/go14/easy-quizy/-/blob/main/stat_service/README.md")
 
-Read more on [Statistics service]("https://gitlab.crja72.ru/golang/2025/spring/course/projects/go14/easy-quizy/-/blob/main/stat_service/README.md")
+Read more on [Statistics service](stat_service/README.md)
 
 #### Methods
 - **UpdateStats**: Updates statistics for a quiz session
