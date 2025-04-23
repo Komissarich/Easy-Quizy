@@ -272,7 +272,7 @@ type RegisterRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
 	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	Username      *string                `protobuf:"bytes,3,opt,name=username,proto3,oneof" json:"username,omitempty"`
+	Username      string                 `protobuf:"bytes,3,opt,name=username,proto3" json:"username,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -322,8 +322,8 @@ func (x *RegisterRequest) GetPassword() string {
 }
 
 func (x *RegisterRequest) GetUsername() string {
-	if x != nil && x.Username != nil {
-		return *x.Username
+	if x != nil {
+		return x.Username
 	}
 	return ""
 }
@@ -1111,12 +1111,11 @@ const file_auth_service_proto_rawDesc = "" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\"4\n" +
 	"\x17FavoriteQuizzesResponse\x12\x19\n" +
-	"\bquiz_ids\x18\x01 \x03(\tR\aquizIds\"q\n" +
+	"\bquiz_ids\x18\x01 \x03(\tR\aquizIds\"_\n" +
 	"\x0fRegisterRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1f\n" +
-	"\busername\x18\x03 \x01(\tH\x00R\busername\x88\x01\x01B\v\n" +
-	"\t_username\"+\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1a\n" +
+	"\busername\x18\x03 \x01(\tR\busername\"+\n" +
 	"\x10RegisterResponse\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"@\n" +
 	"\fLoginRequest\x12\x14\n" +
@@ -1176,9 +1175,9 @@ const file_auth_service_proto_rawDesc = "" +
 	"\fRemoveFriend\x12\x19.auth.RemoveFriendRequest\x1a\x14.auth.FriendResponse\"\x00\x12B\n" +
 	"\n" +
 	"GetFriends\x12\x17.auth.GetFriendsRequest\x1a\x19.auth.FriendsListResponse\"\x00\x12M\n" +
-	"\x0fAddFavoriteQuiz\x12\x1c.auth.AddFavoriteQuizRequest\x1a\x1a.auth.FavoriteQuizResponse\"\x00\x12S\n" +
-	"\x12RemoveFavoriteQuiz\x12\x1f.auth.RemoveFavoriteQuizRequest\x1a\x1a.auth.FavoriteQuizResponse\"\x00\x12V\n" +
-	"\x12GetFavoriteQuizzes\x12\x1f.auth.GetFavoriteQuizzesRequest\x1a\x1d.auth.FavoriteQuizzesResponse\"\x00B\bZ\x06.;authb\x06proto3"
+	"\x0fAddFavoriteQuiz\x12\x1c.auth.AddFavoriteQuizRequest\x1a\x1a.auth.FavoriteQuizResponse\"\x00\x12V\n" +
+	"\x12GetFavoriteQuizzes\x12\x1f.auth.GetFavoriteQuizzesRequest\x1a\x1d.auth.FavoriteQuizzesResponse\"\x00\x12S\n" +
+	"\x12RemoveFavoriteQuiz\x12\x1f.auth.RemoveFavoriteQuizRequest\x1a\x1a.auth.FavoriteQuizResponse\"\x00B\bZ\x06.;authb\x06proto3"
 
 var (
 	file_auth_service_proto_rawDescOnce sync.Once
@@ -1233,8 +1232,8 @@ var file_auth_service_proto_depIdxs = []int32{
 	17, // 12: auth.AuthService.RemoveFriend:input_type -> auth.RemoveFriendRequest
 	18, // 13: auth.AuthService.GetFriends:input_type -> auth.GetFriendsRequest
 	0,  // 14: auth.AuthService.AddFavoriteQuiz:input_type -> auth.AddFavoriteQuizRequest
-	1,  // 15: auth.AuthService.RemoveFavoriteQuiz:input_type -> auth.RemoveFavoriteQuizRequest
-	2,  // 16: auth.AuthService.GetFavoriteQuizzes:input_type -> auth.GetFavoriteQuizzesRequest
+	2,  // 15: auth.AuthService.GetFavoriteQuizzes:input_type -> auth.GetFavoriteQuizzesRequest
+	1,  // 16: auth.AuthService.RemoveFavoriteQuiz:input_type -> auth.RemoveFavoriteQuizRequest
 	6,  // 17: auth.AuthService.Register:output_type -> auth.RegisterResponse
 	8,  // 18: auth.AuthService.Login:output_type -> auth.LoginResponse
 	10, // 19: auth.AuthService.Logout:output_type -> auth.LogoutResponse
@@ -1245,8 +1244,8 @@ var file_auth_service_proto_depIdxs = []int32{
 	19, // 24: auth.AuthService.RemoveFriend:output_type -> auth.FriendResponse
 	20, // 25: auth.AuthService.GetFriends:output_type -> auth.FriendsListResponse
 	3,  // 26: auth.AuthService.AddFavoriteQuiz:output_type -> auth.FavoriteQuizResponse
-	3,  // 27: auth.AuthService.RemoveFavoriteQuiz:output_type -> auth.FavoriteQuizResponse
-	4,  // 28: auth.AuthService.GetFavoriteQuizzes:output_type -> auth.FavoriteQuizzesResponse
+	4,  // 27: auth.AuthService.GetFavoriteQuizzes:output_type -> auth.FavoriteQuizzesResponse
+	3,  // 28: auth.AuthService.RemoveFavoriteQuiz:output_type -> auth.FavoriteQuizResponse
 	17, // [17:29] is the sub-list for method output_type
 	5,  // [5:17] is the sub-list for method input_type
 	5,  // [5:5] is the sub-list for extension type_name
@@ -1259,7 +1258,6 @@ func file_auth_service_proto_init() {
 	if File_auth_service_proto != nil {
 		return
 	}
-	file_auth_service_proto_msgTypes[5].OneofWrappers = []any{}
 	file_auth_service_proto_msgTypes[14].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
