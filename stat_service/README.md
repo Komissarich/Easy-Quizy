@@ -1,10 +1,10 @@
-# Statistics Service API Documentation
+### Statistics service
 
 This document describes the gRPC/REST API endpoints for the Statistics service. All endpoints are versioned under `/v1/stats`.
 
 ---
 
-## Table of Contents
+##### Table of Contents
 1. [Updating Statistics](#updating-statistics)
 2. [Quiz Statistics](#quiz-statistics)
 3. [Player Statistics](#player-statistics)
@@ -12,15 +12,15 @@ This document describes the gRPC/REST API endpoints for the Statistics service. 
 
 ---
 
-## Updating Statistics
+#### Updating Statistics
 
-### `UpdateStats`
+##### `UpdateStats`
 Updates statistics for a quiz session.
 
 **HTTP Method**: `POST /v1/stats/update`  
 **gRPC Method**: `Statistics.UpdateStats`
 
-#### Request:
+###### Request:
 
 ```protobuf
 message UpdateStatsRequest {
@@ -29,12 +29,12 @@ message UpdateStatsRequest {
     float quiz_rate = 3;             // Average quiz rating (0.0–5.0)
 }
 ```
-#### Response:
+###### Response:
 ```protobuf
 message UpdateStatsResponse {} // Empty on success
 ```
-#### Example:
-```
+###### Example:
+```bash
 curl -X POST "http://localhost:8080/v1/stats/update" \
   -H "Content-Type: application/json" \
   -d '{
@@ -43,22 +43,23 @@ curl -X POST "http://localhost:8080/v1/stats/update" \
     "quiz_rate": 4.7
   }'
 ```
-## Quiz Statistics
-### `GetQuizStat`
+#### Quiz Statistics
+##### `GetQuizStat`
 Retrieves statistics for a specific quiz.
 
 **HTTP Method**: `GET /v1/stats/quiz/{quiz_id}`
 
 **gRPC Method**: `Statistics.GetQuizStat`
 
-#### Request:
-```
+###### Request:
+
+```protobuf
 message GetQuizStatRequest {
     string quiz_id = 1; // Quiz ID
 }
 ```
-#### Response:
-```
+###### Response:
+```protobuf
 message QuizStat {
     string quiz_id = 1;
     string author_id = 2;
@@ -66,12 +67,12 @@ message QuizStat {
     float avg_rate = 4;      // Average rating (0.0–5.0)
 }
 ```
-#### Example:
-```
+###### Example:
+```bash
 curl "http://localhost:8080/v1/stats/quiz/quiz_123"
 ```
 
-### `ListQuizzes`
+##### `ListQuizzes`
 
 Lists quizzes sorted by a specified option.
 
@@ -79,34 +80,34 @@ Lists quizzes sorted by a specified option.
 
 **gRPC Method**: `Statistics.ListQuizzes`
 
-#### Options:
-```
+###### Options:
+```protobuf
 enum ListQuizzesOption {
     AVG_RATE = 0;      // Sort by average rating (desc)
     NUM_SESSIONS = 1;  // Sort by session count (desc)
 }
 ```
 
-#### Request:
-```
+###### Request:
+```protobuf
 message ListQuizzesRequest {
     ListQuizzesOption option = 1;
 }
 ```
-#### Response:
-```
+###### Response:
+```protobuf
 message ListQuizzesResponse {
     repeated QuizStat quizzes = 1;
 }
 ```
-#### Example:
+###### Example:
 
-```
+```bash
 curl "http://localhost:8080/v1/stats/quizzes/AVG_RATE"
 ```
-## Player Statistics
+#### Player Statistics
 
-### `GetPlayerStat`
+##### `GetPlayerStat`
 
 Retrieves statistics for a specific player.
 
@@ -114,14 +115,14 @@ Retrieves statistics for a specific player.
 
 **gRPC Method**: `Statistics.GetPlayerStat`
 
-#### Request:
-```
+###### Request:
+```protobuf
 message GetPlayerStatRequest {
     string user_id = 1; // Player ID
 }
 ```
-#### Response:
-```
+###### Response:
+```protobuf
 message PlayerStat {
     string user_id = 1;
     float total_score = 2;
@@ -130,11 +131,11 @@ message PlayerStat {
     int32 num_sessions = 5;
 }
 ```
-#### Example:
-```
+###### Example:
+```bash
 curl "http://localhost:8080/v1/stats/player/player_123"
 ```
-### `ListPlayers`
+##### `ListPlayers`
 
 Lists players sorted by a specified option.
 
@@ -142,33 +143,33 @@ Lists players sorted by a specified option.
 
 **gRPC Method**: `Statistics.ListPlayers`
 
-### Options:
-```
+###### Options:
+```protobuf
 enum ListPlayersOption {
     TOTAL_SCORE = 0; // Sort by total score (desc)
     BEST_SCORE = 1;  // Sort by best score (desc)
     AVG_SCORE = 2;   // Sort by average score (desc)
 }
 ```
-#### Request:
-```
+###### Request:
+```protobuf
 message ListPlayersRequest {
     ListPlayersOption option = 1;
 }
 ```
-#### Response:
-```
+###### Response:
+```protobuf
 message ListPlayersResponse {
     repeated PlayerStat players = 1;
 }
 ```
-#### Example:
-```
+###### Example:
+```bash
 curl "http://localhost:8080/v1/stats/players?option=BEST_SCORE"
 ```
-## Author Statistics
+#### Author Statistics
 
-### `GetAuthorStat`
+##### `GetAuthorStat`
 
 Retrieves statistics for a specific author.
 
@@ -176,14 +177,14 @@ Retrieves statistics for a specific author.
 
 **gRPC Method**: `Statistics.GetAuthorStat`
 
-#### Request:
-```
+###### Request:
+```protobuf
 message GetAuthorStatRequest {
     string user_id = 1; // Author ID
 }
 ```
-#### Response:
-```
+###### Response:
+```protobuf
 message AuthorStat {
     string user_id = 1;
     int32 num_quizzes = 2;       // Total quizzes created
@@ -191,12 +192,12 @@ message AuthorStat {
     float best_quiz_rate = 4;    // Highest quiz rating (0.0–5.0)
 }
 ```
-#### Example:
-```
+###### Example:
+```bash
 curl "http://localhost:8080/v1/stats/author/author_123"
 ```
 
-### `ListAuthors`
+##### `ListAuthors`
 
 Lists authors sorted by a specified option.
 
@@ -204,8 +205,8 @@ Lists authors sorted by a specified option.
 
 **gRPC Method**: `Statistics.ListAuthors`
 
-#### Options:
-```
+###### Options:
+```protobuf
 enum ListAuthorsOption {
     NUM_QUIZZES = 0;    // Sort by quiz count (desc)
     AVG_QUIZ_RATE = 1;  // Sort by average rating (desc)
@@ -213,20 +214,20 @@ enum ListAuthorsOption {
 }
 ```
 
-#### Request:
-```
+###### Request:
+```protobuf
 message ListAuthorsRequest {
     ListAuthorsOption option = 1;
 }
 ```
 
-#### Response:
-```
+###### Response:
+```protobuf
 message ListAuthorsResponse {
     repeated AuthorStat authors = 1;
 }
 ```
-#### Example:
-```
+###### Example:
+```bash
 curl "http://localhost:8080/v1/stats/authors?option=AVG_QUIZ_RATE"
 ```
