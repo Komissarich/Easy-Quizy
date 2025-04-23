@@ -82,8 +82,8 @@ export default {
           const data = await axios.post(
             'http://localhost:8085/v1/users/login',
             {
-              email: 'egorkart1@gmail.com',
-              password: 'aaaabbbbb'
+              email: this.email,
+              password: this.password
             },
             {
               headers: {

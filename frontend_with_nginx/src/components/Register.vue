@@ -79,11 +79,13 @@ export default {
     async handleLogin() {
         this.errorMessage = ''
         if (this.username !== ""  && this.password !== "") {
+          try {
           const data = await axios.post(
             'http://localhost:8085/v1/users/register',
             {
-              email: 'egorkart1@gmail.com',
-              password: 'aaaabbbbb'
+              email: this.email,
+              username: this.username,
+              password: this.password
             },
             {
               headers: {
@@ -91,18 +93,14 @@ export default {
               },
             }
           );
-          console.log(data, data.data)
-          if (data.data !== "error") {
-              console.log(data.data)
-              localStorage.setItem("auth", "true")
-              localStorage.setItem("username", this.username)
-              this.authState.isLoggedIn = true
-              this.$router.push("/profile/" + this.username) 
+          console.log("Succesfully registered")
+          } catch (error) {
+            console.log("HELLO WORLD", error.status, error)
+            if (error.status === 400) {
+              this.errorMessage = 'Проверьте почту и пароль; пароль не менее 8 символов'
+            }
           }
-          else {
-            //  console.log("erorr")
-              this.errorMessage = 'Пользователь с таким логином или паролем не найден'
-          }
+          
         }
         else {
                 this.errorMessage = 'Пожалуйста, заполните все поля'
