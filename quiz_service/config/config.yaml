@@ -1,4 +1,4 @@
-GRPC_PORT: 50051 # Порт для подключения по gRPC
+GRPC_PORT: 50053 # Порт для подключения по gRPC
 HTTP_PORT: 8080  # Порт для HTTP прокси
 
 HOST: "127.0.0.1"
@@ -6,8 +6,8 @@ HOST: "127.0.0.1"
 POSTGRES:
   POSTGRES_USER: "postgres"
   POSTGRES_PASSWORD: "root"
-  POSTGRES_DB: "quiz_postgres"
-  POSTGRES_HOST: "postgres"
+  POSTGRES_DB: "postgres"
+  POSTGRES_HOST: "quiz_postgres"
   POSTGRES_PORT: 5432
   POSTGRES_MAX_CONN: 10
   POSTGRES_MIN_CONN: 1

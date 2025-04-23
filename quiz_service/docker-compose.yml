@@ -6,11 +6,11 @@ services:
     ports:
       - "50051:50051" 
     depends_on:
-      - postgres
-    networks:
-      - quiz-network
+      quiz_postgres:
+        condition: service_healthy
+    
 
-  postgres:
+  quiz_postgres:
       container_name: postgres_container_goida
       image: postgres
       environment:
@@ -21,12 +21,15 @@ services:
         - db-data:/var/lib/postgresql/data
       ports:
         - "5432:5432"
-      networks:
-        - quiz-network
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+        start_period: 10s
+      restart: unless-stopped
+
+     
 
 volumes:
   db-data:
-
-networks:
-  quiz-network:
-    driver: bridge

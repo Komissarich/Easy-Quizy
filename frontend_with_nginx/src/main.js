@@ -16,6 +16,8 @@ const authState =  reactive({
     logout() {
       this.isLoggedIn = false
       localStorage.setItem('auth', "false")
+      localStorage.setItem('user', "")
+      localStorage.setItem('token', "")
     }
   })
 

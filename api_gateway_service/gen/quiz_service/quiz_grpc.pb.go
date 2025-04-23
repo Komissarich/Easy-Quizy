@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	QuizService_CreateQuiz_FullMethodName = "/api.QuizService/CreateQuiz"
-	QuizService_GetQuiz_FullMethodName    = "/api.QuizService/GetQuiz"
+	QuizService_CreateQuiz_FullMethodName      = "/api.QuizService/CreateQuiz"
+	QuizService_GetQuiz_FullMethodName         = "/api.QuizService/GetQuiz"
+	QuizService_GetQuizByAuthor_FullMethodName = "/api.QuizService/GetQuizByAuthor"
 )
 
 // QuizServiceClient is the client API for QuizService service.
@@ -29,6 +30,7 @@ const (
 type QuizServiceClient interface {
 	CreateQuiz(ctx context.Context, in *CreateQuizRequest, opts ...grpc.CallOption) (*CreateQuizResponse, error)
 	GetQuiz(ctx context.Context, in *GetQuizRequest, opts ...grpc.CallOption) (*GetQuizResponse, error)
+	GetQuizByAuthor(ctx context.Context, in *GetQuizByAuthorRequest, opts ...grpc.CallOption) (*GetQuizByAuthorResponse, error)
 }
 
 type quizServiceClient struct {
@@ -59,12 +61,23 @@ func (c *quizServiceClient) GetQuiz(ctx context.Context, in *GetQuizRequest, opt
 	return out, nil
 }
 
+func (c *quizServiceClient) GetQuizByAuthor(ctx context.Context, in *GetQuizByAuthorRequest, opts ...grpc.CallOption) (*GetQuizByAuthorResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetQuizByAuthorResponse)
+	err := c.cc.Invoke(ctx, QuizService_GetQuizByAuthor_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QuizServiceServer is the server API for QuizService service.
 // All implementations must embed UnimplementedQuizServiceServer
 // for forward compatibility.
 type QuizServiceServer interface {
 	CreateQuiz(context.Context, *CreateQuizRequest) (*CreateQuizResponse, error)
 	GetQuiz(context.Context, *GetQuizRequest) (*GetQuizResponse, error)
+	GetQuizByAuthor(context.Context, *GetQuizByAuthorRequest) (*GetQuizByAuthorResponse, error)
 	mustEmbedUnimplementedQuizServiceServer()
 }
 
@@ -80,6 +93,9 @@ func (UnimplementedQuizServiceServer) CreateQuiz(context.Context, *CreateQuizReq
 }
 func (UnimplementedQuizServiceServer) GetQuiz(context.Context, *GetQuizRequest) (*GetQuizResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetQuiz not implemented")
+}
+func (UnimplementedQuizServiceServer) GetQuizByAuthor(context.Context, *GetQuizByAuthorRequest) (*GetQuizByAuthorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetQuizByAuthor not implemented")
 }
 func (UnimplementedQuizServiceServer) mustEmbedUnimplementedQuizServiceServer() {}
 func (UnimplementedQuizServiceServer) testEmbeddedByValue()                     {}
@@ -138,6 +154,24 @@ func _QuizService_GetQuiz_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _QuizService_GetQuizByAuthor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetQuizByAuthorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QuizServiceServer).GetQuizByAuthor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: QuizService_GetQuizByAuthor_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QuizServiceServer).GetQuizByAuthor(ctx, req.(*GetQuizByAuthorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // QuizService_ServiceDesc is the grpc.ServiceDesc for QuizService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +186,10 @@ var QuizService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetQuiz",
 			Handler:    _QuizService_GetQuiz_Handler,
+		},
+		{
+			MethodName: "GetQuizByAuthor",
+			Handler:    _QuizService_GetQuizByAuthor_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

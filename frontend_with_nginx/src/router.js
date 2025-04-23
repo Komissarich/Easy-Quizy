@@ -3,7 +3,7 @@ import Auth from "./components/Auth.vue";
 import Profile from "./components/Profile.vue";
 import Play from "./components/Play.vue";
 import Register from "./components/Register.vue";
-
+import jwtDecode from 'jwt-decode'
 import authState from "./main"
 import CreateTest from "./components/CreateTest.vue";
 import CreateQuestions from "./components/CreateQuestions.vue";
@@ -28,7 +28,21 @@ const router = createRouter( {
 })
 
 router.beforeEach((to, from, next) => {
-  
+    const token = localStorage.getItem('token');
+    
+    if (token) {
+      const decoded = jwtDecode(token);
+      const isExpired = decoded.exp < Date.now() / 1000;
+     
+      if (isExpired) {
+        const auth = authState
+        auth.logout()
+        return next({ path: "/auth" })
+      }
+      else {
+        next()
+      }
+    }
     
     if (to.meta.requireAuth === false) {
         next()
