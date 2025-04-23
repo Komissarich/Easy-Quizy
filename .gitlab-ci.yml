@@ -5,4 +5,4 @@ lint:
   stage: lint
   image: golangci/golangci-lint:latest
   script:
-    - golangci-lint run
+    - golangci-lint run /stat_service /quiz_service /auth_service /api_gateway_service
