@@ -85,8 +85,8 @@ services:
     networks:
       - app_network
     depends_on:
-      auth_postgres:
-        condition: service_healthy
+      - auth_postgres
+
 
   auth_postgres:
     container_name: auth_postgres
@@ -136,9 +136,8 @@ services:
     networks:
       - app_network
     depends_on:
-      quiz_postgres:
-        condition: service_healthy
-#psql -U postgres -c "SELECT * FROM quizzes"
+      - quiz_postgres
+
   quiz_postgres:
     container_name: quiz_postgres
     image: postgres:15
