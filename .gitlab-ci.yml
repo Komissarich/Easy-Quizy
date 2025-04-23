@@ -1,12 +1,15 @@
 stages:
   - lint
+  - build
 
 lint:
   stage: lint
   image: golangci/golangci-lint:latest
   script:
-    - cd stat_service | go mod tidy | cd ..
-    - cd quiz_service | go mod tidy | cd ..
-    - cd auth_service | go mod tidy | cd ..
-    - cd api_gateway_service | go mod tidy | cd ..
     - golangci-lint run /stat_service /quiz_service /auth_service /api_gateway_service
+
+build:
+  stage: lint
+  image: golang:1.24.2-alpine3.21
+  script:
+    - go build -o ./easy-quizy/stat_service ./stat_service/cmd/app/main.go
