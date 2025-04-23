@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "50051:50051" 
+      - "50053:50053" 
     depends_on:
       quiz_postgres:
         condition: service_healthy
