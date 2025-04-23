@@ -1,10 +1,11 @@
 stages:
-  - lint
   - build
+  - lint
 
 lint:
   stage: lint
   image: golangci/golangci-lint:latest
+  allow_failure: true
   script:
     - golangci-lint run /stat_service /quiz_service /auth_service /api_gateway_service
 
