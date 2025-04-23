@@ -40,7 +40,7 @@ func (u *UserRepository) doSaveUser(ctx context.Context, email, username string,
 }
 
 func (u *UserRepository) User(ctx context.Context, email string) (*entity.User, error) {
-	sql := `SELECT id, email, password FROM users WHERE email = $1 GROUP BY id, email, password;`
+	sql := `SELECT id, username, email, password FROM users WHERE email = $1 GROUP BY id, username, email, password;`
 
 	rows, err := u.db.QueryContext(ctx, sql, email)
 	if err != nil {
@@ -51,7 +51,7 @@ func (u *UserRepository) User(ctx context.Context, email string) (*entity.User, 
 	var user entity.User
 	if rows.Next() {
 
-		err := rows.Scan(&user.ID, &user.Email, &user.Password)
+		err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Password)
 		if err != nil {
 			return nil, fmt.Errorf("can't to scan user: %w", err)
 		}
@@ -87,11 +87,11 @@ func (r *UserRepository) FindByID(ctx context.Context, id uint64) (*entity.User,
 }
 
 func (u *UserRepository) FindByEmail(ctx context.Context, email string) (*entity.User, error) {
-	sql := `SELECT id, email, password FROM users WHERE email = $1`
+	sql := `SELECT id, email, username, password FROM users WHERE email = $1`
 
 	var user entity.User
 
-	err := u.db.QueryRowContext(ctx, sql, email).Scan(&user.ID, &user.Email, &user.Password)
+	err := u.db.QueryRowContext(ctx, sql, email).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
 	if err != nil {
 		return nil, fmt.Errorf("can't find user by email: %w", err)
 	}

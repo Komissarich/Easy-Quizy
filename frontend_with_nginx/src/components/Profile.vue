@@ -73,12 +73,19 @@ import { useRoute } from 'vue-router'
 
     onMounted(async () => {
       try {
-        
-        const response = await axios.get("http://localhost:8080/get_me", {
-          params: { quiz_id: route.params.username }
-        })
-        console.log(route.params.quiz_id)
-        quiz.value = response.data
+        const token = localStorage.getItem('token');
+        const data = await axios.post(
+            'http://localhost:8085/v1/users/me',
+            {
+              token: token
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json', // Важно явно указать!
+              },
+            }
+          );
+          console.log(data.data)
       } catch (error) {
         console.error('Ошибка загрузки профиля:', error)
       } finally {
