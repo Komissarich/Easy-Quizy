@@ -7,11 +7,9 @@ import (
 	logger "api_gateway/pkg"
 	"bytes"
 	"context" // для QuizService
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
-	"strings"
 
 	// для StatsService
 
@@ -53,19 +51,6 @@ func HealthHeandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Service is healthy!")
 }
 
-func repairJSON(body []byte) ([]byte, error) {
-	// Простейший ремонт (для вашего случая)
-	str := string(body)
-	fmt.Println(str)
-
-	str = strings.ReplaceAll(str, "email:", `"email":`)
-	str = strings.ReplaceAll(str, "password:", `"password":`)
-	str = strings.ReplaceAll(str, "username:", `"username":`)
-	fmt.Println(str)
-	return []byte(str), nil
-
-	// return body, nil
-}
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "OPTIONS" {
@@ -73,32 +58,29 @@ func loggingMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// Читаем тело ОДИН раз
-		body, err := io.ReadAll(r.Body)
-		repaired, _ := repairJSON(body)
-		if err != nil {
-			http.Error(w, "Error reading body", http.StatusBadRequest)
-			return
+		if r.Method != "GET" {
+
+			// Читаем тело ОДИН раз
+			body, err := io.ReadAll(r.Body)
+
+			if err != nil {
+				http.Error(w, "Error reading body", http.StatusBadRequest)
+				return
+			}
+
+			// Восстанавливаем тело для следующих обработчиков
+			r.Body = io.NopCloser(bytes.NewBuffer(body))
+
+			// Логируем
+			log.Printf("Raw request body: %s", string(body))
+
+			// Проверяем Content-Type
+			if r.Header.Get("Content-Type") != "application/json" {
+				http.Error(w, "Invalid Content-Type", http.StatusBadRequest)
+				return
+			}
 		}
-
-		// Восстанавливаем тело для следующих обработчиков
-		r.Body = io.NopCloser(bytes.NewBuffer(body))
-
-		// Логируем
-		log.Printf("Raw request body: %s", string(repaired))
-
-		// Проверяем Content-Type
-		if r.Header.Get("Content-Type") != "application/json" {
-			http.Error(w, "Invalid Content-Type", http.StatusBadRequest)
-			return
-		}
-
-		// Проверяем JSON (теперь body доступен)
-		if !json.Valid(repaired) {
-			http.Error(w, "Invalid JSON format", http.StatusBadRequest)
-			return
-		}
-
+		fmt.Println("nice redirect")
 		next.ServeHTTP(w, r)
 	})
 }

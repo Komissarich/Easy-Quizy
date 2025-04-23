@@ -57,21 +57,8 @@ const addQuestion = () => {
 };
 
   const SendQuiz = async () =>{
-    
-    const quizData = {
-    quiz_id: "1",
-    title: testTitle.value,
-    description: testDescription.value,
-    questions: questions.value.map(question => ({
-      text: question.text,
-      answers: question.answers.map(answer => ({
-        text: answer.text,
-        isCorrect: answer.isCorrect
-      }))
-    }))
-
-
-  };
+  
+  
 
   // Преобразуем в JSON
   // const jsonData = JSON.stringify(quizData, null, 2)
@@ -80,13 +67,14 @@ const addQuestion = () => {
   // console.log(jsonData)
 
   try {
-    const id = Math.random().toString(36).substring(2, 2 + length).toUpperCase()
-    console.log(questions.value)
+    const id = Date.now().toString().slice(-5);
+   // const username = localStorage.getItem("username")
+    console.log(id)
     const data = await axios.post(
       'http://localhost:8085/v1/quiz',
         {
-          quiz_id: id,
-          title: testTitle.value,
+          name: testTitle.value,
+          author: localStorage.getItem("username"),
           image_id: "",
           description: testDescription.value,
           question: questions.value
@@ -97,6 +85,7 @@ const addQuestion = () => {
           },
         }
       );
+      console.log(data.data)
       console.log("Succesfully created quiz")
       } catch (error) {
         console.log(error.status, error)

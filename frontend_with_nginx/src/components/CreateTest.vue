@@ -86,54 +86,42 @@
   description: testDescription.value
 })
 
-function authorizeImgur() {
-  const clientId = '414e796021c50a0'
-  const redirectUri = encodeURIComponent('http://localhost:5173/imgur-callback')
-  window.location.href = `https://api.imgur.com/oauth2/authorize?client_id=${clientId}&response_type=token&redirect_uri=${redirectUri}`
-}
 
-// После редиректа извлекаем токен
-function getAccessToken() {
-  const hash = window.location.hash.substring(1)
-  const params = new URLSearchParams(hash)
-  return params.get('access_token')
-}
-const uploadImage = async () => {
-  console.log(fileInput.value)
-  authorizeImgur()
-  let accessToken = getAccessToken()
-  //if (!fileInput.value || !accessToken.value) return
+// const uploadImage = async () => {
+//   console.log(fileInput.value)
+//   authorizeImgur()
+//   let accessToken = getAccessToken()
+//   //if (!fileInput.value || !accessToken.value) return
   
-  uploading.value = true
-  error.value = ''
+//   uploading.value = true
+//   error.value = ''
   
-  const formData = new FormData()
-  formData.append('image', selectedFile.value)
+//   const formData = new FormData()
+//   formData.append('image', selectedFile.value)
   
-  try {
-    const response = await axios.post('https://api.imgur.com/3/image', formData, {
-      headers: {
-        'Authorization': `Bearer ${accessToken.value}`,
-        'Content-Type': 'multipart/form-data'
-      }
-    })
+//   try {
+//     const response = await axios.post('https://api.imgur.com/3/image', formData, {
+//       headers: {
+//         'Authorization': `Bearer ${accessToken.value}`,
+//         'Content-Type': 'multipart/form-data'
+//       }
+//     })
     
-    imageUrl.value = response.data.data.link
-  } catch (err) {
-    console.error('Ошибка загрузки:', err)
-    error.value = err.response?.data?.data?.error || 'Не удалось загрузить изображение'
-  } finally {
-    uploading.value = false
-  }
-}
+//     imageUrl.value = response.data.data.link
+//   } catch (err) {
+//     console.error('Ошибка загрузки:', err)
+//     error.value = err.response?.data?.data?.error || 'Не удалось загрузить изображение'
+//   } finally {
+//     uploading.value = false
+//   }
+// }
 
   const goToQuestions = () => {
-    uploadImage(fileInput.value, parseTokenFromRedirect)
+   // uploadImage(fileInput.value, parseTokenFromRedirect)
     const testData = {
       cover: coverImage.value,
       title: testTitle.value,
-      description: testDescription.value,
-      type: testType.value
+      description: testDescription.value
     }
     console.log('Данные теста:', testData)
    // router.push('/auth')

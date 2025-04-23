@@ -74,19 +74,17 @@ import { useRoute } from 'vue-router'
     onMounted(async () => {
       try {
         const token = localStorage.getItem('token');
-        const data = await axios.post(
-            'http://localhost:8085/v1/users/me',
-            {
-              token: token
-            },
-            {
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json', // Важно явно указать!
-              },
-            }
-          );
-          console.log(data.data)
+        console.log(token)
+        // const data = await axios.get(
+        //     'http://localhost:8085/v1/users/me',
+        //     {
+        //       headers: {
+        //         'Authorization': `Bearer ${token}`,
+        //         'Content-Type': 'application/json', // Важно явно указать!
+        //       },
+        //     }
+        //   );
+        //   console.log(data.data)
       } catch (error) {
         console.error('Ошибка загрузки профиля:', error)
       } finally {

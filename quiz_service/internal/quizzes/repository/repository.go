@@ -3,10 +3,12 @@ package repository
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"quizzes/internal/config"
 	v1 "quizzes/pkg/api/v1"
 	"quizzes/pkg/logger"
 	"quizzes/pkg/postgres"
+	"strconv"
 
 	pb "quizzes/pkg/authapi/v1"
 
@@ -55,6 +57,7 @@ func (r *Repository) CreateQuiz(
 
 	quizID := uuid.New().String()
 
+	quizID = strconv.Itoa(10000 + rand.Intn(99999-10000))
 	_, err = tx.Exec(ctx,
 		"INSERT INTO quizzes (Quiz_ID, Name, Author, Image_ID, Description) VALUES ($1, $2, $3, $4, $5)",
 		quizID, name, author, &image_id, &description)
@@ -93,6 +96,8 @@ func (r *Repository) GetQuiz(
 	ctx context.Context,
 	quizID string,
 ) (*v1.GetQuizResponse, error) {
+	fmt.Println(1251261261712)
+	fmt.Println(quizID)
 	var name, author, image_id, description string
 	err := r.pool.QueryRow(ctx,
 		"SELECT Name, Author, Image_ID, Description FROM quizzes WHERE Quiz_ID = $1",
@@ -172,6 +177,7 @@ func (r *Repository) GetQuizByAuthor(
 	if err != nil {
 		return nil, fmt.Errorf("failed to get questions: %w", err)
 	}
+	fmt.Println("HELLO WORLD")
 	defer rows.Close()
 	var quizzes []*v1.GetQuizResponse
 	for rows.Next() {

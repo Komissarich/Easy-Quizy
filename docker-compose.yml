@@ -52,7 +52,7 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: 1234
-      PGDATA: "/postgres_data"
+      PGDATA: /var/lib/postgresql/data/pgdata 
     volumes:
        - stat_postgres:/var/lib/postgresql/data
     
@@ -95,6 +95,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 05042007PULlup!
       POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata 
     volumes:
        - auth_postgres:/var/lib/postgresql/data
     networks:
@@ -128,6 +129,8 @@ services:
     build: ./quiz_service
     ports:
       - "50053:50053"
+    environment:
+      GRPC_PORT: 50053
     expose:
       - "50053"              # gRPC порт
     networks:
@@ -135,14 +138,15 @@ services:
     depends_on:
       quiz_postgres:
         condition: service_healthy
-
+#psql -U postgres -c "SELECT * FROM quizzes"
   quiz_postgres:
     container_name: quiz_postgres
     image: postgres:15
+   
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
-      PGDATA: "/postgres_data"
+      PGDATA: /var/lib/postgresql/data/pgdata 
     volumes:
        - quiz_postgres:/var/lib/postgresql/data
     networks:

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	api "quizzes/pkg/api/v1"
 	v1 "quizzes/pkg/api/v1"
 
@@ -35,6 +36,7 @@ func (s *QuizService) CreateQuiz(ctx context.Context, req *api.CreateQuizRequest
 	return &api.CreateQuizResponse{QuizId: quiz_id}, nil
 }
 func (s *QuizService) GetQuiz(ctx context.Context, req *api.GetQuizRequest) (*api.GetQuizResponse, error) {
+	fmt.Println(3333333333)
 	resp, err := s.repo.GetQuiz(ctx, req.QuizId)
 	if err != nil {
 		//		logger.GetLoggerFromCtx(ctx).Error(ctx, err.Error())

@@ -28,21 +28,7 @@ const router = createRouter( {
 })
 
 router.beforeEach((to, from, next) => {
-    const token = localStorage.getItem('token');
-    
-    if (token) {
-      const decoded = jwtDecode(token);
-      const isExpired = decoded.exp < Date.now() / 1000;
-     
-      if (isExpired) {
-        const auth = authState
-        auth.logout()
-        return next({ path: "/auth" })
-      }
-      else {
-        next()
-      }
-    }
+   
     
     if (to.meta.requireAuth === false) {
         next()
@@ -51,7 +37,23 @@ router.beforeEach((to, from, next) => {
       
         if (to.meta.requireAuth === true && authState.isLoggedIn === false) {
            
+            
             return next({ path: "/auth" })
+        }
+
+        const token = localStorage.getItem('token');
+    
+        if (token) {
+          const decoded = jwtDecode(token);
+          const isExpired = decoded.exp < Date.now() / 1000;
+         
+          if (isExpired) {
+            console.log("token has expired", isExpired)
+            const auth = authState
+            auth.logout()
+            return next({ path: "/auth" })
+          }
+         
         }
         
         next()
