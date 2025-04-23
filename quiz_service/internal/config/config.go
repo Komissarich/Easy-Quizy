@@ -11,7 +11,7 @@ import (
 type Config struct {
 	Postgres postgres.Config `yaml:"POSTGRES" env:"POSTGRES"`
 	Host     string          `yaml:"HOST" env:"HOST" env-default:"127.0.0.1"`
-	GRPCPort int             `yaml:"GRPC_PORT" env:"GRPC_PORT" env-default:"50051"`
+	GRPCPort int             `yaml:"GRPC_PORT" env:"GRPC_PORT" env-default:"50053"`
 	HTTPPort int             `yaml:"HTTP_PORT" env:"HTTP_PORT" env-default:"8080"`
 }
 

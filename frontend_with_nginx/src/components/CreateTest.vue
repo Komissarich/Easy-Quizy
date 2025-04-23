@@ -59,7 +59,7 @@
   import { provide, ref } from 'vue'
   import { RouterView } from 'vue-router'
   import { useRouter } from 'vue-router'
-  
+  import axios from 'axios'
   const router = useRouter()
   const fileInput = ref(null)
   const coverImage = ref(null)
@@ -87,37 +87,32 @@
 })
 
 
-// const uploadImage = async () => {
-//   console.log(fileInput.value)
-//   authorizeImgur()
-//   let accessToken = getAccessToken()
-//   //if (!fileInput.value || !accessToken.value) return
-  
-//   uploading.value = true
-//   error.value = ''
-  
-//   const formData = new FormData()
-//   formData.append('image', selectedFile.value)
-  
-//   try {
-//     const response = await axios.post('https://api.imgur.com/3/image', formData, {
-//       headers: {
-//         'Authorization': `Bearer ${accessToken.value}`,
-//         'Content-Type': 'multipart/form-data'
-//       }
-//     })
-    
-//     imageUrl.value = response.data.data.link
-//   } catch (err) {
-//     console.error('Ошибка загрузки:', err)
-//     error.value = err.response?.data?.data?.error || 'Не удалось загрузить изображение'
-//   } finally {
-//     uploading.value = false
-//   }
-// }
+const uploadToImgBB = async (imageFile) => {
+  const pureBase64 = imageFile.replace(/^data:image\/\w+;base64,/, '');
+  const formData = new FormData();
+  formData.append('image', pureBase64); // Передаем файл напрямую, не конвертируя в base64
 
-  const goToQuestions = () => {
-   // uploadImage(fileInput.value, parseTokenFromRedirect)
+  try {
+    const res = await axios.post(
+      'https://api.imgbb.com/1/upload?key=e31b2ba286ca280d76c0c3d2bfa314e9',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data' // Важно!
+        }
+      }
+    );
+    console.log(res.data.data.url);
+  } catch (error) {
+    console.error('Upload failed:', error);
+    throw error;
+  }
+}
+
+  const goToQuestions = async () => {
+
+   uploadToImgBB(coverImage.value)
+
     const testData = {
       cover: coverImage.value,
       title: testTitle.value,
