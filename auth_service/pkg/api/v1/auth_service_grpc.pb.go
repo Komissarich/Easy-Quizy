@@ -29,8 +29,8 @@ const (
 	AuthService_RemoveFriend_FullMethodName       = "/auth.AuthService/RemoveFriend"
 	AuthService_GetFriends_FullMethodName         = "/auth.AuthService/GetFriends"
 	AuthService_AddFavoriteQuiz_FullMethodName    = "/auth.AuthService/AddFavoriteQuiz"
-	AuthService_RemoveFavoriteQuiz_FullMethodName = "/auth.AuthService/RemoveFavoriteQuiz"
 	AuthService_GetFavoriteQuizzes_FullMethodName = "/auth.AuthService/GetFavoriteQuizzes"
+	AuthService_RemoveFavoriteQuiz_FullMethodName = "/auth.AuthService/RemoveFavoriteQuiz"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -51,8 +51,8 @@ type AuthServiceClient interface {
 	GetFriends(ctx context.Context, in *GetFriendsRequest, opts ...grpc.CallOption) (*FriendsListResponse, error)
 	// Quizzez
 	AddFavoriteQuiz(ctx context.Context, in *AddFavoriteQuizRequest, opts ...grpc.CallOption) (*FavoriteQuizResponse, error)
-	RemoveFavoriteQuiz(ctx context.Context, in *RemoveFavoriteQuizRequest, opts ...grpc.CallOption) (*FavoriteQuizResponse, error)
 	GetFavoriteQuizzes(ctx context.Context, in *GetFavoriteQuizzesRequest, opts ...grpc.CallOption) (*FavoriteQuizzesResponse, error)
+	RemoveFavoriteQuiz(ctx context.Context, in *RemoveFavoriteQuizRequest, opts ...grpc.CallOption) (*FavoriteQuizResponse, error)
 }
 
 type authServiceClient struct {
@@ -163,20 +163,20 @@ func (c *authServiceClient) AddFavoriteQuiz(ctx context.Context, in *AddFavorite
 	return out, nil
 }
 
-func (c *authServiceClient) RemoveFavoriteQuiz(ctx context.Context, in *RemoveFavoriteQuizRequest, opts ...grpc.CallOption) (*FavoriteQuizResponse, error) {
+func (c *authServiceClient) GetFavoriteQuizzes(ctx context.Context, in *GetFavoriteQuizzesRequest, opts ...grpc.CallOption) (*FavoriteQuizzesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FavoriteQuizResponse)
-	err := c.cc.Invoke(ctx, AuthService_RemoveFavoriteQuiz_FullMethodName, in, out, cOpts...)
+	out := new(FavoriteQuizzesResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetFavoriteQuizzes_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authServiceClient) GetFavoriteQuizzes(ctx context.Context, in *GetFavoriteQuizzesRequest, opts ...grpc.CallOption) (*FavoriteQuizzesResponse, error) {
+func (c *authServiceClient) RemoveFavoriteQuiz(ctx context.Context, in *RemoveFavoriteQuizRequest, opts ...grpc.CallOption) (*FavoriteQuizResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FavoriteQuizzesResponse)
-	err := c.cc.Invoke(ctx, AuthService_GetFavoriteQuizzes_FullMethodName, in, out, cOpts...)
+	out := new(FavoriteQuizResponse)
+	err := c.cc.Invoke(ctx, AuthService_RemoveFavoriteQuiz_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -201,8 +201,8 @@ type AuthServiceServer interface {
 	GetFriends(context.Context, *GetFriendsRequest) (*FriendsListResponse, error)
 	// Quizzez
 	AddFavoriteQuiz(context.Context, *AddFavoriteQuizRequest) (*FavoriteQuizResponse, error)
-	RemoveFavoriteQuiz(context.Context, *RemoveFavoriteQuizRequest) (*FavoriteQuizResponse, error)
 	GetFavoriteQuizzes(context.Context, *GetFavoriteQuizzesRequest) (*FavoriteQuizzesResponse, error)
+	RemoveFavoriteQuiz(context.Context, *RemoveFavoriteQuizRequest) (*FavoriteQuizResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -243,11 +243,11 @@ func (UnimplementedAuthServiceServer) GetFriends(context.Context, *GetFriendsReq
 func (UnimplementedAuthServiceServer) AddFavoriteQuiz(context.Context, *AddFavoriteQuizRequest) (*FavoriteQuizResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddFavoriteQuiz not implemented")
 }
-func (UnimplementedAuthServiceServer) RemoveFavoriteQuiz(context.Context, *RemoveFavoriteQuizRequest) (*FavoriteQuizResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemoveFavoriteQuiz not implemented")
-}
 func (UnimplementedAuthServiceServer) GetFavoriteQuizzes(context.Context, *GetFavoriteQuizzesRequest) (*FavoriteQuizzesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFavoriteQuizzes not implemented")
+}
+func (UnimplementedAuthServiceServer) RemoveFavoriteQuiz(context.Context, *RemoveFavoriteQuizRequest) (*FavoriteQuizResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveFavoriteQuiz not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -450,24 +450,6 @@ func _AuthService_AddFavoriteQuiz_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_RemoveFavoriteQuiz_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RemoveFavoriteQuizRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).RemoveFavoriteQuiz(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AuthService_RemoveFavoriteQuiz_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).RemoveFavoriteQuiz(ctx, req.(*RemoveFavoriteQuizRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _AuthService_GetFavoriteQuizzes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetFavoriteQuizzesRequest)
 	if err := dec(in); err != nil {
@@ -482,6 +464,24 @@ func _AuthService_GetFavoriteQuizzes_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServiceServer).GetFavoriteQuizzes(ctx, req.(*GetFavoriteQuizzesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_RemoveFavoriteQuiz_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveFavoriteQuizRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).RemoveFavoriteQuiz(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_RemoveFavoriteQuiz_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).RemoveFavoriteQuiz(ctx, req.(*RemoveFavoriteQuizRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -534,12 +534,12 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthService_AddFavoriteQuiz_Handler,
 		},
 		{
-			MethodName: "RemoveFavoriteQuiz",
-			Handler:    _AuthService_RemoveFavoriteQuiz_Handler,
-		},
-		{
 			MethodName: "GetFavoriteQuizzes",
 			Handler:    _AuthService_GetFavoriteQuizzes_Handler,
+		},
+		{
+			MethodName: "RemoveFavoriteQuiz",
+			Handler:    _AuthService_RemoveFavoriteQuiz_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

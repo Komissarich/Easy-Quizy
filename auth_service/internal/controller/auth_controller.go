@@ -45,13 +45,15 @@ func (c *AuthController) Register(ctx context.Context, req *v1.RegisterRequest) 
 		return nil, status.Error(codes.InvalidArgument, "password must be at least 8 characters")
 	}
 
+	if req.Username == "" {
+		c.l.Warn("username is required")
+		return nil, status.Error(codes.InvalidArgument, "username is required")
+	}
+
 	user := &entity.User{
 		Email:    req.Email,
 		Password: req.Password,
-	}
-
-	if req.Username != nil {
-		user.Username = *req.Username
+		Username: req.Username,
 	}
 
 	c.l.Info("Trying to register user", zap.String("email", req.Email), zap.Any("username", req.Username))
