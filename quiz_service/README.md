@@ -6,6 +6,7 @@ This document describes the gRPC/REST API endpoints for the Quiz service. All en
 
 ##### Table of Contents
 1. [Quiz Management](#quiz-management)
+2. [Data Model Specifications](#data-model-specifications)
 
 ---
 
