@@ -85,7 +85,7 @@ func main() {
 			log.Fatal(ctx, fmt.Sprintf("failed to serve: %v", zap.Error(err)))
 		}
 	}()
-	service.UpdateStats(ctx, &api.UpdateStatsRequest{QuizId: "63I0B", AuthorId: "Kommisarich", PlayerId: "yandex", PlayerScore: 100, QuizRate: 5})
+
 	select {
 	case <-ctx.Done():
 		server.GracefulStop()
