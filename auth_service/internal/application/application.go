@@ -69,7 +69,7 @@ func (a *Application) Run(ctx context.Context) {
 	friendService := service.NewFriendService(*friendRepo, *userRepo, l)
 	quizzesService := service.NewQuizzesService(*quizzesRepo, l)
 
-	authController := controller.NewAuthController(authService, friendService, quizzesService, l)
+	authController := controller.NewAuthController(authService, friendService, quizzesService, *jwtService, l)
 
 	authInterceptor := interceptors.NewAuthInterceptor(authService, l)
 

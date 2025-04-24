@@ -22,11 +22,12 @@ type AuthController struct {
 	authService    service.AuthService
 	friendService  service.FriendService
 	quizzesService service.QuizzesService
+	jwtService     service.JWTService
 
 	l *logger.Logger
 }
 
-func NewAuthController(authService service.AuthService, friendService service.FriendService, quizzesService service.QuizzesService, l *logger.Logger) *AuthController {
+func NewAuthController(authService service.AuthService, friendService service.FriendService, quizzesService service.QuizzesService, jwtService service.JWTService, l *logger.Logger) *AuthController {
 	return &AuthController{
 		authService:    authService,
 		friendService:  friendService,
@@ -139,6 +140,10 @@ func (c *AuthController) GetUser(ctx context.Context, req *v1.GetUserRequest) (*
 
 	c.l.Info("User found successfully", zap.Uint64("user_id", user.ID))
 
+	if err := c.jwtService.CacheUser(ctx, user); err != nil {
+		c.l.Error("Failed to cache user", zap.Error(err))
+	}
+
 	return convertUserToProto(user), nil
 }
 
@@ -237,6 +242,7 @@ func (c *AuthController) RemoveFriend(ctx context.Context, req *v1.RemoveFriendR
 			return nil, status.Error(codes.NotFound, "users are not friends")
 		}
 		c.l.Error("Failed to remove friend", zap.Error(err))
+
 		return nil, status.Error(codes.Internal, "failed to remove friend")
 	}
 
