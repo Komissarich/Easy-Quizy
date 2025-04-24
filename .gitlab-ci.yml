@@ -19,4 +19,4 @@ build:
   stage: build
   script:
     - cd stat_service
-    - go build -o /stat_service ./stat_service/cmd/app/main.go 
+    - go build -o /cmd/bin/stat_service /cmd/app/main.go 
