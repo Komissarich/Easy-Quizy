@@ -229,6 +229,7 @@ func (r *Repository) GetQuiz(
 		return nil, fmt.Errorf("error iterating questions: %w", rows.Err())
 	}
 	return &v1.GetQuizResponse{
+		ShortID:     quizID,
 		Name:        name,
 		Author:      author,
 		ImageId:     &image_id,
