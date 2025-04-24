@@ -5,7 +5,6 @@ import (
 	"eazy-quizy-auth/internal/service"
 	"eazy-quizy-auth/pkg/logger"
 	"eazy-quizy-auth/pkg/utils"
-	"log"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -40,7 +39,7 @@ func (i *AuthInterceptor) Unary(ctx context.Context) grpc.UnaryServerInterceptor
 			i.l.Error("Missing metadata in context")
 			return nil, status.Error(codes.Unauthenticated, "metadata is required")
 		}
-		log.Printf("gRPC metadata: %v", md)
+
 		authHeaders := md.Get("authorization")
 		if len(authHeaders) == 0 {
 			i.l.Error("Missing authorization header")

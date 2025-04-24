@@ -18,7 +18,12 @@
         <!-- Заголовок и автор -->
         <div class="quiz-header">
           <h1 class="quiz-title">{{ quiz.title }}</h1>
-          <p class="quiz-author">Автор: {{ quiz.author || 'Неизвестен' }}</p>
+          <router-link 
+            class="quiz-author" 
+            :to="quiz.author === currentuser ? '/profile/me' : '/profile/' + quiz.author"
+            >
+            Автор: {{ quiz.author || 'Неизвестен' }}
+            </router-link>
         </div>
   
         <!-- Основная информация -->
@@ -79,7 +84,7 @@
                 @click="toggleFavorite"
                 :class="['favorite-button', { 'active': isFavorite }]"
               >
-                {{ isFavorite ? '★ В избранном' : '☆ Добавить в избранное' }}
+                {{ isFavorite ? '★ Удалить из избранного?' : '☆ Добавить в избранное' }}
               </button>
               <button 
                 @click="startQuiz"
@@ -119,9 +124,10 @@
         average_score: 0
       })
       const loading = ref(true)
+      const currentuser = ref('')
       const isFavorite = ref(false)
       const quiz_id = route.params.quiz_id
-      console.log(quiz_id)
+     
       // Функция загрузки данных квиза
       const fetchQuizData = async () => {
         try {
@@ -134,8 +140,10 @@
               'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
           })
-          console.log("favorite quizzes", favoriteResponse.data)
-          isFavorite.value = favoriteResponse.data.isFavorite
+          currentuser.value = localStorage.getItem('username')
+          
+          isFavorite.value = favoriteResponse.data.quizIds.includes(quiz_id)
+          
              // 2. Загрузка статистики
             const statsResponse = await axios.get(`http://localhost:8085/v1/stats/quiz/${quiz_id}`)
           console.log(statsResponse.data)
@@ -151,25 +159,36 @@
       const toggleFavorite = async () => {
         try {
           if (isFavorite.value) {
-            await axios.delete(`http://localhost:8085/v1/favorites/${quiz_id}`, {
+            await axios.post(`http://localhost:8085/v1/users/favorites/quizzes/remove`, 
+            {
+                token: localStorage.getItem('token'),
+                quiz_id: quiz_id,
+            },
+            {
               headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
               }
             })
           } else {
-            await axios.post(`http://localhost:8085/v1/favorites`, 
-              { quiz_id: quiz_id },
-              {
-                headers: {
-                  'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-              }
-            )
+            await axios.post(`http://localhost:8085/v1/users/favorites/quizzes/add`, 
+            {
+              token: localStorage.getItem('token'),
+              quiz_id: router.currentRoute.value.params.quiz_id
+            },
+            {
+              headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'application/json', // Важно явно указать!
+              },
+            } 
+           
+             
+           )
           }
           isFavorite.value = !isFavorite.value
         } catch (error) {
           console.error('Ошибка обновления избранного:', error)
-          alert('Не удалось обновить избранное')
+          
         }
       }
   
@@ -188,7 +207,8 @@
         isFavorite,
         quiz_id,
         toggleFavorite,
-        startQuiz
+        startQuiz,
+        currentuser
       }
     }
   }
@@ -389,9 +409,9 @@
   }
   
   .favorite-button.active {
-    background: #fff3bf;
-    border-color: #ffe69c;
-    color: #e67700;
+    background: #df1469;
+    border-color: #ff0000;
+    color: #fdefef;
   }
   
   .play-button {

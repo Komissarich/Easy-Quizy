@@ -10,6 +10,7 @@ import CreateQuestions from "./components/CreateQuestions.vue";
 import Quiz from "./components/Quiz.vue";
 import Result from "./components/Result.vue";
 import ShowQuiz from "./components/ShowQuiz.vue";
+import OtherProfile from "./components/OtherProfile.vue";
 
 
 const router = createRouter( {
@@ -24,7 +25,8 @@ const router = createRouter( {
         {path: '/play', component: Play, meta: {requireAuth: false}, alias: '/' },
         {path: '/play/:quiz_id',component: Quiz,meta: { requireAuth: false }},
         {path: '/play/:quiz_id/result', name: "QuizResult", component: Result,meta: { requireAuth: false }},
-        {path: '/profile/:username', name: 'Profile', component: Profile, meta: {requireAuth: true}},
+        {path: '/profile/me', name: 'Profile', component: Profile, meta: {requireAuth: true}},
+        {path: '/profile/:username', name: 'OtherProfile', component: OtherProfile, meta: {requireAuth: true}},
         {path: '/quiz/:quiz_id', name: 'ShowQuiz', component: ShowQuiz, meta: {requireAuth: true}},
     ]
 })

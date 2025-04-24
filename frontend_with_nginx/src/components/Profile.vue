@@ -33,7 +33,7 @@
         </div>
 
         <div class="stat-card">
-          <div class="stat-value">{{ stats.quizzes_count || 0 }}</div>
+          <div class="stat-value"> {{ (userQuizzes[0]?.quizzes?.length ?? 0) || 0 }}</div>
           <div class="stat-label">Создано квизов</div>
         </div>
       </div>
@@ -132,7 +132,7 @@
           
           <div v-if="friends.length > 0" class="friends-list">
             <div v-for="friend in friends" :key="friend.id" class="friend-card">
-              <img :src="friend.avatar || defaultAvatar" class="friend-avatar" />
+              
               <span class="friend-name">{{ friend.username }}</span>
               <button class="remove-friend-btn" @click="removeFriend(friend.id)">
                 ×

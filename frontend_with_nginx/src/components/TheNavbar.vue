@@ -29,7 +29,7 @@ export default {
   methods: {
     goToProfile() {
     
-      this.$router.push('/profile/' + localStorage.getItem('username'));
+      this.$router.push('/profile/me');
     }
   },
 
@@ -39,7 +39,7 @@ export default {
     const router = useRouter()
     //Sconsole.log("log", authState.isLoggedIn)
     const gotoProfile = () => {
-      this.$router.push('/profile/' + localStorage.getItem('username'));
+      this.$router.push('/profile/me');
     }
     const handleLogout = () => {
       authState.logout()

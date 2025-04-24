@@ -79,7 +79,8 @@ export default {
     async handleLogin() {
         this.errorMessage = ''
         if (this.username !== ""  && this.password !== "") {
-         try { const data = await axios.post(
+         try { 
+          const data = await axios.post(
             'http://localhost:8085/v1/users/login',
             {
               email: this.email,
@@ -101,7 +102,7 @@ export default {
           
           this.authState.isLoggedIn = true
         
-          this.$router.push("/profile/" + data.data.user.username) 
+          this.$router.push("/profile/me") 
          } catch (error) {
          
           this.errorMessage = 'Пользователь с таким логином или паролем не найден'
