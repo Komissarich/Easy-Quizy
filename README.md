@@ -40,6 +40,14 @@ graph LR
     C --> I[Redis]
 ```
 
+### Ключевые особенности архитектуры:
+
+- API Gateway: Единая точка входа для всех запросов
+
+- Изолированные БД: Каждый сервис имеет свою БД
+
+- Кеширование: Использование Redis, для кеширования данных
+
 ## Технологический стек
 
 - Технологический стек
@@ -69,6 +77,8 @@ graph LR
 
 - **GetMe**: Получение информации о пользователе
 
+- **GetUser**: Получение информации о пользователе по уникальному идентификатору
+
 - **UpdateMe**: Обновление информации о пользователе
 
 - **AddFriend**: Добавление в список друзей
@@ -80,6 +90,20 @@ graph LR
 - **GetFavoriteQuizzes**: Получение всех квизов из избранного
 
 - **RemoveFavoriteQuiz**: Удаление квиза из списка избранного
+
+#### Data models
+
+**User**
+```protobuf
+message User {
+    string id = 1;
+    string username = 2;
+    string email = 3;
+    string hash_pass =4
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
+}
+```
 
 ### Сервис квизов
 
@@ -134,17 +158,64 @@ Read more on [Statistics service](stat_service/README.md)
 
 ### Prerequisits
 - Docker 20.10+
-- PostgreSQL
+- PostgreSQL 15+
+- 4GB+ свободной памяти
+- 2+ ядра CPU
 
 ### Steps
 
+1. Клонирование репозитория:
+```bash
+git clone https://gitlab.crja72.ru/golang/2025/spring/course/projects/go14/easy-quizy.git
+cd easy-quizy
+```
+2. Настройка переменных окружения.
+
+3. Запуск сервисов:
+```bash
+docker-compose up -d
+```
+
 ## Development Setup
 
-## Monitoring
+1. Установка зависимостей:
 
-### Logger
+```bash
+# Для бэкенда
+cd <name_service> && go mod download
+
+# Для фронтенда
+cd frontend_with_nginx && npm install
+```
+
+2. Для каждого из сервисов настроен свой makefile с документированием команд, поэтому, чтобы запустить какой-либо из сервисов выполните команду, например:
+
+```bash
+make run
+```
+
+Для auth-сервиса данная команда собирает сервис прогоняет миграции, а также поднимает сервис в докере.
 
 ## Testing
+
+### Виды тестов:
+
+1. Unit-тесты:
+- Покрытие критической бизнес-логики
+- Изолированное тестирование компонентов
+
+2. Integrations тесты:
+- Работа с тестовыми БД
+
+Всегда прогоняйте тесты в процессе разработки, для того, чтобы убедиться, что все работает исправно. Сделать вы это можете с помощью того же makefile для каждого сервиса, пример:
+
+```bash
+# Запуск unit-тестов
+make test
+
+# Запуск интеграционных тестов:
+make test-integration
+```
 
 ## CI/CD Pipeline
 
