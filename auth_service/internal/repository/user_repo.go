@@ -85,6 +85,29 @@ func (r *UserRepository) FindByID(ctx context.Context, id uint64) (*entity.User,
 	return &user, nil
 }
 
+func (r *UserRepository) FindByUsername(ctx context.Context, id string) (*entity.User, error) {
+	query := `
+        SELECT id, email, username, password, created_at
+        FROM users 
+        WHERE username = $1`
+
+	var user entity.User
+
+	err := r.db.QueryRowContext(ctx, query, id).Scan(
+		&user.ID,
+		&user.Email,
+		&user.Username,
+		&user.Password,
+		&user.CreatedAt,
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to find user: %w", err)
+	}
+
+	return &user, nil
+}
+
 func (u *UserRepository) FindByEmail(ctx context.Context, email string) (*entity.User, error) {
 	sql := `SELECT id, username, email, password FROM users WHERE email = $1`
 
