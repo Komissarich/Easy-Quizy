@@ -2,13 +2,8 @@ stages:
   - build
   - lint
 
-variables:
-  DOCKER_HOST: tcp://docker:2375
-
-services:
-  - name: docker:dind
-    alias: docker
-    command: ["--tls=false", "--host=tcp://0.0.0.0:2375"]
+# variables:
+#   DOCKER_HOST: tcp://docker:2375
 
 lint:
   stage: lint
@@ -18,15 +13,17 @@ lint:
     - golangci-lint run ./stat_service ./quiz_service ./auth_service ./api_gateway_service
 
 build:
+  # Use the official docker image.
+  image: docker:cli
   stage: build
-  image: docker:24.0
-  before_script:
-    - apk add --no-cache docker-compose
-    - docker info
+  services:
+    - docker:dind
+  variables:
+    DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  # before_script:
+  #   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  # # All branches are tagged with $DOCKER_IMAGE_NAME (defaults to commit ref slug)
+  # # Default branch is also tagged with `latest`
   script:
-    - docker-compose config
-    - docker-compose build
-    - docker-compose up -d
-    - docker-compose ps
-  after_script:
-    - docker-compose down -v
+    - docker build --pull -t "$DOCKER_IMAGE_NAME" .
+    - docker push "$DOCKER_IMAGE_NAME"
