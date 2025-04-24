@@ -22,7 +22,6 @@ build:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
   before_script:
-    - docker info
     - docker buildx create --use
   script:
     - docker buildx build --platform linux/amd64 -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
