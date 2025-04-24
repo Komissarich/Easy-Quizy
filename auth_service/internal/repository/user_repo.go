@@ -64,8 +64,7 @@ func (u *UserRepository) User(ctx context.Context, email string) (*entity.User, 
 
 func (r *UserRepository) FindByID(ctx context.Context, id uint64) (*entity.User, error) {
 	query := `
-        SELECT id, email, COALESCE(username, '') as username, password, 
-               created_at
+        SELECT id, email, username, password, created_at
         FROM users 
         WHERE id = $1`
 

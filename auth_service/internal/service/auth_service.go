@@ -19,7 +19,7 @@ type AuthService interface {
 
 	ValidateToken(ctx context.Context, token string) (*entity.User, error)
 
-	GetUserByID(ctx context.Context, id string) (*entity.User, error)
+	GetUserByID(ctx context.Context, userID string) (*entity.User, error)
 	UpdateUser(ctx context.Context, user *entity.User) error
 }
 

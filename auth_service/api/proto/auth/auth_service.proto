@@ -22,6 +22,7 @@ service AuthService {
       body: "*"
     };
   }
+  
   rpc Logout (LogoutRequest) returns (LogoutResponse) {
     option(google.api.http) = {
       post: "/v1/users/logout"
@@ -40,7 +41,13 @@ service AuthService {
     option(google.api.http) = {
       get: "/v1/users/me"
     };
-}
+  }
+
+  rpc GetUser (GetUserRequest) returns (UserResponse) {
+    option(google.api.http) = {
+      get: "/v1/users/{user_id}"
+    };
+  }
 
   rpc UpdateMe (UpdateMeRequest) returns (UserResponse) {
     option (google.api.http) = {
@@ -166,6 +173,11 @@ message UpdateMeRequest {
   optional string username = 2;
   optional string email = 3;
   optional string password = 4;
+}
+
+message GetUserRequest {
+  string token = 1;
+  string user_id = 2;
 }
 
 message UserResponse {

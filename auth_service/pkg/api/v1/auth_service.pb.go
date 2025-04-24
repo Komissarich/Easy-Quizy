@@ -773,6 +773,58 @@ func (x *UpdateMeRequest) GetPassword() string {
 	return ""
 }
 
+type GetUserRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetUserRequest) Reset() {
+	*x = GetUserRequest{}
+	mi := &file_auth_service_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserRequest) ProtoMessage() {}
+
+func (x *GetUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_service_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserRequest.ProtoReflect.Descriptor instead.
+func (*GetUserRequest) Descriptor() ([]byte, []int) {
+	return file_auth_service_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *GetUserRequest) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *GetUserRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
 type UserResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -786,7 +838,7 @@ type UserResponse struct {
 
 func (x *UserResponse) Reset() {
 	*x = UserResponse{}
-	mi := &file_auth_service_proto_msgTypes[15]
+	mi := &file_auth_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -798,7 +850,7 @@ func (x *UserResponse) String() string {
 func (*UserResponse) ProtoMessage() {}
 
 func (x *UserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_service_proto_msgTypes[15]
+	mi := &file_auth_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -811,7 +863,7 @@ func (x *UserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserResponse.ProtoReflect.Descriptor instead.
 func (*UserResponse) Descriptor() ([]byte, []int) {
-	return file_auth_service_proto_rawDescGZIP(), []int{15}
+	return file_auth_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *UserResponse) GetId() string {
@@ -860,7 +912,7 @@ type AddFriendRequest struct {
 
 func (x *AddFriendRequest) Reset() {
 	*x = AddFriendRequest{}
-	mi := &file_auth_service_proto_msgTypes[16]
+	mi := &file_auth_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -872,7 +924,7 @@ func (x *AddFriendRequest) String() string {
 func (*AddFriendRequest) ProtoMessage() {}
 
 func (x *AddFriendRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_service_proto_msgTypes[16]
+	mi := &file_auth_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -885,7 +937,7 @@ func (x *AddFriendRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddFriendRequest.ProtoReflect.Descriptor instead.
 func (*AddFriendRequest) Descriptor() ([]byte, []int) {
-	return file_auth_service_proto_rawDescGZIP(), []int{16}
+	return file_auth_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *AddFriendRequest) GetToken() string {
@@ -912,7 +964,7 @@ type RemoveFriendRequest struct {
 
 func (x *RemoveFriendRequest) Reset() {
 	*x = RemoveFriendRequest{}
-	mi := &file_auth_service_proto_msgTypes[17]
+	mi := &file_auth_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -924,7 +976,7 @@ func (x *RemoveFriendRequest) String() string {
 func (*RemoveFriendRequest) ProtoMessage() {}
 
 func (x *RemoveFriendRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_service_proto_msgTypes[17]
+	mi := &file_auth_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -937,7 +989,7 @@ func (x *RemoveFriendRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveFriendRequest.ProtoReflect.Descriptor instead.
 func (*RemoveFriendRequest) Descriptor() ([]byte, []int) {
-	return file_auth_service_proto_rawDescGZIP(), []int{17}
+	return file_auth_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *RemoveFriendRequest) GetToken() string {
@@ -963,7 +1015,7 @@ type GetFriendsRequest struct {
 
 func (x *GetFriendsRequest) Reset() {
 	*x = GetFriendsRequest{}
-	mi := &file_auth_service_proto_msgTypes[18]
+	mi := &file_auth_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -975,7 +1027,7 @@ func (x *GetFriendsRequest) String() string {
 func (*GetFriendsRequest) ProtoMessage() {}
 
 func (x *GetFriendsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_service_proto_msgTypes[18]
+	mi := &file_auth_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -988,7 +1040,7 @@ func (x *GetFriendsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFriendsRequest.ProtoReflect.Descriptor instead.
 func (*GetFriendsRequest) Descriptor() ([]byte, []int) {
-	return file_auth_service_proto_rawDescGZIP(), []int{18}
+	return file_auth_service_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *GetFriendsRequest) GetToken() string {
@@ -1008,7 +1060,7 @@ type FriendResponse struct {
 
 func (x *FriendResponse) Reset() {
 	*x = FriendResponse{}
-	mi := &file_auth_service_proto_msgTypes[19]
+	mi := &file_auth_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1020,7 +1072,7 @@ func (x *FriendResponse) String() string {
 func (*FriendResponse) ProtoMessage() {}
 
 func (x *FriendResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_service_proto_msgTypes[19]
+	mi := &file_auth_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1033,7 +1085,7 @@ func (x *FriendResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FriendResponse.ProtoReflect.Descriptor instead.
 func (*FriendResponse) Descriptor() ([]byte, []int) {
-	return file_auth_service_proto_rawDescGZIP(), []int{19}
+	return file_auth_service_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *FriendResponse) GetSuccess() bool {
@@ -1059,7 +1111,7 @@ type FriendsListResponse struct {
 
 func (x *FriendsListResponse) Reset() {
 	*x = FriendsListResponse{}
-	mi := &file_auth_service_proto_msgTypes[20]
+	mi := &file_auth_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1071,7 +1123,7 @@ func (x *FriendsListResponse) String() string {
 func (*FriendsListResponse) ProtoMessage() {}
 
 func (x *FriendsListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_service_proto_msgTypes[20]
+	mi := &file_auth_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1084,7 +1136,7 @@ func (x *FriendsListResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FriendsListResponse.ProtoReflect.Descriptor instead.
 func (*FriendsListResponse) Descriptor() ([]byte, []int) {
-	return file_auth_service_proto_rawDescGZIP(), []int{20}
+	return file_auth_service_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *FriendsListResponse) GetFriends() []*UserResponse {
@@ -1142,7 +1194,10 @@ const file_auth_service_proto_rawDesc = "" +
 	"\bpassword\x18\x04 \x01(\tH\x02R\bpassword\x88\x01\x01B\v\n" +
 	"\t_usernameB\b\n" +
 	"\x06_emailB\v\n" +
-	"\t_password\"\xc6\x01\n" +
+	"\t_password\"?\n" +
+	"\x0eGetUserRequest\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId\"\xc6\x01\n" +
 	"\fUserResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x14\n" +
@@ -1163,13 +1218,14 @@ const file_auth_service_proto_rawDesc = "" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\"C\n" +
 	"\x13FriendsListResponse\x12,\n" +
-	"\afriends\x18\x01 \x03(\v2\x12.auth.UserResponseR\afriends2\xad\x06\n" +
+	"\afriends\x18\x01 \x03(\v2\x12.auth.UserResponseR\afriends2\xe4\x06\n" +
 	"\vAuthService\x12;\n" +
 	"\bRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\"\x00\x122\n" +
 	"\x05Login\x12\x12.auth.LoginRequest\x1a\x13.auth.LoginResponse\"\x00\x125\n" +
 	"\x06Logout\x12\x13.auth.LogoutRequest\x1a\x14.auth.LogoutResponse\"\x00\x12J\n" +
 	"\rValidateToken\x12\x1a.auth.ValidateTokenRequest\x1a\x1b.auth.ValidateTokenResponse\"\x00\x121\n" +
-	"\x05GetMe\x12\x12.auth.GetMeRequest\x1a\x12.auth.UserResponse\"\x00\x127\n" +
+	"\x05GetMe\x12\x12.auth.GetMeRequest\x1a\x12.auth.UserResponse\"\x00\x125\n" +
+	"\aGetUser\x12\x14.auth.GetUserRequest\x1a\x12.auth.UserResponse\"\x00\x127\n" +
 	"\bUpdateMe\x12\x15.auth.UpdateMeRequest\x1a\x12.auth.UserResponse\"\x00\x12;\n" +
 	"\tAddFriend\x12\x16.auth.AddFriendRequest\x1a\x14.auth.FriendResponse\"\x00\x12A\n" +
 	"\fRemoveFriend\x12\x19.auth.RemoveFriendRequest\x1a\x14.auth.FriendResponse\"\x00\x12B\n" +
@@ -1191,7 +1247,7 @@ func file_auth_service_proto_rawDescGZIP() []byte {
 	return file_auth_service_proto_rawDescData
 }
 
-var file_auth_service_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
+var file_auth_service_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
 var file_auth_service_proto_goTypes = []any{
 	(*AddFavoriteQuizRequest)(nil),    // 0: auth.AddFavoriteQuizRequest
 	(*RemoveFavoriteQuizRequest)(nil), // 1: auth.RemoveFavoriteQuizRequest
@@ -1208,46 +1264,49 @@ var file_auth_service_proto_goTypes = []any{
 	(*ValidateTokenResponse)(nil),     // 12: auth.ValidateTokenResponse
 	(*GetMeRequest)(nil),              // 13: auth.GetMeRequest
 	(*UpdateMeRequest)(nil),           // 14: auth.UpdateMeRequest
-	(*UserResponse)(nil),              // 15: auth.UserResponse
-	(*AddFriendRequest)(nil),          // 16: auth.AddFriendRequest
-	(*RemoveFriendRequest)(nil),       // 17: auth.RemoveFriendRequest
-	(*GetFriendsRequest)(nil),         // 18: auth.GetFriendsRequest
-	(*FriendResponse)(nil),            // 19: auth.FriendResponse
-	(*FriendsListResponse)(nil),       // 20: auth.FriendsListResponse
-	(*timestamppb.Timestamp)(nil),     // 21: google.protobuf.Timestamp
+	(*GetUserRequest)(nil),            // 15: auth.GetUserRequest
+	(*UserResponse)(nil),              // 16: auth.UserResponse
+	(*AddFriendRequest)(nil),          // 17: auth.AddFriendRequest
+	(*RemoveFriendRequest)(nil),       // 18: auth.RemoveFriendRequest
+	(*GetFriendsRequest)(nil),         // 19: auth.GetFriendsRequest
+	(*FriendResponse)(nil),            // 20: auth.FriendResponse
+	(*FriendsListResponse)(nil),       // 21: auth.FriendsListResponse
+	(*timestamppb.Timestamp)(nil),     // 22: google.protobuf.Timestamp
 }
 var file_auth_service_proto_depIdxs = []int32{
-	15, // 0: auth.LoginResponse.user:type_name -> auth.UserResponse
-	15, // 1: auth.ValidateTokenResponse.user:type_name -> auth.UserResponse
-	21, // 2: auth.UserResponse.created_at:type_name -> google.protobuf.Timestamp
-	21, // 3: auth.UserResponse.updated_at:type_name -> google.protobuf.Timestamp
-	15, // 4: auth.FriendsListResponse.friends:type_name -> auth.UserResponse
+	16, // 0: auth.LoginResponse.user:type_name -> auth.UserResponse
+	16, // 1: auth.ValidateTokenResponse.user:type_name -> auth.UserResponse
+	22, // 2: auth.UserResponse.created_at:type_name -> google.protobuf.Timestamp
+	22, // 3: auth.UserResponse.updated_at:type_name -> google.protobuf.Timestamp
+	16, // 4: auth.FriendsListResponse.friends:type_name -> auth.UserResponse
 	5,  // 5: auth.AuthService.Register:input_type -> auth.RegisterRequest
 	7,  // 6: auth.AuthService.Login:input_type -> auth.LoginRequest
 	9,  // 7: auth.AuthService.Logout:input_type -> auth.LogoutRequest
 	11, // 8: auth.AuthService.ValidateToken:input_type -> auth.ValidateTokenRequest
 	13, // 9: auth.AuthService.GetMe:input_type -> auth.GetMeRequest
-	14, // 10: auth.AuthService.UpdateMe:input_type -> auth.UpdateMeRequest
-	16, // 11: auth.AuthService.AddFriend:input_type -> auth.AddFriendRequest
-	17, // 12: auth.AuthService.RemoveFriend:input_type -> auth.RemoveFriendRequest
-	18, // 13: auth.AuthService.GetFriends:input_type -> auth.GetFriendsRequest
-	0,  // 14: auth.AuthService.AddFavoriteQuiz:input_type -> auth.AddFavoriteQuizRequest
-	2,  // 15: auth.AuthService.GetFavoriteQuizzes:input_type -> auth.GetFavoriteQuizzesRequest
-	1,  // 16: auth.AuthService.RemoveFavoriteQuiz:input_type -> auth.RemoveFavoriteQuizRequest
-	6,  // 17: auth.AuthService.Register:output_type -> auth.RegisterResponse
-	8,  // 18: auth.AuthService.Login:output_type -> auth.LoginResponse
-	10, // 19: auth.AuthService.Logout:output_type -> auth.LogoutResponse
-	12, // 20: auth.AuthService.ValidateToken:output_type -> auth.ValidateTokenResponse
-	15, // 21: auth.AuthService.GetMe:output_type -> auth.UserResponse
-	15, // 22: auth.AuthService.UpdateMe:output_type -> auth.UserResponse
-	19, // 23: auth.AuthService.AddFriend:output_type -> auth.FriendResponse
-	19, // 24: auth.AuthService.RemoveFriend:output_type -> auth.FriendResponse
-	20, // 25: auth.AuthService.GetFriends:output_type -> auth.FriendsListResponse
-	3,  // 26: auth.AuthService.AddFavoriteQuiz:output_type -> auth.FavoriteQuizResponse
-	4,  // 27: auth.AuthService.GetFavoriteQuizzes:output_type -> auth.FavoriteQuizzesResponse
-	3,  // 28: auth.AuthService.RemoveFavoriteQuiz:output_type -> auth.FavoriteQuizResponse
-	17, // [17:29] is the sub-list for method output_type
-	5,  // [5:17] is the sub-list for method input_type
+	15, // 10: auth.AuthService.GetUser:input_type -> auth.GetUserRequest
+	14, // 11: auth.AuthService.UpdateMe:input_type -> auth.UpdateMeRequest
+	17, // 12: auth.AuthService.AddFriend:input_type -> auth.AddFriendRequest
+	18, // 13: auth.AuthService.RemoveFriend:input_type -> auth.RemoveFriendRequest
+	19, // 14: auth.AuthService.GetFriends:input_type -> auth.GetFriendsRequest
+	0,  // 15: auth.AuthService.AddFavoriteQuiz:input_type -> auth.AddFavoriteQuizRequest
+	2,  // 16: auth.AuthService.GetFavoriteQuizzes:input_type -> auth.GetFavoriteQuizzesRequest
+	1,  // 17: auth.AuthService.RemoveFavoriteQuiz:input_type -> auth.RemoveFavoriteQuizRequest
+	6,  // 18: auth.AuthService.Register:output_type -> auth.RegisterResponse
+	8,  // 19: auth.AuthService.Login:output_type -> auth.LoginResponse
+	10, // 20: auth.AuthService.Logout:output_type -> auth.LogoutResponse
+	12, // 21: auth.AuthService.ValidateToken:output_type -> auth.ValidateTokenResponse
+	16, // 22: auth.AuthService.GetMe:output_type -> auth.UserResponse
+	16, // 23: auth.AuthService.GetUser:output_type -> auth.UserResponse
+	16, // 24: auth.AuthService.UpdateMe:output_type -> auth.UserResponse
+	20, // 25: auth.AuthService.AddFriend:output_type -> auth.FriendResponse
+	20, // 26: auth.AuthService.RemoveFriend:output_type -> auth.FriendResponse
+	21, // 27: auth.AuthService.GetFriends:output_type -> auth.FriendsListResponse
+	3,  // 28: auth.AuthService.AddFavoriteQuiz:output_type -> auth.FavoriteQuizResponse
+	4,  // 29: auth.AuthService.GetFavoriteQuizzes:output_type -> auth.FavoriteQuizzesResponse
+	3,  // 30: auth.AuthService.RemoveFavoriteQuiz:output_type -> auth.FavoriteQuizResponse
+	18, // [18:31] is the sub-list for method output_type
+	5,  // [5:18] is the sub-list for method input_type
 	5,  // [5:5] is the sub-list for extension type_name
 	5,  // [5:5] is the sub-list for extension extendee
 	0,  // [0:5] is the sub-list for field type_name
@@ -1265,7 +1324,7 @@ func file_auth_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_service_proto_rawDesc), len(file_auth_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   21,
+			NumMessages:   22,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

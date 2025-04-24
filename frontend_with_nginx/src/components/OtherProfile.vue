@@ -127,6 +127,8 @@
       const route = useRoute()
       const quiz = ref(null)
       const loading = ref(true)
+      const profileName = ref('')
+      const profileEmail = ref('')
       const isFriend = ref(false)
       const userQuizzes = ref([])
       const stats = ref({
@@ -136,8 +138,14 @@
       })
         onMounted(async () => {
           try {
-          
-            console.log(route.params.username)
+            let user_data = await axios.get(`http://localhost:8085/v1/users/${route.params.username}`,
+               {
+                  headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                  },
+                })
+            
+            console.log(user_data.data)
             let data = await axios.get(`http://localhost:8085/v1/quiz/author/${route.params.username}`,  {
                   headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`

@@ -123,6 +123,25 @@ func (c *AuthController) ValidateToken(ctx context.Context, req *v1.ValidateToke
 	}, nil
 }
 
+func (c *AuthController) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.UserResponse, error) {
+	if req.UserId == "" {
+		c.l.Warn("user_id is required")
+		return nil, status.Error(codes.InvalidArgument, "user_id is required")
+	}
+
+	c.l.Info("Trying to get user", zap.String("user_id", req.UserId))
+
+	user, err := c.authService.GetUserByID(ctx, req.UserId)
+	if err != nil {
+		c.l.Error("Failed to get user", zap.Error(err))
+		return nil, status.Error(codes.NotFound, "user not found")
+	}
+
+	c.l.Info("User found successfully", zap.Uint64("user_id", user.ID))
+
+	return convertUserToProto(user), nil
+}
+
 func (c *AuthController) GetMe(ctx context.Context, req *v1.GetMeRequest) (*v1.UserResponse, error) {
 	user, ok := utils.GetUser(ctx)
 	if !ok || user == nil {
