@@ -4,6 +4,7 @@ stages:
 
 variables:
   DOCKER_HOST: tcp://docker:2375
+  DOCKER_IPTABLES_LEGACY: 1
 
 lint:
   stage: lint
