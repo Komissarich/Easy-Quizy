@@ -23,7 +23,6 @@ service QuizService{
       get: "/v1/quiz/author/{author}"
     };
   }
-  
 }
 message CreateQuizRequest{
   string name = 1;
@@ -58,6 +57,9 @@ message GetQuizResponse{
 message GetQuizByAuthorRequest{
   string author = 1;
 }
-message GetQuizByAuthorResponse{
+message GetQuizzes{
   repeated GetQuizResponse quizzes = 1;
+}
+message GetQuizByAuthorResponse{
+  repeated GetQuizzes author_quizzes = 1;
 }

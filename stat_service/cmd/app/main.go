@@ -12,6 +12,7 @@ import (
 	"quiz_app/internal/statistics/service"
 	api "quiz_app/pkg/api/v1"
 	"quiz_app/pkg/logger"
+	"strconv"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -46,7 +47,7 @@ func main() {
 	log.Info(ctx, "config loaded")
 
 	// TCP Connection
-	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", cfg.Host, cfg.GRPCPort))
+	lis, err := net.Listen("tcp", ":"+strconv.Itoa(cfg.GRPCPort))
 	if err != nil {
 		log.Fatal(ctx, fmt.Sprintf("failed to listen: %v", zap.Error(err)))
 	}

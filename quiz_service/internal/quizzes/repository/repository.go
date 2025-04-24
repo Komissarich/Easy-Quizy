@@ -2,7 +2,9 @@ package repository
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
+	"math/big"
 	"quizzes/internal/config"
 	v1 "quizzes/pkg/api/v1"
 	"quizzes/pkg/logger"
@@ -25,7 +27,70 @@ import (
 type Repository struct {
 	pool *pgxpool.Pool
 }
+type IDGenerator struct {
+	pool    *pgxpool.Pool
+	charset string
+}
 
+// NewIDGenerator создает новый генератор
+func NewIDGenerator(pool *pgxpool.Pool) *IDGenerator {
+	return &IDGenerator{
+		pool:    pool,
+		charset: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+	}
+}
+
+// GenerateID генерирует уникальный 5-символьный ключ
+func (g *IDGenerator) GenerateID(ctx context.Context) (string, error) {
+	// Максимум попыток, чтобы избежать бесконечного цикла
+	const maxAttempts = 10000
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+		key, err := g.generateRandomKey(5)
+		if err != nil {
+			return "", err
+		}
+
+		// Проверяем уникальность в базе данных
+		unique, err := g.isUniqueInDB(ctx, key)
+		if err != nil {
+			return "", err
+		}
+		if unique {
+			return key, nil
+		}
+	}
+
+	return "", fmt.Errorf("unable to create unique code after %d atempts", maxAttempts)
+}
+
+// generateRandomKey генерирует случайный ключ заданной длины
+func (g *IDGenerator) generateRandomKey(length int) (string, error) {
+	result := make([]byte, length)
+	charsetLength := len(g.charset)
+
+	for i := 0; i < length; i++ {
+		// Генерируем случайный индекс для символа из charset
+		idx, err := rand.Int(rand.Reader, big.NewInt(int64(charsetLength)))
+		if err != nil {
+			return "", err
+		}
+		result[i] = g.charset[idx.Int64()]
+	}
+
+	return string(result), nil
+}
+
+// isUniqueInDB проверяет уникальность ключа в таблице quizzes
+func (g *IDGenerator) isUniqueInDB(ctx context.Context, key string) (bool, error) {
+	var count int
+	err := g.pool.QueryRow(ctx, `
+		SELECT COUNT(*) FROM quizzes WHERE Quiz_ID = $1
+	`, key).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count == 0, nil
+}
 func NewRepository(ctx context.Context, config *config.Config) *Repository {
 	pg, err := postgres.New(ctx, config.Postgres)
 	//	fmt.Println(err.Error())
@@ -50,20 +115,24 @@ func (r *Repository) CreateQuiz(
 	image_id *string,
 	description *string,
 	questions []*v1.CreateQuestion,
-) (string, error) {
+) (string, string, error) {
 	tx, err := r.pool.Begin(ctx)
 	if err != nil {
-		return "", fmt.Errorf("failed to begin transaction: %w", err)
+		return "", "", fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer tx.Rollback(ctx)
-
-	quizID := uuid.New().String()
+	generator := NewIDGenerator(r.pool)
+	quizID, err := generator.GenerateID(ctx)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to create an id: %w", err)
+	}
+	uuID := uuid.New().String()
 	fmt.Println(questions)
 	_, err = tx.Exec(ctx,
-		"INSERT INTO quizzes (Quiz_ID, Name, Author, Image_ID, Description) VALUES ($1, $2, $3, $4, $5)",
-		quizID, name, author, &image_id, &description)
+		"INSERT INTO quizzes (Quiz_ID, Name, Author, Image_ID, Description, UUID) VALUES ($1, $2, $3, $4, $5, $6)",
+		quizID, name, author, &image_id, &description, uuID)
 	if err != nil {
-		return "", fmt.Errorf("failed to insert quiz: %w", err)
+		return "", "", fmt.Errorf("failed to insert quiz: %w", err)
 	}
 	for _, q := range questions {
 		questionID := uuid.New().String()
@@ -71,7 +140,7 @@ func (r *Repository) CreateQuiz(
 			"INSERT INTO questions (Question_ID, Quiz_ID, Question_text, Image_ID) VALUES ($1, $2, $3, $4)",
 			questionID, quizID, q.QuestionText, &q.ImageId)
 		if err != nil {
-			return "", fmt.Errorf("failed to insert question: %w", err)
+			return "", "", fmt.Errorf("failed to insert question: %w", err)
 		}
 
 		for _, a := range q.Answer {
@@ -80,17 +149,17 @@ func (r *Repository) CreateQuiz(
 				"INSERT INTO answers (Answer_ID, Question_ID, Answer_text, Is_correct) VALUES ($1, $2, $3, $4)",
 				answerID, questionID, a.AnswerText, a.IsCorrect)
 			if err != nil {
-				return "", fmt.Errorf("failed to insert answer: %w", err)
+				return "", "", fmt.Errorf("failed to insert answer: %w", err)
 			}
 		}
 	}
 
 	err = tx.Commit(ctx)
 	if err != nil {
-		return "", fmt.Errorf("failed to commit transaction: %w", err)
+		return "", "", fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
-	return quizID, nil
+	return quizID, uuID, nil
 }
 
 func (r *Repository) GetQuiz(
@@ -179,7 +248,7 @@ func (r *Repository) GetQuizByAuthor(
 		return nil, fmt.Errorf("failed to get questions: %w", err)
 	}
 	defer rows.Close()
-	var quizzes []*v1.GetQuizResponse
+	var quizzesbyauthor []*v1.GetQuizResponse
 	for rows.Next() {
 		var quiz_ids, name, image_id, description string
 		err = rows.Scan(&quiz_ids, &name, &image_id, &description)
@@ -191,11 +260,12 @@ func (r *Repository) GetQuizByAuthor(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get quiz: %w", err)
 		}
-		quizzes = append(quizzes, quiz)
+		quizzesbyauthor = append(quizzesbyauthor, quiz)
 	}
 	if rows.Err() != nil {
 		return nil, fmt.Errorf("error iterating questions: %w", rows.Err())
 	}
+	author_quizzes := &v1.GetQuizzes{Quizzes: quizzesbyauthor}
 	conn, err := grpc.NewClient("auth_service:50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to auth: %w", err)
@@ -217,8 +287,10 @@ func (r *Repository) GetQuizByAuthor(
 		return nil, status.Error(codes.Unauthenticated, "invalid auth token format")
 	}
 	meta := metadata.Pairs("authorization", "Bearer "+token)
+	fmt.Println("NICETOKEN", token)
 	ctx = metadata.NewOutgoingContext(context.Background(), meta)
 	a := &pb.GetFavoriteQuizzesRequest{}
+	var quizbyfav []*v1.GetQuizResponse
 	response, err := client.GetFavoriteQuizzes(ctx, a)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get quiz: %w", err)
@@ -228,7 +300,11 @@ func (r *Repository) GetQuizByAuthor(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get quiz: %w", err)
 		}
-		quizzes = append(quizzes, quiz)
+		quizbyfav = append(quizbyfav, quiz)
 	}
-	return &v1.GetQuizByAuthorResponse{Quizzes: quizzes}, nil
+	favouritequizzes := &v1.GetQuizzes{Quizzes: quizbyfav}
+	var res []*v1.GetQuizzes
+	res = append(res, author_quizzes)
+	res = append(res, favouritequizzes)
+	return &v1.GetQuizByAuthorResponse{AuthorQuizzes: res}, nil
 }

@@ -138,7 +138,8 @@ import Quiz from './Quiz.vue'
             },
             {
               headers: {
-                'Content-Type': 'application/json', // Важно явно указать!
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'application/json', // Важно явно указать!
               },
             } 
            

@@ -35,7 +35,7 @@ func allowCORS(h http.Handler) http.Handler {
 
 		// Разрешаем необходимые заголовки
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
+		w.Header().Set("Access-Control-Expose-Headers", "Authorization")
 		// Для предварительных OPTIONS-запросов
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
