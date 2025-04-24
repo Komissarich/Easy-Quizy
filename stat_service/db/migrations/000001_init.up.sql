@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS stats.authors (
 );
 
 -- Индексы для ускорения запросов
-CREATE INDEX IF NOT EXISTS idx_quizzes_quiz ON stats.quizzes(quiz_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_quizzes_quiz ON stats.quizzes(quiz_id);
 
 -- Функция и триггеры для обновления временных меток
 CREATE OR REPLACE FUNCTION stats.update_timestamp()
