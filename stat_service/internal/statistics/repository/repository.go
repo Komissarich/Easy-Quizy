@@ -208,10 +208,17 @@ func (r *Repository) GetPlayerStat(ctx context.Context, user_id string) (*api.Pl
 		avg_score    float32
 		num_sessions int32
 	)
+
 	err := r.pg.QueryRow(ctx, player_stat_query, user_id).Scan(&total_score, &best_score, &avg_score, &num_sessions)
 	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, fmt.Errorf("player not found")
+		if err.Error() == "no rows in result set" {
+			return &api.PlayerStat{
+				UserId:      user_id,
+				TotalScore:  0,
+				BestScore:   0,
+				AvgScore:    0,
+				NumSessions: 0,
+			}, nil
 		}
 		return nil, fmt.Errorf("unable to get player statistics: %w", err)
 	}

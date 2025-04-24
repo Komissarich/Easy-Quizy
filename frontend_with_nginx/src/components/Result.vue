@@ -26,7 +26,7 @@
   
       <!-- Блок оценки квиза -->
       <div v-if="errorMessage !== 'false'" class="rating-section">
-        <h3>Оцените этот квиз:</h3>
+        <h3>Оцените этот квиз (ваша статистика также требует оценки):</h3>
         <div class="stars">
             <span 
           v-for="star in 5" 

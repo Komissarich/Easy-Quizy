@@ -196,10 +196,7 @@ import { useRoute } from 'vue-router'
       },
       userQuizzes: [],
       favorites: [],
-      friends: [
-        { id: 2, username: 'Мария Петрова', avatar: null },
-        { id: 3, username: 'Алексей Смирнов', avatar: null }
-      ],
+     
     
         username: localStorage.getItem("username"),
         password: '',
@@ -241,6 +238,10 @@ import { useRoute } from 'vue-router'
     const quiz = ref(null)
     const loading = ref(true)
     const userQuizzes = ref([])
+    const friends = ref([  // Теперь это reactive ref
+      { id: 1, username: '' },
+      { id: 2, username: '' }
+    ]);
     const stats = ref({
       average_author_rating: 0,
       average_success_rate: 0,
@@ -248,23 +249,35 @@ import { useRoute } from 'vue-router'
     })
       onMounted(async () => {
         try {
-        
+      
+          let friend_data = await axios.post(`http://localhost:8085/v1/user/friends`, 
+              {
+                token: localStorage.getItem('token')
+              },
+               {
+                  headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                  },
+                })
+                console.log(friend_data.data) 
+               friends.value = friend_data.data.friends
+                
         
           let data = await axios.get(`http://localhost:8085/v1/quiz/author/${localStorage.getItem('username')}`,  {
                 headers: {
                   'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
               })
-            console.log(data.data)
+           
             userQuizzes.value = data.data.authorQuizzes
 
             let stat_data = await axios.get(`http://localhost:8085/v1/stats/player/${localStorage.getItem('username')}`)  
 
-              console.log(stat.data)
-              stats.value = statsResponse.data
+              console.log("STAT",stat_data.data)
+              stats.value = stat_data.data
 
         } catch (error) {
-          console.error('Ошибка загрузки профиля:', error)
+          console.error('Ошибка загрузки профиля:', error, error.data)
         } finally {
           loading.value = false
         }
@@ -274,7 +287,8 @@ import { useRoute } from 'vue-router'
         userQuizzes,
         quiz,
         loading,
-        stats
+        stats,
+        friends
       }
     }
 }
