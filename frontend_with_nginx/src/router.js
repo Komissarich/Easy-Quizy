@@ -29,7 +29,7 @@ const router = createRouter( {
         {path: '/profile/me', name: 'Profile', component: Profile, meta: {requireAuth: true}},
         {path: '/profile/:username', name: 'OtherProfile', component: OtherProfile, meta: {requireAuth: true}},
         {path: '/quiz/:quiz_id', name: 'ShowQuiz', component: ShowQuiz, meta: {requireAuth: true}},
-        {path: '/quizzes', name: 'ShowQuiz', component: QuizHolder, meta: {requireAuth: false}},
+        {path: '/quizzes', name: 'QuizHolder', component: QuizHolder, meta: {requireAuth: false}},
     ]
 })
 

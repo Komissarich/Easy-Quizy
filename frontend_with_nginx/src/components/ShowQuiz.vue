@@ -44,33 +44,21 @@
               <h3>Статистика квиза</h3>
               <div class="stats-grid">
                 <div class="stat-card">
-                  <div class="stat-value">{{ stats.success_rate || 0 }}%</div>
-                  <div class="stat-label">Успешных прохождений</div>
+                  <div class="stat-value">{{ stats.numSessions || 0 }}%</div>
+                  <div class="stat-label">Количество прохождений</div>
                 </div>
                 <div class="stat-card">
-                  <div class="stat-value">{{ stats.average_score || 0 }}/10</div>
+                  <div class="stat-value">{{ stats.avgRate || 0 }}/5</div>
                   <div class="stat-label">Средняя оценка</div>
                 </div>
                 <div class="stat-card">
-                  <div class="stat-value">{{ quiz.questions_count || 0 }}</div>
+                  <div class="stat-value">{{ quiz.question.length || 0 }}</div>
                   <div class="stat-label">Вопросов</div>
                 </div>
               </div>
             </div>
   
-            <!-- Прогресс-бар для визуализации успешности -->
-            <div class="progress-section">
-              <div class="progress-label">
-                <span>Успешность прохождений:</span>
-                <span>{{ stats.success_rate || 0 }}%</span>
-              </div>
-              <div class="progress-bar">
-                <div 
-                  class="progress-fill"
-                  :style="{ width: `${stats.success_rate || 0}%` }"
-                ></div>
-              </div>
-            </div>
+         
   
             <!-- Описание -->
             <div class="description-section">
@@ -116,6 +104,7 @@
   export default {
     name: 'ShowQuiz',
     setup() {
+        console.log('hello')
       const route = useRoute()
       const router = useRouter()
       const quiz = ref(null)
@@ -130,9 +119,11 @@
      
       // Функция загрузки данных квиза
       const fetchQuizData = async () => {
+       
         try {
           // 1. Загрузка основной информации о квизе
           let data = await axios.get(`http://localhost:8085/v1/quiz/${quiz_id}`)
+          console.log(data.data)
           quiz.value = data.data
           // 3. Проверка, находится ли квиз в избранном
           const favoriteResponse = await axios.get(`http://localhost:8085/v1/users/favorites/quizzes`, {
@@ -199,7 +190,7 @@
   
       // Загружаем данные при монтировании компонента
       onMounted(fetchQuizData)
-  
+      
       return {
         quiz,
         stats,

@@ -107,9 +107,11 @@ import Quiz from './Quiz.vue'
     const username =  localStorage.getItem("username")
     console.log(correctCount.value, totalQuestions.value)
     console.log(parseFloat((3/20) * 100).toFixed(2))
+    console.log("AUTJOR", localStorage.getItem('author_id'))
     let data = await axios.post(`http://localhost:8085/v1/stats/update`, 
             {
               quiz_rate: currentRating.value,
+              author_id:  localStorage.getItem('author_id'),
               quiz_id: router.currentRoute.value.params.quiz_id,
               player_id: username,
               player_score:parseFloat((correctCount.value/totalQuestions.value) * 100)
@@ -122,6 +124,8 @@ import Quiz from './Quiz.vue'
            
              
            )
+
+           localStorage.setItem('author_id', '')
          console.log(data.data)
   }
   

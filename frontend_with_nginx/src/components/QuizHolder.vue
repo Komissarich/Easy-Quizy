@@ -7,7 +7,7 @@
       </div>
   
       <div v-else-if="quizzes.length === 0" class="empty-state">
-        <img src="@/assets/no-quizzes.svg" alt="No quizzes" class="empty-image">
+       
         <p>Пока нет доступных квизов</p>
       </div>
   
@@ -20,17 +20,15 @@
         >
           <div class="quiz-card__image-container">
             <img 
-              :src="quiz.imageId || require('@/assets/quiz-default-bg.jpg')" 
+                :src="`${quiz.imageId}`" 
               class="quiz-card__image"
               alt="Quiz cover"
             />
             <div class="quiz-card__overlay">
               <span class="quiz-card__questions-count">
-                {{ quiz.questionsCount || 0 }} вопросов
+                {{ quiz.question.length || 0 }} вопросов
               </span>
-              <span class="quiz-card__rating">
-                ★ {{ quiz.rating?.toFixed(1) || 'Нет оценок' }}
-              </span>
+             
             </div>
           </div>
           
@@ -104,7 +102,7 @@
         return desc.length > 100 ? desc.substring(0, 100) + '...' : desc;
       },
       startQuiz(quizId) {
-        this.$router.push(`/quiz/${quizId}/play`);
+        this.$router.push(`/play/${quizId}`);
       }
     },
     mounted() {

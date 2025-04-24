@@ -52,6 +52,7 @@ onMounted(async () => {
     let data = await axios.get(`http://localhost:8085/v1/quiz/${quiz_id}`)
    
     quiz.value = data.data
+    localStorage.setItem('author_id', quiz.value.author)
     console.log(quiz.value.question.length)
   } catch (error) {
     console.error('Ошибка загрузки квиза:', error)

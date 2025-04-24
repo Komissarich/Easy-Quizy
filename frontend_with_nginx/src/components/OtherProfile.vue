@@ -7,36 +7,40 @@
           <p class="user-email">{{ profileEmail }}</p>
         </div>
   
-        <!-- Блок статистики автора -->
-        <div class="user-stats">
-          <div class="stat-card">
-            <div class="stat-value">{{ stats.average_author_rating?.toFixed(1) || '0.0' }}</div>
-            <div class="stat-label">Средний рейтинг</div>
-            <div class="rating-stars">
-              <span 
-                v-for="star in 5" 
-                :key="star"
-                :class="{ 'filled': star <= Math.round(stats.average_author_rating / 2) }"
-              >★</span>
-            </div>
-          </div>
-  
-          <div class="stat-card">
-            <div class="stat-value">{{ stats.average_success_rate?.toFixed(1) || '0' }}%</div>
-            <div class="stat-label">Успешность квизов</div>
-            <div class="progress-bar">
-              <div 
-                class="progress-fill"
-                :style="{ width: `${stats.average_success_rate || 0}%` }"
-              ></div>
-            </div>
-          </div>
-  
-          <div class="stat-card">
-            <div class="stat-value">{{(userQuizzes[0]?.quizzes?.length ?? 0) || 0 }}</div>
-            <div class="stat-label">Создано квизов</div>
-          </div>
-        </div>
+        <div class="compact-stats">
+    <!-- Первая строка -->
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-value">{{ player_stats.average_author_rating?.toFixed(1) || '0.0' }}</div>
+        <div class="stat-label">Рейтинг</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">{{ player_stats.average_success_rate?.toFixed(1) || '0' }}%</div>
+        <div class="stat-label">Успешность</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">{{ player_stats.numSessions || 0 }}</div>
+        <div class="stat-label">Пройдено</div>
+      </div>
+    </div>
+    
+    <!-- Вторая строка -->
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-value">{{ author_stats.avgQuizRate?.toFixed(1) || '0.0' }}</div>
+        <div class="stat-label">Автор.рейтинг</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">{{ author_stats.bestQuizRate?.toFixed(1) || '0.0' }}</div>
+        <div class="stat-label">Лучший квиз</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">{{ author_stats.numQuizzes || 0 }}</div>
+        <div class="stat-label">Создано</div>
+      </div>
+    </div>
+  </div>
+
 
 
         
@@ -116,11 +120,17 @@
       const profileEmail = ref('')
       const isFriend = ref(false)
       const userQuizzes = ref([])
-      const stats = ref({
-        average_author_rating: 0,
-        average_success_rate: 0,
-        quizzes_count: 0
-      })
+      const player_stats = ref({
+      average_author_rating: 0,
+      average_success_rate: 0,
+      numSessions: 0,
+      totalScore: 0
+    })
+    const author_stats = ref({
+      avgQuizRate: 0,
+      bestQuizRate: 0,
+      numQuizzes: 0
+    })
 
       const addFriend = async () => {
        
@@ -173,10 +183,19 @@
                 console.log("friends", friend_data.data)
                 isFriend.value = friend_data.data.friends.includes(localStorage.getItem('username'))
                 
-                  let stat_data = await axios.get(`http://localhost:8085/v1/stats/player/${localStorage.getItem('username')}`)  
+                let player_data = await axios.get(`http://localhost:8085/v1/stats/player/${localStorage.getItem('username')}`)  
+
+                console.log("PLAYER STAT",player_data.data)
+                player_stats.value = player_data.data
+
+                let author_data = await axios.get(`http://localhost:8085/v1/stats/author/${localStorage.getItem('username')}`)  
+
+                console.log("AUTHOR STAT",author_data.data)
+                author_stats.value = author_data
+
   
                 console.log(stat.data)
-                stats.value = statsResponse.data
+                stats.value = stat_data.data
   
           } catch (error) {
             console.error('Ошибка загрузки профиля:', error)
@@ -189,7 +208,8 @@
           userQuizzes,
           quiz,
           loading,
-          stats,
+          author_stats,
+          player_stats,
           isFriend,
           profileName,
           profileEmail,
@@ -432,6 +452,87 @@
       height: 2px;
       background-color: #4CAF50;
     }
+
+    .compact-stats {
+  flex-grow: 1;
+  max-width: 500px;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-around;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  min-width: 80px;
+}
+
+.stat-value {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #4a6fa5;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #7f8c8d;
+  white-space: nowrap;
+}
+
+.profile-tabs {
+  display: flex;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 1.5rem;
+}
+
+.profile-tabs button {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.profile-tabs button.active {
+  color: #4a6fa5;
+  font-weight: bold;
+}
+
+.profile-tabs button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #4a6fa5;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .user-profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+  
+  .stats-row {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  
+  .stat-item {
+    min-width: calc(33% - 0.5rem);
+  }
     
     .drafts {
       margin-left: auto;
