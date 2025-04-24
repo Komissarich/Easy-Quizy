@@ -96,16 +96,6 @@ func (s *authService) GetUserByID(ctx context.Context, id string) (*entity.User,
 }
 
 func (s *authService) GetUserByUsername(ctx context.Context, userID string) (*entity.User, error) {
-	username, err := strconv.ParseUint(userID, 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("can't parse id: %w", err)
-	}
-
-	userFromCache, err := s.jwtService.getCachedUser(ctx, username)
-	if err == nil {
-		return userFromCache, nil
-	}
-
 	user, err := s.userRepo.FindByUsername(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("can't find user by id: %w", err)

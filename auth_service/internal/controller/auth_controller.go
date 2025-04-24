@@ -140,10 +140,6 @@ func (c *AuthController) GetUser(ctx context.Context, req *v1.GetUserRequest) (*
 
 	c.l.Info("User found successfully", zap.Uint64("user_id", user.ID))
 
-	if err := c.jwtService.CacheUser(ctx, user); err != nil {
-		c.l.Error("Failed to cache user", zap.Error(err))
-	}
-
 	return convertUserToProto(user), nil
 }
 

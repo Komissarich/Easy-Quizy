@@ -37,7 +37,7 @@
               <h3 class="quiz-card__title">{{ quiz.name }}</h3>
               <div class="quiz-card__author">
                 <router-link 
-                  :to="`/profile/${quiz.author}`" 
+                  :to="quiz.author === currentuser ? '/profile/me' : '/profile/' + quiz.author"
                   class="author-link"
                   @click.stop
                 >
@@ -83,12 +83,14 @@
     data() {
       return {
         loading: true,
-        quizzes: []
+        quizzes: [],
+        currentuser: ""
       }
     },
     methods: {
       async fetchQuizzes() {
         try {
+            this.currentuser = localStorage.getItem('username')
           const response = await axios.get('http://localhost:8085/v1/quiz/orderby');
           this.quizzes = response.data.quizzes || [];
         } catch (error) {

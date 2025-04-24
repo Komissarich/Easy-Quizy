@@ -121,7 +121,7 @@
         </div>
         <div class="quiz-info">
           <h3 class="quiz-title">{{ quiz.name }}</h3>
-          <p class="quiz-description">{{ quiz.description || 'Описание отсутствует' }}</p>
+          
         </div>
         </div>
         </div>
@@ -139,7 +139,7 @@
             <div v-for="friend in friends" :key="friend.id" class="friend-card">
               
               <span class="friend-name">{{ friend.username }}</span>
-              <button class="remove-friend-btn" @click="removeFriend(friend.id)">
+              <button class="remove-friend-btn" @click="removeFriend(friend.username)">
                 ×
               </button>
             </div>
@@ -151,32 +151,7 @@
       </div>
     </div>
 
-    <!-- Модальное окно добавления друга -->
-    <div v-if="showAddFriendModal" class="modal-overlay" @click.self="showAddFriendModal = false">
-      <div class="modal-content">
-        <h2>Добавить друга</h2>
-        <input 
-          v-model="friendSearchQuery"
-          type="text" 
-          placeholder="Введите имя пользователя"
-          @input="searchFriends"
-        />
-        
-        <div v-if="searchResults.length > 0" class="search-results">
-          <div 
-            v-for="user in searchResults" 
-            :key="user.id"
-            class="user-result"
-            @click="addFriend(user)"
-          >
-            <img :src="user.avatar || defaultAvatar" class="user-avatar" />
-            <span>{{ user.username }}</span>
-          </div>
-        </div>
-        
-        <button class="close-btn" @click="showAddFriendModal = false">Закрыть</button>
-      </div>
-    </div>
+   
   </div>
 </template>
 <script>
@@ -210,31 +185,25 @@ import { useRoute } from 'vue-router'
     }
   },
   methods: {
-    editProfile() {
-        // Логика для редактирования профиля
-        console.log('Редактирование профиля')
-    },
-    searchFriends() {
-      // Здесь будет логика поиска друзей
-      if (this.friendSearchQuery.length > 2) {
-        this.searchResults = [
-          { id: 4, username: 'Новый друг', avatar: null }
-        ];
-      } else {
-        this.searchResults = [];
-      }
-      
-  },
-  addFriend(user) {
-      if (!this.friends.some(f => f.id === user.id)) {
-        this.friends.push(user);
-      }
-      this.showAddFriendModal = false;
-      this.friendSearchQuery = '';
-      this.searchResults = [];
-    },
-    removeFriend(friendId) {
+
+   
+  
+  
+    async removeFriend(friendusername) {
+      console.log("REMOVING ", friendusername)
       this.friends = this.friends.filter(f => f.id !== friendId);
+
+      let friend_data = await axios.post(`http://localhost:8085/v1/users/friends/remove`, 
+      {
+        token: localStorage.getItem('token'),
+        friend_id: friendusername
+      },
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+        })
+        console.log(friend_data)
     }
   },
   setup() {
