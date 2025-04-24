@@ -129,11 +129,7 @@
         
         <!-- Друзья -->
         <div v-if="activeTab === 'friends'" class="friends-section">
-          <div class="friends-header">
-            <button class="add-friend-btn" @click="showAddFriendModal = true">
-              + Добавить друга
-            </button>
-          </div>
+         
           
           <div v-if="friends.length > 0" class="friends-list">
             <div v-for="friend in friends" :key="friend.id" class="friend-card">

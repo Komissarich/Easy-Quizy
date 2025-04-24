@@ -32,8 +32,7 @@ services:
 
   stat_service: 
     container_name: stat_service
-    ports:
-      - "50051:50051"
+    
     environment:
       GRPC_PORT: 50051
     expose:
@@ -80,8 +79,7 @@ services:
     build:
       context: ./auth_service
       dockerfile: Dockerfile
-    ports:
-      - "50052:50052"
+    
     networks:
       - app_network
     depends_on:
@@ -127,8 +125,7 @@ services:
 
   quiz_service:
     build: ./quiz_service
-    ports:
-      - "50053:50053"
+    
     environment:
       GRPC_PORT: 50053
     expose:
