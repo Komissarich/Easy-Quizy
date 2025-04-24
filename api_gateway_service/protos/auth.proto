@@ -22,7 +22,7 @@ service AuthService {
       body: "*"
     };
   }
-  
+
   rpc Logout (LogoutRequest) returns (LogoutResponse) {
     option(google.api.http) = {
       post: "/v1/users/logout"
@@ -79,12 +79,7 @@ service AuthService {
   }
 
   // Quizzez
-  rpc AddFavoriteQuiz (AddFavoriteQuizRequest) returns (FavoriteQuizResponse) {
-    option(google.api.http) = {
-      post: "/v1/users/favorites/quizzes/add"
-      body: "*"
-    };
-  }
+  rpc AddFavoriteQuiz (AddFavoriteQuizRequest) returns (FavoriteQuizResponse) {}
 
   rpc GetFavoriteQuizzes (GetFavoriteQuizzesRequest) returns (FavoriteQuizzesResponse) {
     option(google.api.http) = {
