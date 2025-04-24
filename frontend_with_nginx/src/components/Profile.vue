@@ -139,7 +139,7 @@
             <div v-for="friend in friends" :key="friend.id" class="friend-card">
               
               <span class="friend-name">{{ friend.username }}</span>
-              <button class="remove-friend-btn" @click="removeFriend(friend.username)">
+              <button class="remove-friend-btn" @click="removeFriend(friend)">
                 ×
               </button>
             </div>
@@ -189,14 +189,14 @@ import { useRoute } from 'vue-router'
    
   
   
-    async removeFriend(friendusername) {
-      console.log("REMOVING ", friendusername)
-      this.friends = this.friends.filter(f => f.id !== friendId);
+    async removeFriend(friend) {
+      console.log("REMOVING ", friend.username)
+      this.friends = this.friends.filter(f => f.id !== friend.id);
 
       let friend_data = await axios.post(`http://localhost:8085/v1/users/friends/remove`, 
       {
         token: localStorage.getItem('token'),
-        friend_id: friendusername
+        friend_id: friend.username
       },
         {
           headers: {

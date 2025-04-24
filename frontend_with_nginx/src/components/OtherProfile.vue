@@ -50,7 +50,7 @@
                 @click="addFriend"
                 :class="['add-friend-btn', { 'active': isFriend }]"
               >
-                {{ isFavorite ? 'Уже друзья' : 'Добавить в друзья' }}
+                {{ isFriend ? 'Уже друзья' : 'Добавить в друзья' }}
               </button>
           </div>
       </div>
@@ -133,7 +133,7 @@
     })
 
       const addFriend = async () => {
-       
+      
         if (!isFriend.value){
            
             let friend_data = await axios.post(`http://localhost:8085/v1/users/friends/add`, 
@@ -147,8 +147,10 @@
                   },
                 })
                 console.log(friend_data)
-                isFriend = !isFriend
+                
         }
+      
+        
       }
   
         onMounted(async () => {
@@ -162,15 +164,15 @@
             
             profileName.value = user_data.data.username
             profileEmail.value = user_data.data.email
-            console.log(user_data.data)
+            
             let data = await axios.get(`http://localhost:8085/v1/quiz/author/${route.params.username}`,  {
                   headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                   },
                 })
-              console.log(data.data)
+           
               userQuizzes.value = data.data.authorQuizzes
-              console.log(userQuizzes.value[0].length)
+             
               let friend_data = await axios.post(`http://localhost:8085/v1/user/friends`, 
               {
                 token: localStorage.getItem('token')
@@ -180,8 +182,8 @@
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                   },
                 })
-                console.log("friends", friend_data.data)
-                isFriend.value = friend_data.data.friends.includes(localStorage.getItem('username'))
+              
+                isFriend.value = friend_data.data.friends.map(f => f.username).includes(route.params.username)
                 
                 let player_data = await axios.get(`http://localhost:8085/v1/stats/player/${localStorage.getItem('username')}`)  
 
@@ -194,8 +196,8 @@
                 author_stats.value = author_data
 
   
-                console.log(stat.data)
-                stats.value = stat_data.data
+               
+                stats.value =  author_stats.data
   
           } catch (error) {
             console.error('Ошибка загрузки профиля:', error)

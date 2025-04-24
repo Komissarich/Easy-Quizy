@@ -42,8 +42,7 @@ func (s *friendService) AddFriend(ctx context.Context, userID uint64, friendID s
 	}
 
 	alreadyFriends := s.friendRepo.CheckFriendship(ctx, userID, userFriend.ID)
-	if !alreadyFriends {
-		s.l.Error("Failed to add friend", zap.Error(errors.New("users are already friends")))
+	if alreadyFriends {
 		return errors.New("users are already friends")
 	}
 

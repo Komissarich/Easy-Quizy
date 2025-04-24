@@ -58,7 +58,12 @@ func (r *FriendRepository) GetFriendIDs(ctx context.Context, userID uint64) ([]s
 }
 
 func (r *FriendRepository) CheckFriendship(ctx context.Context, userID uint64, friendID uint64) bool {
-	query := `SELECT COUNT(*) FROM friends WHERE user_id = $1 AND friend_id = $2`
+	query := `
+        SELECT COUNT(*) 
+        FROM friends 
+        WHERE (user_id = $1 AND friend_id = $2)
+           OR (user_id = $2 AND friend_id = $1)
+    `
 
 	var count int
 
