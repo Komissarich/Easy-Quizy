@@ -17,7 +17,8 @@ build:
   image: docker:latest
   stage: build
   services:
-    - docker:dind
+    - name: harbor.example.com/dockerhub-proxy-cache/library/docker:24.0.7-dind
+      alias: docker
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
@@ -25,3 +26,4 @@ build:
     - docker buildx create --use
   script:
     - docker buildx build --platform linux/amd64 -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
+
