@@ -27,6 +27,7 @@ func TestUpdateStats(t *testing.T) {
 
 	t.Run("successful update", func(t *testing.T) {
 		quizID := "quiz1"
+		authorID := "author1"
 		players := map[string]float32{"player1": 0.8, "player2": 0.9}
 		rate := float32(4.5)
 
@@ -48,7 +49,7 @@ func TestUpdateStats(t *testing.T) {
 			WithArgs(players["player2"], "player2").
 			WillReturnResult(pgxmock.NewResult("UPDATE", 1))
 
-		err := repo.UpdateStats(ctx, quizID, players, rate)
+		err := repo.UpdateStats(ctx, quizID, authorID, players, rate)
 		assert.NoError(t, err)
 	})
 
@@ -56,7 +57,7 @@ func TestUpdateStats(t *testing.T) {
 		mock.ExpectExec("UPDATE stats.quizzes").
 			WillReturnError(errors.New("update failed"))
 
-		err := repo.UpdateStats(ctx, "quiz1", map[string]float32{}, 0)
+		err := repo.UpdateStats(ctx, "quiz1", "author1", map[string]float32{}, 0)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "unable to update quiz statistics")
 	})

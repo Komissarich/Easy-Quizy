@@ -8,40 +8,48 @@ lint:
   image: golangci/golangci-lint:latest
   allow_failure: true
   script:
-    - cd api_gateway_service | golangci-lint run
+    - cd api_gateway_service 
+    - golangci-lint run
     - cd ..
-    - cd auth_Service | golangci-lint run
+    - cd auth_service
+    - golangci-lint run
     - cd ..
-    - cd quiz_service | golangci-lint run
+    - cd quiz_service
+    - golangci-lint run
     - cd ..
-    - cd stat_service | golangci-lint run
+    - cd stat_service
+    - golangci-lint run
     - cd ..
 
 build:
   image: golang:1.24.2-alpine3.21
   stage: build
   script:
-    - cd api_gateway_service | go build -o api_gateway_service cmd/main.go
+    - cd auth_Service
+    - go build -o auth_Service cmd/main.go
     - cd ..
-    - cd auth_Service | go build -o auth_Service cmd/main.go
+    - cd quiz_service
+    - go build -o quiz_service cmd/quiz/main.go
     - cd ..
-    - cd quiz_service | go build -o quiz_service cmd/quiz/main.go
-    - cd ..
-    - cd stat_service | go build -o stat_service cmd/app/main.go
+    - cd stat_service
+    - go build -o stat_service cmd/app/main.go
     - cd ..
      
   
 test:
   image: golang:1.24.2-alpine3.21
   stage: test
-  stage: build
   script:
-    - cd api_gateway_service | go test ./... -coverprofile=coverage.out
+    - cd auth_service
+    - go test ./... -coverprofile=cover
+    - go tool cover -func cover | grep total
     - cd ..
-    - cd auth_service | go test ./... -coverprofile=coverage.out
+    - cd quiz_service
+    - go test ./... -coverprofile=cover
+    - go tool cover -func cover | grep total
     - cd ..
-    - cd quiz_service | go test ./... -coverprofile=coverage.out
-    - cd ..
-    - cd stat_service | go test ./... -coverprofile=coverage.out
+    - cd stat_service
+    - go test ./... -coverprofile=cover
+    - go tool cover -func cover | grep total
     - cd ..
 

@@ -8,7 +8,7 @@ import (
 	"quiz_app/pkg/logger"
 	"quiz_app/pkg/postgres"
 
-	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )
@@ -39,7 +39,8 @@ func (r *Repository) UpdateStats(
 	ctx context.Context,
 	quiz_id string,
 	author_id string,
-	players_score map[string]float32,
+	player_id string,
+	player_score float32,
 	quiz_rate float32,
 ) error {
 	quiz_upd_query := `
@@ -107,12 +108,12 @@ func (r *Repository) UpdateStats(
 	if err != nil {
 		return fmt.Errorf("unable to update author statistics: %w", err)
 	}
-	for user_id, score := range players_score {
-		_, err = r.pg.Exec(ctx, player_upd_query, score, user_id)
-		if err != nil {
-			return fmt.Errorf("unable to update player statistics: %w", err)
-		}
+
+	_, err = r.pg.Exec(ctx, player_upd_query, player_score, player_id)
+	if err != nil {
+		return fmt.Errorf("unable to update player statistics: %w", err)
 	}
+
 	return nil
 }
 
@@ -133,7 +134,15 @@ func (r *Repository) GetQuizStat(ctx context.Context, quiz_id string) (*api.Quiz
 	err := r.pg.QueryRow(ctx, quiz_stat_query, quiz_id).Scan(&author_id, &num_sessions, &avg_rate)
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, fmt.Errorf("quiz not found")
+			if err.Error() == "no rows in result set" {
+				return &api.PlayerStat{
+					UserId:      user_id,
+					TotalScore:  0,
+					BestScore:   0,
+					AvgScore:    0,
+					NumSessions: 0,
+				}, nil
+			}
 		}
 		return nil, fmt.Errorf("unable to get quiz statistics: %w", err)
 	}

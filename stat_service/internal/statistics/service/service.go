@@ -8,7 +8,7 @@ import (
 )
 
 type Repository interface {
-	UpdateStats(context.Context, string, string, map[string]float32, float32) error
+	UpdateStats(context.Context, string, string, string, float32, float32) error
 
 	GetQuizStat(context.Context, string) (*api.QuizStat, error)
 	ListQuizzes(context.Context, api.ListQuizzesOption) ([]*api.QuizStat, error)
@@ -30,8 +30,8 @@ func New(ctx context.Context, repo Repository) *Service {
 }
 
 func (s *Service) UpdateStats(ctx context.Context, r *api.UpdateStatsRequest) (*api.UpdateStatsResponse, error) {
-	quiz_id, author_id, players_score, quiz_rate := r.GetQuizId(), r.GetAuthorId(), r.GetPlayersScore(), r.GetQuizRate()
-	err := s.repo.UpdateStats(ctx, quiz_id, author_id, players_score, quiz_rate)
+	quiz_id, author_id, player_id, player_score, quiz_rate := r.GetQuizId(), r.GetAuthorId(), r.GetPlayerId(), r.GetPlayerScore(), r.GetQuizRate()
+	err := s.repo.UpdateStats(ctx, quiz_id, author_id, player_id, player_score, quiz_rate)
 	if err != nil {
 		logger.GetLoggerFromCtx(ctx).Error(ctx, err.Error())
 		return nil, err
