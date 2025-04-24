@@ -26,7 +26,7 @@
   
       <!-- Блок оценки квиза -->
       <div v-if="errorMessage !== 'false'" class="rating-section">
-        <h3>Оцените этот квиз (ваша статистика также требует оценки):</h3>
+        <h3>Оцените этот квиз (ваша статистика отправится с оценкой):</h3>
         <div class="stars">
             <span 
           v-for="star in 5" 
@@ -111,9 +111,8 @@ import Quiz from './Quiz.vue'
             {
               quiz_rate: currentRating.value,
               quiz_id: router.currentRoute.value.params.quiz_id,
-              players_score: {
-                [username]: parseFloat((correctCount.value/totalQuestions.value) * 100)
-              },
+              player_id: username,
+              player_score:parseFloat((correctCount.value/totalQuestions.value) * 100)
             },
             {
               headers: {

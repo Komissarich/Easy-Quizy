@@ -135,7 +135,7 @@ func (r *Repository) GetQuizStat(ctx context.Context, quiz_id string) (*api.Quiz
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			if err.Error() == "no rows in result set" {
-				return &api.PlayerStat{
+				return &api.QuizStat{
 					UserId:      user_id,
 					TotalScore:  0,
 					BestScore:   0,
