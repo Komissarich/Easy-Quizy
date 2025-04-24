@@ -179,7 +179,7 @@ func (r *Repository) GetQuizByAuthor(
 		return nil, fmt.Errorf("failed to get questions: %w", err)
 	}
 	defer rows.Close()
-	var quizzes []*v1.GetQuizResponse
+	var quizzesbyauthor []*v1.GetQuizResponse
 	for rows.Next() {
 		var quiz_ids, name, image_id, description string
 		err = rows.Scan(&quiz_ids, &name, &image_id, &description)
@@ -191,11 +191,12 @@ func (r *Repository) GetQuizByAuthor(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get quiz: %w", err)
 		}
-		quizzes = append(quizzes, quiz)
+		quizzesbyauthor = append(quizzesbyauthor, quiz)
 	}
 	if rows.Err() != nil {
 		return nil, fmt.Errorf("error iterating questions: %w", rows.Err())
 	}
+	author_quizzes := &v1.GetQuizzes{Quizzes: quizzesbyauthor}
 	conn, err := grpc.NewClient("auth_service:50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to auth: %w", err)
@@ -219,6 +220,7 @@ func (r *Repository) GetQuizByAuthor(
 	meta := metadata.Pairs("authorization", "Bearer "+token)
 	ctx = metadata.NewOutgoingContext(context.Background(), meta)
 	a := &pb.GetFavoriteQuizzesRequest{}
+	var quizbyfav []*v1.GetQuizResponse
 	response, err := client.GetFavoriteQuizzes(ctx, a)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get quiz: %w", err)
@@ -228,7 +230,11 @@ func (r *Repository) GetQuizByAuthor(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get quiz: %w", err)
 		}
-		quizzes = append(quizzes, quiz)
+		quizbyfav = append(quizbyfav, quiz)
 	}
-	return &v1.GetQuizByAuthorResponse{Quizzes: quizzes}, nil
+	favouritequizzes := &v1.GetQuizzes{Quizzes: quizbyfav}
+	var res []*v1.GetQuizzes
+	res = append(res, author_quizzes)
+	res = append(res, favouritequizzes)
+	return &v1.GetQuizByAuthorResponse{AuthorQuizzes: res}, nil
 }
