@@ -8,7 +8,6 @@ import (
 	"eazy-quizy-auth/pkg/logger"
 	"eazy-quizy-auth/pkg/redis"
 	"eazy-quizy-auth/pkg/utils"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -59,15 +58,6 @@ func (s *JWTService) ValidateToken(ctx context.Context, authHeader string) (*ent
 		return nil, fmt.Errorf("invalid auth header: %w", err)
 	}
 
-	isInvalid, err := s.isTokenInvalid(ctx, tokenString)
-	if err != nil {
-		s.l.Error("Failed to check token validity", zap.Error(err))
-		return nil, fmt.Errorf("token validation failed: %w", err)
-	}
-	if isInvalid {
-		return nil, ErrInvalidToken
-	}
-
 	claims, err := utils.ParseJWT(tokenString, s.Jwt.Secret)
 	if err != nil {
 		s.l.Error("Failed to parse token",
@@ -89,11 +79,6 @@ func (s *JWTService) ValidateToken(ctx context.Context, authHeader string) (*ent
 		return nil, fmt.Errorf("invalid user data")
 	}
 
-	err = s.CacheUser(ctx, user)
-	if err != nil {
-		s.l.Warn("Failed to cache user", zap.Error(err))
-	}
-
 	return user, nil
 }
 
@@ -106,41 +91,4 @@ func (s *JWTService) InvalidateToken(ctx context.Context, token string) error {
 	remainingTTL := time.Until(claims.ExpiresAt.Time)
 
 	return s.redis.Set(ctx, "jwt_blacklist:"+token, "1", remainingTTL)
-}
-
-func (s *JWTService) IsTokenValid(ctx context.Context, token string) (bool, error) {
-	_, err := s.redis.Get(ctx, "jwt_blacklist:"+token)
-	if err == nil {
-		return false, nil
-	}
-
-	_, err = utils.ParseJWT(token, s.Jwt.Secret)
-
-	return err == nil, nil
-}
-
-func (s *JWTService) isTokenInvalid(ctx context.Context, token string) (bool, error) {
-	exists, err := s.redis.Exists(ctx, "jwt_blacklist:"+token)
-
-	return exists == 1, fmt.Errorf("failed to check token validity: %w", err)
-}
-
-func (s *JWTService) CacheUser(ctx context.Context, user *entity.User) error {
-	userJSON, err := json.Marshal(user)
-	if err != nil {
-		return fmt.Errorf("failed to marshal user: %w", err)
-	}
-
-	return s.redis.Set(ctx, fmt.Sprintf("user:%s", user.Username), userJSON, s.Jwt.TTL)
-}
-
-func (s *JWTService) getCachedUser(ctx context.Context, userID uint64) (*entity.User, error) {
-	var user entity.User
-
-	err := s.redis.GetStruct(ctx, fmt.Sprintf("user:%d", userID), &user)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get cached user: %w", err)
-	}
-
-	return &user, nil
 }
