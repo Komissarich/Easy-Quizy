@@ -22,10 +22,9 @@ func NewRepository(ctx context.Context, config *config.Config) (*Repository, err
 	if err != nil {
 		logger.GetLoggerFromCtx(ctx).Error(ctx, fmt.Sprint("failed to create repository", zap.Error(err)))
 		return nil, err
-	} else {
-		logger.GetLoggerFromCtx(ctx).Info(ctx, "connected to postgres")
-		logger.GetLoggerFromCtx(ctx).Info(ctx, fmt.Sprint("pinging postgres: ", pg.Ping(ctx)))
 	}
+	logger.GetLoggerFromCtx(ctx).Info(ctx, "connected to postgres")
+	logger.GetLoggerFromCtx(ctx).Info(ctx, fmt.Sprint("pinging postgres: ", pg.Ping(ctx)))
 
 	return &Repository{
 		pg: pg,
@@ -39,54 +38,72 @@ func (r *Repository) CloseConn() {
 func (r *Repository) UpdateStats(
 	ctx context.Context,
 	quiz_id string,
+	author_id string,
 	players_score map[string]float32,
 	quiz_rate float32,
 ) error {
 	quiz_upd_query := `
-	UPDATE stats.quizzes q
+	INSERT INTO stats.quizzes (quiz_id, author_id, avg_rate, num_sessions, updated_at)
+	VALUES (
+    	$2, 
+		$3,
+   		$1,  
+    	1,   
+    	CURRENT_TIMESTAMP
+	)
+	ON CONFLICT (quiz_id) DO UPDATE
 	SET
-		q.avg_rate = (q.avg_rate * q.num_sessions + $1) / (q.num_sessions + 1),
-		q.num_sessions = q.num_sessions + 1,
-		q.updated_at = CURRENT_TIMESTAMP,
-	WHERE
-		q.quiz_id = $2;
+    	avg_rate = (stats.quizzes.avg_rate * stats.quizzes.num_sessions + $1) / (stats.quizzes.num_sessions + 1),
+    	num_sessions = stats.quizzes.num_sessions + 1,
+    	updated_at = CURRENT_TIMESTAMP
 	`
 	author_upd_query := `
-	UPDATE stats.authors a
+	WITH author_stats AS (
+		SELECT
+	    	COUNT(DISTINCT quiz_id) AS num_quizzes,
+	    	AVG(avg_rate) AS avg_rate,
+	    	MAX(avg_rate) AS best_rate
+		FROM stats.quizzes
+		WHERE author_id = $1
+		)
+	INSERT INTO stats.authors (user_id, num_quizzes, avg_quiz_rate, best_quiz_rate, updated_at)
+	VALUES (
+		$1,
+		COALESCE((SELECT num_quizzes FROM author_stats), 0),
+		COALESCE((SELECT avg_rate FROM author_stats), 0),
+		COALESCE((SELECT best_rate FROM author_stats), 0),
+		CURRENT_TIMESTAMP
+	)
+	ON CONFLICT (user_id) DO UPDATE
 	SET
-		a.num_quizzes = (
-			SELECT COUNT(DISTINCT q.quiz_id)
-			FROM stats.quizzes q
-			WHERE q.quiz_id = $1
-		),
-		a.avg_quiz_rate = (
-			SELECT AVG(q.avg_rate)
-			FROM stats.quizzes q
-			WHERE q.quiz_id = $1
-		),
-		a.best_quiz_rate = (
-			SELECT MAX(q.avg_rate)
-			FROM stats.quizzes q
-			WHERE q.quiz_id = $1
-		),
-		a.updated_at = CURRENT_TIMESTAMP
-	WHERE a.user_id = (SELECT q.author_id FROM stats.quizzes q WHERE q.quiz_id = $1);
+		num_quizzes = EXCLUDED.num_quizzes,
+		avg_quiz_rate = EXCLUDED.avg_quiz_rate,
+		best_quiz_rate = EXCLUDED.best_quiz_rate,
+		updated_at = EXCLUDED.updated_at;
 	`
 	player_upd_query := `
-	UPDATE stats.players p
+	INSERT INTO stats.players (user_id, total_score, best_score, avg_score, num_sessions, updated_at)
+	VALUES (
+    	$2,
+    	$1,  
+    	$1,  
+    	$1,  
+    	1,   
+    	CURRENT_TIMESTAMP
+	)
+	ON CONFLICT (user_id) DO UPDATE
 	SET
-		p.total_score = p.total_score + $1,
-		p.best_score = MAX(p.best_score, $1),
-		p.avg_score = (p.avg_score * p.num_sessions + $1) / (p.num_sessions + 1),
-		p.num_sessions = p.num_sessions + 1
-		p.updated_at = CURRENT_TIMESTAMP
-	WHERE p.user_id = $2;
+    	total_score = stats.players.total_score + $1,
+    	best_score = GREATEST(stats.players.best_score, $1),
+    	avg_score = (stats.players.avg_score * stats.players.num_sessions + $1) / (stats.players.num_sessions + 1),
+    	num_sessions = stats.players.num_sessions + 1,
+    	updated_at = CURRENT_TIMESTAMP;
 	`
-	_, err := r.pg.Exec(ctx, quiz_upd_query, quiz_rate, quiz_id)
+	_, err := r.pg.Exec(ctx, quiz_upd_query, quiz_rate, quiz_id, author_id)
 	if err != nil {
 		return fmt.Errorf("unable to update quiz statistics: %w", err)
 	}
-	_, err = r.pg.Exec(ctx, author_upd_query, quiz_id)
+	_, err = r.pg.Exec(ctx, author_upd_query, author_id)
 	if err != nil {
 		return fmt.Errorf("unable to update author statistics: %w", err)
 	}
@@ -102,11 +119,11 @@ func (r *Repository) UpdateStats(
 func (r *Repository) GetQuizStat(ctx context.Context, quiz_id string) (*api.QuizStat, error) {
 	quiz_stat_query := `
 	SELECT 
-		q.author_id, 
-		q.num_sessions, 
-		q.avg_rate
-	FROM stats.quizzes q 
-	WHERE q.quiz_id = $1;
+		stats.quizzes.author_id, 
+		stats.quizzes.num_sessions, 
+		stats.quizzes.avg_rate
+	FROM stats.quizzes
+	WHERE stats.quizzes.quiz_id = $1;
 	`
 	var (
 		author_id    string
@@ -140,12 +157,12 @@ func (r *Repository) ListQuizzes(ctx context.Context, option api.ListQuizzesOpti
 	}
 	list_query := fmt.Sprintf(`
 	SELECT 
-		q.quiz_id,
-		q.author_id,
-		q.num_sessions,
-		q.avg_rate
-	FROM statc.quizzes q
-	ORDER BY q.%s
+		stats.quizzes.quiz_id,
+		stats.quizzes.author_id,
+		stats.quizzes.num_sessions,
+		stats.quizzes.avg_rate
+	FROM stats.quizzes
+	ORDER BY stats.quizzes.%s;
 	`, order)
 	rows, err := r.pg.Query(ctx, list_query)
 	if err != nil {
@@ -178,12 +195,12 @@ func (r *Repository) ListQuizzes(ctx context.Context, option api.ListQuizzesOpti
 func (r *Repository) GetPlayerStat(ctx context.Context, user_id string) (*api.PlayerStat, error) {
 	player_stat_query := `
 	SELECT 
-		p.total_score,
-		p.best_score,
-		p.avg_score,
-		p.num_sessions
-	FROM stats.players p 
-	WHERE p.user_id = $1;
+		stats.players.total_score,
+		stats.players.best_score,
+		stats.players.avg_score,
+		stats.players.num_sessions
+	FROM stats.players
+	WHERE stats.players.user_id = $1;
 	`
 	var (
 		total_score  float32
@@ -221,13 +238,13 @@ func (r *Repository) ListPlayers(ctx context.Context, option api.ListPlayersOpti
 	}
 	list_query := fmt.Sprintf(`
 	SELECT 
-		p.user_id
-		p.total_score,
-		p.best_score,
-		p.avg_score,
-		p.num_sessions
-	FROM stats.players p
-	ORDER BY p.%s
+		stats.players.user_id,
+		stats.players.total_score,
+		stats.players.best_score,
+		stats.players.avg_score,
+		stats.players.num_sessions
+	FROM stats.players
+	ORDER BY stats.players.%s;
 	`, order)
 	rows, err := r.pg.Query(ctx, list_query)
 	if err != nil {
@@ -262,11 +279,11 @@ func (r *Repository) ListPlayers(ctx context.Context, option api.ListPlayersOpti
 func (r *Repository) GetAuthorStat(ctx context.Context, user_id string) (*api.AuthorStat, error) {
 	author_stat_query := `
 	SELECT 
-		a.num_quizzes,
-    	a.avg_quiz_rate,
-		a.best_quiz_rate,
-	FROM stats.authors a 
-	WHERE a.user_id = $1;
+		stats.authors.num_quizzes,
+    	stats.authors.avg_quiz_rate,
+		stats.authors.best_quiz_rate
+	FROM stats.authors
+	WHERE stats.authors.user_id = $1;
 	`
 	var (
 		num_quizzes    int32
@@ -302,12 +319,12 @@ func (r *Repository) ListAuthors(ctx context.Context, option api.ListAuthorsOpti
 	}
 	list_query := fmt.Sprintf(`
 	SELECT 
-		a.user_id,
-		a.num_quizzes,
-    	a.avg_quiz_rate,
-		a.best_quiz_rate,
-	FROM stats.authors a
-	ORDER BY a.%s
+		stats.authors.user_id,
+		stats.authors.num_quizzes,
+    	stats.authors.avg_quiz_rate,
+		stats.authors.best_quiz_rate
+	FROM stats.authors
+	ORDER BY stats.authors.%s;
 	`, order)
 	rows, err := r.pg.Query(ctx, list_query)
 	if err != nil {
