@@ -2,14 +2,12 @@ CREATE SCHEMA IF NOT EXISTS stats;
 
 -- Статистика по квизам (QuizStat)
 CREATE TABLE IF NOT EXISTS stats.quizzes (
-    quiz_id VARCHAR(255) NOT NULL,
+    quiz_id VARCHAR(255) PRIMARY KEY,
     author_id VARCHAR(255) NOT NULL,
     num_sessions INTEGER NOT NULL DEFAULT 0,
     avg_rate FLOAT NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    
-    PRIMARY KEY (quiz_id, author_id)
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Статистика игроков (PlayerStat)
@@ -34,7 +32,6 @@ CREATE TABLE IF NOT EXISTS stats.authors (
 );
 
 -- Индексы для ускорения запросов
-CREATE INDEX IF NOT EXISTS idx_quizzes_author ON stats.quizzes(author_id);
 CREATE INDEX IF NOT EXISTS idx_quizzes_quiz ON stats.quizzes(quiz_id);
 
 -- Функция и триггеры для обновления временных меток
