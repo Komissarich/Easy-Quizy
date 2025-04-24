@@ -1,0 +1,21 @@
+stages:
+  - build
+  # - lint
+
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_IPTABLES_LEGACY: 1
+
+# lint:
+#   stage: lint
+#   image: golangci/golangci-lint:latest
+#   allow_failure: true
+#   script:
+#     - golangci-lint run ./stat_service ./quiz_service ./auth_service ./api_gateway_service
+
+build:
+  # Use the official docker image.
+  image: golang:1.24.2-alpine3.21
+  stage: build
+  script:
+    - go build -o /stat_service ./stat_service/cmd/app/main.go 
