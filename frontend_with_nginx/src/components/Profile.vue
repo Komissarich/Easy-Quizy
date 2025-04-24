@@ -10,17 +10,18 @@
       <div class="compact-stats">
     <!-- Первая строка -->
     <div class="stats-row">
+     
       <div class="stat-item">
-        <div class="stat-value">{{ player_stats.average_author_rating?.toFixed(1) || '0.0' }}</div>
-        <div class="stat-label">Рейтинг</div>
+        <div class="stat-value">{{ player_stats.avgScore?.toFixed(1) || '0.0' }}</div>
+        <div class="stat-label">Средний результат</div>
       </div>
       <div class="stat-item">
-        <div class="stat-value">{{ player_stats.average_success_rate?.toFixed(1) || '0' }}%</div>
-        <div class="stat-label">Успешность</div>
+        <div class="stat-value">{{ player_stats.bestScore?.toFixed(1) || '0' }}</div>
+        <div class="stat-label">Лучший результат</div>
       </div>
       <div class="stat-item">
         <div class="stat-value">{{ player_stats.numSessions || 0 }}</div>
-        <div class="stat-label">Пройдено</div>
+        <div class="stat-label">Пройдено квизов</div>
       </div>
     </div>
     
@@ -28,7 +29,7 @@
     <div class="stats-row">
       <div class="stat-item">
         <div class="stat-value">{{ author_stats.avgQuizRate?.toFixed(1) || '0.0' }}</div>
-        <div class="stat-label">Автор.рейтинг</div>
+        <div class="stat-label">Авторский рейтинг</div>
       </div>
       <div class="stat-item">
         <div class="stat-value">{{ author_stats.bestQuizRate?.toFixed(1) || '0.0' }}</div>
@@ -36,7 +37,7 @@
       </div>
       <div class="stat-item">
         <div class="stat-value">{{ author_stats.numQuizzes || 0 }}</div>
-        <div class="stat-label">Создано</div>
+        <div class="stat-label">Создано квизов</div>
       </div>
     </div>
   </div>
@@ -213,10 +214,9 @@ import { useRoute } from 'vue-router'
       { id: 2, username: '' }
     ]);
     const player_stats = ref({
-      average_author_rating: 0,
-      average_success_rate: 0,
-      numSessions: 0,
-      totalScore: 0
+      bestScore: 0,
+      avgScore: 0,
+      numSessions: 0
     })
     const author_stats = ref({
       avgQuizRate: 0,
@@ -250,12 +250,12 @@ import { useRoute } from 'vue-router'
             let player_data = await axios.get(`http://localhost:8085/v1/stats/player/${localStorage.getItem('username')}`)  
 
             console.log("PLAYER STAT",player_data.data)
-            player_stats.value = player_data.data
+            player_stats.value = player_data.data.player
 
             let author_data = await axios.get(`http://localhost:8085/v1/stats/author/${localStorage.getItem('username')}`)  
 
           console.log("AUTHOR STAT",author_data.data)
-          author_stats.value = author_data
+          author_stats.value = author_data.data.author
 
         } catch (error) {
           console.error('Ошибка загрузки профиля:', error, error.data)

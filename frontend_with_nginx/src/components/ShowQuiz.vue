@@ -44,11 +44,11 @@
               <h3>Статистика квиза</h3>
               <div class="stats-grid">
                 <div class="stat-card">
-                  <div class="stat-value">{{ stats.numSessions || 0 }}%</div>
+                  <div class="stat-value">{{ stats.numSessions || 0 }}</div>
                   <div class="stat-label">Количество прохождений</div>
                 </div>
                 <div class="stat-card">
-                  <div class="stat-value">{{ stats.avgRate || 0 }}/5</div>
+                  <div class="stat-value">{{ stats.avgRate || 0 }}</div>
                   <div class="stat-label">Средняя оценка</div>
                 </div>
                 <div class="stat-card">
@@ -109,8 +109,8 @@
       const router = useRouter()
       const quiz = ref(null)
       const stats = ref({
-        success_rate: 0,
-        average_score: 0
+        numSessions: 0,
+        avgRate: 0
       })
       const loading = ref(true)
       const currentuser = ref('')
@@ -138,7 +138,7 @@
              // 2. Загрузка статистики
             const statsResponse = await axios.get(`http://localhost:8085/v1/stats/quiz/${quiz_id}`)
           console.log(statsResponse.data)
-          stats.value = statsResponse.data
+          stats.value = statsResponse.data.quiz
         } catch (error) {
           console.error('Ошибка загрузки данных:', error)
         } finally {
