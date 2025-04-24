@@ -11,8 +11,8 @@
   
       <div class="question-content">
         <textarea 
-          :value="modelValue.text"
-          @input="updateQuestion('text', $event.target.value)"
+          :value="modelValue.question_text"
+          @input="updateQuestion('question_text', $event.target.value)"
           placeholder="Введите текст вопроса" 
           class="question-textarea"
         ></textarea>
@@ -20,7 +20,7 @@
   
       <div class="answers-list">
         <div 
-          v-for="(answer, index) in modelValue.answers" 
+          v-for="(answer, index) in modelValue.answer" 
           :key="index" 
           class="answer-item"
         >
@@ -28,15 +28,15 @@
             <span class="answer-number">Ответ №{{ index + 1 }}</span>
             <input
               type="text"
-              :value="answer.text"
-              @input="updateAnswer(index, 'text', $event.target.value)"
+              :value="answer.answer_text"
+              @input="updateAnswer(index, 'answer_text', $event.target.value)"
               placeholder="Введите текст ответа"
               class="answer-input"
             >
             <input
               type="checkbox"
-              :checked="answer.isCorrect"
-              @change="updateAnswer(index, 'isCorrect', $event.target.checked)"
+              :checked="answer.is_correct"
+              @change="updateAnswer(index, 'is_correct', $event.target.checked)"
               class="result-input"
             >
             <label class="right-option">
@@ -75,13 +75,13 @@
   
   // Обновление ответов
   const updateAnswer = (answerIndex, field, value) => {
-    const updatedAnswers = [...props.modelValue.answers]
+    const updatedAnswers = [...props.modelValue.answer]
     
-    if (field === 'isCorrect' && value === true) {
+    if (field === 'is_correct' && value === true) {
     // Сбрасываем все другие чекбоксы
     updatedAnswers.forEach((answer, idx) => {
       if (idx !== answerIndex) {
-        answer.isCorrect = false
+        answer.is_correct = false
       }
     })
   }
@@ -94,32 +94,32 @@
     
     emit('update:modelValue', {
       ...props.modelValue,
-      answers: updatedAnswers
+      answer: updatedAnswers
     })
   }
   
   // Добавление нового ответа
   const addAnswer = () => {
     const updatedAnswers = [
-      ...props.modelValue.answers,
-      { text: '', isCorrect: false }
+      ...props.modelValue.answer,
+      { answer_text: '', is_correct: false }
     ]
     
     emit('update:modelValue', {
       ...props.modelValue,
-      answers: updatedAnswers
+      answer: updatedAnswers
     })
   }
   
   // Удаление ответа
   const removeAnswer = (index) => {
-    if (props.modelValue.answers.length > 2) {
-      const updatedAnswers = [...props.modelValue.answers]
+    if (props.modelValue.answer.length > 2) {
+      const updatedAnswers = [...props.modelValue.answer]
       updatedAnswers.splice(index, 1)
       
       emit('update:modelValue', {
         ...props.modelValue,
-        answers: updatedAnswers
+        answer: updatedAnswers
       })
     } else {
       alert('Должен быть хотя бы 2 ответа')

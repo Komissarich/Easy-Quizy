@@ -13,7 +13,7 @@
         :question="currentQuestion"
         :question-index="currentQuestionIndex"
         :question-number="currentQuestionIndex + 1"
-        :total-questions="quiz.questions.length"
+        :total-questions="quiz.question.length"
         :selected-answer="selectedAnswer"
         @answer-selected="selectAnswer"
       />
@@ -49,16 +49,16 @@ onMounted(async () => {
   try {
 
      
-    let response = await axios.get("http://localhost:8080/get_quiz", {params: {quiz_id:route.params.quiz_id}})
-    
-    console.log(route.params.quiz_id)
-    quiz.value = response.data
+    let data = await axios.get(`http://localhost:8085/v1/quiz/${localStorage.getItem('quizId')}`)
+   
+    quiz.value = data.data
+    console.log(quiz.value.question.length)
   } catch (error) {
     console.error('Ошибка загрузки квиза:', error)
   } finally {
     loading.value = false
   }
-})
+})  
 
 const props = defineProps({
   quizId: String
@@ -67,23 +67,26 @@ const props = defineProps({
 
 
 const currentQuestion = computed(() => {
-  return quiz.value.questions?.[currentQuestionIndex.value]
+  return quiz.value.question?.[currentQuestionIndex.value]
 })
 
 const isLastQuestion = computed(() => {
-  return currentQuestionIndex.value === quiz.value.questions?.length - 1
+  return currentQuestionIndex.value === quiz.value.question?.length - 1
 })
 
 const selectAnswer = (index) => {
+ 
   selectedAnswer.value = index
 }
 
 const nextQuestion = () => {
-  userAnswers.value.push({question: quiz.value.questions?.[currentQuestionIndex.value], user_answer: selectedAnswer.value})
+  userAnswers.value.push({question: quiz.value.question?.[currentQuestionIndex.value], user_answer: selectedAnswer.value})
   if (isLastQuestion.value) {
+    localStorage.setItem('quizId', '')
+    localStorage.setItem('isPlay', 'false')
     sessionStorage.setItem('quizResults', JSON.stringify({
     userAnswers: userAnswers.value,
-    totalQuestions: quiz.value.questions.length
+    totalQuestions: quiz.value.question.length
   }))
   
   router.push({

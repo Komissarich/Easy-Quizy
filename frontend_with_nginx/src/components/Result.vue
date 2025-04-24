@@ -11,7 +11,7 @@
         <div v-for="(result, index) in results" :key="index" class="result-item">
           <div class="question">
             <span class="question-number">Вопрос {{ index + 1 }}:</span>
-            {{ result.question.text }}
+            {{ result.question.questionText }}
           </div>
           <div class="user-answer" :class="{'correct': result.isCorrect, 'incorrect': !result.isCorrect}">
             Ваш ответ: {{ getUserAnswerText(result) }}
@@ -101,20 +101,60 @@ import Quiz from './Quiz.vue'
   if (ratingSubmitted.value === false) {
     currentRating.value = rating
     ratingSubmitted.value = true
-    
-    await axios.post("http://localhost:8080/rate_quiz", JSON.stringify({quiz_id: router.currentRoute.value.params.quiz_id, rating: currentRating.value}))
+    // string quiz_id = 1;
+    // map<string, float> players_score = 2;
+    // float quiz_rate = 3; post: "/v1/stats/update"
+    const username =  localStorage.getItem("username")
+    console.log(correctCount.value, totalQuestions.value)
+    console.log(parseFloat((3/20) * 100).toFixed(2))
+    let data = await axios.post(`http://localhost:8085/v1/stats/update`, 
+            {
+              quiz_rate: currentRating.value,
+              quiz_id: router.currentRoute.value.params.quiz_id,
+              players_score: {
+                [username]: parseFloat((correctCount.value/totalQuestions.value) * 100)
+              },
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              },
+            } 
+           
+             
+           )
+         console.log(data.data)
   }
   
 
 }
   const addFavorite = async () => {
     addedFavorite.value = true
-    await axios.post("http://localhost:8080/rate_quiz", JSON.stringify({user_id: localStorage.getItem("username"), quiz_id: router.currentRoute.value.params.quiz_id}))
+    try {
+       let data = await axios.post(`http://localhost:8085/v1/users/favorites/quizzes/add`, 
+            {
+              token: localStorage.getItem('token'),
+              quiz_id: router.currentRoute.value.params.quiz_id
+            },
+            {
+              headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'application/json', // Важно явно указать!
+              },
+            } 
+           
+             
+           )
+         console.log(data.data)
+     } catch (error) {
+       console.error('Ошибка добавления в избранное:', error)
+     }
+  // await axios.post("http://localhost:8080/rate_quiz", JSON.stringify({user_id: localStorage.getItem("username"), quiz_id: router.currentRoute.value.params.quiz_id}))
   }
   const processResults = async () => {
     errorMessage.value = ""
     results.value = userAnswers.value.map(answer => {
-      const isCorrect = answer.question.answers[answer.user_answer].isCorrect
+      const isCorrect = answer.question.answer[answer.user_answer].isCorrect
       if (isCorrect) correctCount.value++
         return {
             question: answer.question,
@@ -127,18 +167,18 @@ import Quiz from './Quiz.vue'
         errorMessage.value = "Войдите в аккаунт для сбора статистики и оценки квиза!"
     }
 
-    await axios.post("http://localhost:8080/player_stat", JSON.stringify({user_id: localStorage.getItem("username"), correctAnswer: correctCount.value, totalquestion: totalQuestions.value}))
+    //await axios.post("http://localhost:8080/player_stat", JSON.stringify({user_id: localStorage.getItem("username"), correctAnswer: correctCount.value, totalquestion: totalQuestions.value}))
    
     
   }
   
   const getUserAnswerText = (result) => {
-    return result.question.answers[result.user_answer].text
+    return result.question.answer[result.user_answer].answerText
   }
   
   const getCorrectAnswerText = (question) => {
-    const correctAnswer = question.answers.find(a => a.isCorrect)
-    return correctAnswer.text
+    const correctAnswer = question.answer.find(a => a.isCorrect)
+    return correctAnswer.answerText
   }
   
   const returnToQuizzes = () => {

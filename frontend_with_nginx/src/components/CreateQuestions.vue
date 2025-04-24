@@ -37,10 +37,11 @@ const testCover = ref(route.query.cover)
   const questions = ref([
   {
     id: 1,
-    text: '',
-    answers: [
-      { text: '', isCorrect: false },
-      { text: '', isCorrect: false }
+    question_text: '',
+    image_id: "",
+    answer: [
+      { answer_text: '', is_correct: false },
+      { answer_text: '', is_correct: false }
     ]
   }
 ])
@@ -48,34 +49,26 @@ const testCover = ref(route.query.cover)
 const addQuestion = () => {
   questions.value.push({ 
     id: nextId++,
-    text: '',
-    answers: [
-      { text: '', isCorrect: false },
-      { text: '', isCorrect: false }
+    question_text: '',
+    image_id: "",
+    answer: [
+      { answer_text: '', is_correct: false },
+      { answer_text: '', is_correct: false }
     ]
   });
 };
 
   const SendQuiz = async () =>{
-  
-  
-
-  // Преобразуем в JSON
-  // const jsonData = JSON.stringify(quizData, null, 2)
-  
-  // // Выводим результат (можно заменить на отправку на сервер)
-  // console.log(jsonData)
 
   try {
-    const id = Date.now().toString().slice(-5);
-   // const username = localStorage.getItem("username")
-    console.log(id)
+    console.log(questions.value)
     const data = await axios.post(
+      
       'http://localhost:8085/v1/quiz',
         {
           name: testTitle.value,
           author: localStorage.getItem("username"),
-          image_id: "",
+          image_id: testCover.value,
           description: testDescription.value,
           question: questions.value
         },
@@ -89,9 +82,9 @@ const addQuestion = () => {
       console.log("Succesfully created quiz")
       } catch (error) {
         console.log(error.status, error)
-        if (error.status == 400) {
-          this.errorMessage = 'Проверьте почту и пароль; пароль не менее 8 символов'
-        }
+        // if (error.status == 400) {
+        //   this.errorMessage = 'Проверьте почту и пароль; пароль не менее 8 символов'
+        // }
       }
   };
   

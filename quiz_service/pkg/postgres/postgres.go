@@ -64,7 +64,8 @@ func InitTables(ctx context.Context, pool *pgxpool.Pool) error {
     Name VARCHAR(255) NOT NULL ,
     Author VARCHAR(255) NOT NULL,
     Image_ID VARCHAR(255),
-    Description VARCHAR(255)
+    Description VARCHAR(255),
+	UUID VARCHAR(255) UNIQUE
 );`
 	conn.Exec(ctx, query)
 	query = `CREATE TABLE IF NOT EXISTS questions(

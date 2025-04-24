@@ -20,7 +20,7 @@ service QuizService{
   }
   rpc GetQuizByAuthor (GetQuizByAuthorRequest) returns (GetQuizByAuthorResponse){
     option(google.api.http) = {
-      get: "v1/quiz/author/{author}"
+      get: "/v1/quiz/author/{author}"
     };
   }
 }
@@ -57,6 +57,9 @@ message GetQuizResponse{
 message GetQuizByAuthorRequest{
   string author = 1;
 }
-message GetQuizByAuthorResponse{
+message GetQuizzes{
   repeated GetQuizResponse quizzes = 1;
+}
+message GetQuizByAuthorResponse{
+  repeated GetQuizzes author_quizzes = 1;
 }
