@@ -96,12 +96,12 @@ graph LR
 **User**
 ```protobuf
 message User {
-    string id = 1;
-    string username = 2;
-    string email = 3;
-    string hash_pass =4
-    google.protobuf.Timestamp created_at = 5;
-    google.protobuf.Timestamp updated_at = 6;
+    string id = 1;  // ID пользователя
+    string username = 2; // Псевдоним 
+    string email = 3; // Адрес электронной почты
+    string hash_pass =4 // Хеш пароля
+    google.protobuf.Timestamp created_at = 5; // Время создания
+    google.protobuf.Timestamp updated_at = 6; // Время редактирования
 }
 ```
 
@@ -111,27 +111,27 @@ message User {
 
 #### Методы
 
-- **CreateQuiz**: Creation of new quiz
+- **CreateQuiz**: Создание новой викторины
 
-- **GetQuiz**: Get quiz by ID
+- **GetQuiz**: Получение викторины по её ID
 
-- **GetQuizByAuthor**: List of all authors' quizzes 
+- **GetQuizByAuthor**: Список всех викторин автора
 
 #### Data Models 
 
 **Question**
 ```protobuf
 message Question {
-    string question_text = 1; // Question text
-    optional string image_id = 2; // Image
-    repeated Answer answers = 3;  // Answers options
+    string question_text = 1; // Текст вопроса
+    optional string image_id = 2; // Изображения (опционально)
+    repeated Answer answers = 3;  // Варианты ответов
 }
 ```
 **Answer**
 ```protobuf
 message Answer {
-    string answer_text = 1; // Text of answer
-    bool is_correct = 2;    // Is this answer correct
+    string answer_text = 1; // Текст ответа
+    bool is_correct = 2;    // Является ли ответ правильным
 }
 ```
 **Hint**: every quiz must contain at least 1 question, every question must contain at least 2 answers and only one of them is correct.
@@ -142,17 +142,17 @@ message Answer {
 Read more on [Statistics service](stat_service/README.md)
 
 #### Methods
-- **UpdateStats**: Updates statistics for a quiz session
+- **UpdateStats**: Обновляет статистику для сессии викторины
   
-- **GetQuizStats**: Retrieves statistics for a specific quiz
+- **GetQuizStats**: Получает статистику для конкретной викторины
   
-- **ListQuizzes**: Lists quizzes sorted by a specified option
+- **ListQuizzes**: Выводит список викторин, отсортированных по заданному параметру
   
-- **GetPlayerStat**: Retrieves statistics for a specific player
+- **GetPlayerStat**: Получает статистику для конкретного игрока
    
-- **GetAuthorStat**: Retrieves statistics for a specific author
+- **GetAuthorStat**: Получает статистику для конкретного автора
 
-- **ListAuthors**: Lists authors sorted by a specified option
+- **ListAuthors**: Выводит список авторов, отсортированных по заданному параметру
   
 ## Deployment
 
