@@ -36,7 +36,7 @@
         <div class="stat-label">Лучший квиз</div>
       </div>
       <div class="stat-item">
-        <div class="stat-value">{{ author_stats.numQuizzes || 0 }}</div>
+        <div class="stat-value">{{ (userQuizzes[0]?.quizzes?.length ?? 0) || 0}}</div>
         <div class="stat-label">Создано квизов</div>
       </div>
     </div>

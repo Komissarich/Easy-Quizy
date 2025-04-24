@@ -105,9 +105,7 @@ import Quiz from './Quiz.vue'
     // map<string, float> players_score = 2;
     // float quiz_rate = 3; post: "/v1/stats/update"
     const username =  localStorage.getItem("username")
-    console.log(correctCount.value, totalQuestions.value)
-    console.log(parseFloat((3/20) * 100).toFixed(2))
-    console.log("AUTJOR", localStorage.getItem('author_id'))
+  
     let data = await axios.post(`http://localhost:8085/v1/stats/update`, 
             {
               quiz_rate: currentRating.value,
