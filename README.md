@@ -96,12 +96,12 @@ graph LR
 **User**
 ```protobuf
 message User {
-    string id = 1;  // ID пользователя
-    string username = 2; // Псевдоним 
-    string email = 3; // Адрес электронной почты
-    string hash_pass =4 // Хеш пароля
-    google.protobuf.Timestamp created_at = 5; // Время создания
-    google.protobuf.Timestamp updated_at = 6; // Время редактирования
+    string id = 1;
+    string username = 2;
+    string email = 3;
+    string hash_pass =4
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
 }
 ```
 
@@ -111,72 +111,56 @@ message User {
 
 #### Методы
 
-- **CreateQuiz**: Создание новой викторины
+- **CreateQuiz**: Создание нового квиза
 
-- **GetQuiz**: Получение викторины по её ID
+- **GetQuiz**: Получение квиза по id
 
-- **GetQuizByAuthor**: Список всех викторин автора
+- **GetQuizByAuthor**: Список авторских квизов
 
-#### Data Models 
-
-**Question**
-```protobuf
-message Question {
-    string question_text = 1; // Текст вопроса
-    optional string image_id = 2; // Изображения (опционально)
-    repeated Answer answers = 3;  // Варианты ответов
-}
-```
-**Answer**
-```protobuf
-message Answer {
-    string answer_text = 1; // Текст ответа
-    bool is_correct = 2;    // Является ли ответ правильным
-}
-```
-**Hint**: every quiz must contain at least 1 question, every question must contain at least 2 answers and only one of them is correct.
+- **GetQuizzes**: Список всех квизов 
 
 
-### [Statistics service]("https://gitlab.crja72.ru/golang/2025/spring/course/projects/go14/easy-quizy/-/blob/main/stat_service/README.md")
 
-Read more on [Statistics service](stat_service/README.md)
+### [Сервис статистики]("https://gitlab.crja72.ru/golang/2025/spring/course/projects/go14/easy-quizy/-/blob/main/stat_service/README.md")
+
+Подробности в [Сервисе статистики](stat_service/README.md)
 
 #### Methods
-- **UpdateStats**: Обновляет статистику для сессии викторины
+- **UpdateStats**: Обновляет статистику
   
-- **GetQuizStats**: Получает статистику для конкретной викторины
+- **GetQuizStats**: Отправляет статистику квиза
   
-- **ListQuizzes**: Выводит список викторин, отсортированных по заданному параметру
+- **ListQuizzes**: Список квизов отсортированный
   
-- **GetPlayerStat**: Получает статистику для конкретного игрока
+- **GetPlayerStat**: Отправляет статистику игрока
    
-- **GetAuthorStat**: Получает статистику для конкретного автора
+- **GetAuthorStat**: Отправляет статистику автора
 
-- **ListAuthors**: Выводит список авторов, отсортированных по заданному параметру
+- **ListAuthors**:Список авторов отсортированный
   
-## Deployment
+## Развертывание
 
-### Prerequisits
+### Требования
 - Docker 20.10+
 - PostgreSQL 15+
 - 4GB+ свободной памяти
 - 2+ ядра CPU
 
-### Steps
+### Шаги
 
 1. Клонирование репозитория:
 ```bash
 git clone https://gitlab.crja72.ru/golang/2025/spring/course/projects/go14/easy-quizy.git
 cd easy-quizy
 ```
-2. Настройка переменных окружения.
+2. Настройка переменных окружения. Смотрите папку config
 
 3. Запуск сервисов:
 ```bash
 docker-compose up -d
 ```
 
-## Development Setup
+## Настройка-для-разработки
 
 1. Установка зависимостей:
 
@@ -196,7 +180,7 @@ make run
 
 Для auth-сервиса данная команда собирает сервис прогоняет миграции, а также поднимает сервис в докере.
 
-## Testing
+## Тестирование
 
 ### Виды тестов:
 
