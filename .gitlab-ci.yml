@@ -11,7 +11,7 @@ lint:
     - cd api_gateway_service 
     - golangci-lint run
     - cd ..
-    - cd auth_Service
+    - cd auth_service
     - golangci-lint run
     - cd ..
     - cd quiz_service
@@ -42,19 +42,17 @@ build:
 test:
   image: golang:1.24.2-alpine3.21
   stage: test
-  stage: build
   script:
-    - cd api_gateway_service 
+    - cd auth_service
     - go test ./... -coverprofile=cover
     - go tool cover -func cover | grep total
     - cd ..
-    - cd auth_service
-    - go test ./... -coverprofile=cover | grep total
-    - cd ..
     - cd quiz_service
-    - go test ./... -coverprofile=cover | grep total
+    - go test ./... -coverprofile=cover
+    - go tool cover -func cover | grep total
     - cd ..
     - cd stat_service
-    - go test ./... -coverprofile=cover | grep total
+    - go test ./... -coverprofile=cover
+    - go tool cover -func cover | grep total
     - cd ..
 
