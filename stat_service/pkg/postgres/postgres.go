@@ -20,6 +20,9 @@ type Config struct {
 
 	MinConns int32 `yaml:"POSTGRES_MIN_CONN" env:"POSTGRES_MIN_CONN" env-default:"1"`
 	MaxConns int32 `yaml:"POSTGRES_MAX_CONN" env:"POSTGRES_MAX_CONN" env-default:"10"`
+
+	MaxRetries int `yaml:"POSTGRES_MAX_RETRIES" env:"POSTGRES_MAX_RETRIES" env-default:"5"`
+	BaseDelay  int `yaml:"POSTGRES_BASE_DELAY" env:"POSTGRES_BASE_DELAY" env-default:"5"`
 }
 
 func New(ctx context.Context, config Config) (*pgxpool.Pool, error) {

@@ -47,11 +47,11 @@ func TestProccessWithDLQ(t *testing.T) {
 		if msg == "msg2" {
 			return errors.New("processing failed")
 		}
-		fmt.Printf("Processed: %s\n", msg)
+		// fmt.Printf("Processed: %s\n", msg)
 		return nil
 	}, dlq)
 
-	fmt.Println(dlq.GetMessages())
+	// fmt.Println(dlq.GetMessages())
 	if len(dlq.GetMessages()) != 1 {
 		t.Errorf("dead letter queue test failed")
 	}

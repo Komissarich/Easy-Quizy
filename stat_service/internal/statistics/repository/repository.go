@@ -8,6 +8,7 @@ import (
 	"quiz_app/pkg/logger"
 	"quiz_app/pkg/postgres"
 
+	"github.com/jackc/pgx"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )
@@ -20,6 +21,7 @@ func NewRepository(ctx context.Context, config *config.Config) (*Repository, err
 	pg, err := postgres.New(ctx, config.Postgres)
 	if err != nil {
 		logger.GetLoggerFromCtx(ctx).Error(ctx, fmt.Sprint("failed to create repository", zap.Error(err)))
+		return nil, err
 	} else {
 		logger.GetLoggerFromCtx(ctx).Info(ctx, "connected to postgres")
 		logger.GetLoggerFromCtx(ctx).Info(ctx, fmt.Sprint("pinging postgres: ", pg.Ping(ctx)))
@@ -113,6 +115,9 @@ func (r *Repository) GetQuizStat(ctx context.Context, quiz_id string) (*api.Quiz
 	)
 	err := r.pg.QueryRow(ctx, quiz_stat_query, quiz_id).Scan(&author_id, &num_sessions, &avg_rate)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, fmt.Errorf("quiz not found")
+		}
 		return nil, fmt.Errorf("unable to get quiz statistics: %w", err)
 	}
 	return &api.QuizStat{
@@ -125,11 +130,12 @@ func (r *Repository) GetQuizStat(ctx context.Context, quiz_id string) (*api.Quiz
 
 func (r *Repository) ListQuizzes(ctx context.Context, option api.ListQuizzesOption) ([]*api.QuizStat, error) {
 	var order string
-	if option == api.ListQuizzesOption_AVG_RATE {
+	switch option {
+	case api.ListQuizzesOption_AVG_RATE:
 		order = "avg_rate"
-	} else if option == api.ListQuizzesOption_NUM_SESSIONS {
+	case api.ListQuizzesOption_NUM_SESSIONS:
 		order = "num_sessions"
-	} else {
+	default:
 		return nil, fmt.Errorf("no such option: %d", option)
 	}
 	list_query := fmt.Sprintf(`
@@ -187,6 +193,9 @@ func (r *Repository) GetPlayerStat(ctx context.Context, user_id string) (*api.Pl
 	)
 	err := r.pg.QueryRow(ctx, player_stat_query, user_id).Scan(&total_score, &best_score, &avg_score, &num_sessions)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, fmt.Errorf("player not found")
+		}
 		return nil, fmt.Errorf("unable to get player statistics: %w", err)
 	}
 	return &api.PlayerStat{
@@ -200,13 +209,14 @@ func (r *Repository) GetPlayerStat(ctx context.Context, user_id string) (*api.Pl
 
 func (r *Repository) ListPlayers(ctx context.Context, option api.ListPlayersOption) ([]*api.PlayerStat, error) {
 	var order string
-	if option == api.ListPlayersOption_TOTAL_SCORE {
+	switch option {
+	case api.ListPlayersOption_TOTAL_SCORE:
 		order = "total_score"
-	} else if option == api.ListPlayersOption_BEST_SCORE {
+	case api.ListPlayersOption_BEST_SCORE:
 		order = "best_score"
-	} else if option == api.ListPlayersOption_AVG_SCORE {
+	case api.ListPlayersOption_AVG_SCORE:
 		order = "avg_score"
-	} else {
+	default:
 		return nil, fmt.Errorf("no such option: %d", option)
 	}
 	list_query := fmt.Sprintf(`
@@ -265,6 +275,9 @@ func (r *Repository) GetAuthorStat(ctx context.Context, user_id string) (*api.Au
 	)
 	err := r.pg.QueryRow(ctx, author_stat_query, user_id).Scan(&num_quizzes, &avg_quiz_rate, &best_quiz_rate)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, fmt.Errorf("author not found")
+		}
 		return nil, fmt.Errorf("unable to get author statistics: %w", err)
 	}
 	return &api.AuthorStat{
@@ -277,13 +290,14 @@ func (r *Repository) GetAuthorStat(ctx context.Context, user_id string) (*api.Au
 
 func (r *Repository) ListAuthors(ctx context.Context, option api.ListAuthorsOption) ([]*api.AuthorStat, error) {
 	var order string
-	if option == api.ListAuthorsOption_NUM_QUIZZES {
+	switch option {
+	case api.ListAuthorsOption_NUM_QUIZZES:
 		order = "num_quizzes"
-	} else if option == api.ListAuthorsOption_AVG_QUIZ_RATE {
+	case api.ListAuthorsOption_AVG_QUIZ_RATE:
 		order = "avg_quiz_rate"
-	} else if option == api.ListAuthorsOption_BEST_QUIZ_RATE {
+	case api.ListAuthorsOption_BEST_QUIZ_RATE:
 		order = "best_quiz_rate"
-	} else {
+	default:
 		return nil, fmt.Errorf("no such option: %d", option)
 	}
 	list_query := fmt.Sprintf(`

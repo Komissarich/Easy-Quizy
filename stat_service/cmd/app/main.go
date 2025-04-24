@@ -11,6 +11,7 @@ import (
 	"quiz_app/internal/statistics/repository"
 	"quiz_app/internal/statistics/service"
 	api "quiz_app/pkg/api/v1"
+	"quiz_app/pkg/faults"
 	"quiz_app/pkg/logger"
 
 	"go.uber.org/zap"
@@ -40,20 +41,27 @@ func main() {
 	// Config
 	cfg, err = config.New()
 	if err != nil {
-		log.Fatal(ctx, fmt.Sprintf("failed to load config", zap.Error(err)))
+		log.Fatal(ctx, fmt.Sprintf("failed to load config: %v", zap.Error(err)))
 
 	}
 	log.Info(ctx, "config loaded")
 
 	// TCP Connection
-	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", cfg.Host, cfg.GRPCPort))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPCPort))
 	if err != nil {
 		log.Fatal(ctx, fmt.Sprintf("failed to listen: %v", zap.Error(err)))
 	}
-	log.Info(ctx, fmt.Sprintf("listening gRPC on localhost:%d", cfg.GRPCPort))
+	log.Info(ctx, fmt.Sprintf("listening gRPC on port %d", cfg.GRPCPort))
 
 	// Repository
-	repo, err := repository.NewRepository(ctx, cfg)
+	var repo *repository.Repository
+
+	err = faults.Retry(
+		func() error {
+			repo, err = repository.NewRepository(ctx, cfg)
+			return err
+		}, cfg.Postgres.MaxRetries, cfg.Postgres.BaseDelay)
+
 	if err != nil {
 		log.Fatal(ctx, fmt.Sprintf("failed to connect to database: %v", zap.Error(err)))
 	}
