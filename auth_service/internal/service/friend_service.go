@@ -6,6 +6,7 @@ import (
 	"eazy-quizy-auth/internal/repository"
 	"eazy-quizy-auth/pkg/logger"
 	"errors"
+	"fmt"
 	"strconv"
 
 	"go.uber.org/zap"
@@ -35,28 +36,18 @@ func NewFriendService(friendRepo repository.FriendRepository, userRepo repositor
 }
 
 func (s *friendService) AddFriend(ctx context.Context, userID uint64, friendID string) error {
-	id, err := strconv.ParseUint(friendID, 10, 64)
-	if err != nil {
-		return errors.New("invalid friend id")
-	}
-
-	_, err = s.userRepo.FindByID(ctx, id)
+	userFriend, err := s.userRepo.FindByUsername(ctx, friendID)
 	if err != nil {
 		return errors.New("friend user not found")
 	}
 
-	alreadyFriends, err := s.friendRepo.CheckFriendship(ctx, userID, friendID)
-	if err != nil {
-		s.l.Error("Failed to check friendship", zap.Error(err))
-		return errors.New("failed to check friendship")
-	}
-
-	if alreadyFriends {
+	alreadyFriends := s.friendRepo.CheckFriendship(ctx, userID, userFriend.ID)
+	if !alreadyFriends {
+		s.l.Error("Failed to add friend", zap.Error(errors.New("users are already friends")))
 		return errors.New("users are already friends")
 	}
-	friendIDUint, _ := strconv.Atoi(friendID)
 
-	err = s.friendRepo.AddFriend(ctx, userID, uint64(friendIDUint))
+	err = s.friendRepo.AddFriend(ctx, userID, userFriend.ID)
 	if err != nil {
 		s.l.Error("Failed to add friend", zap.Error(err))
 		return errors.New("failed to add friend")
@@ -66,17 +57,22 @@ func (s *friendService) AddFriend(ctx context.Context, userID uint64, friendID s
 }
 
 func (s *friendService) RemoveFriend(ctx context.Context, userID uint64, friendID string) error {
-	areFriends, err := s.friendRepo.CheckFriendship(ctx, userID, friendID)
+	userFriend, err := s.userRepo.FindByUsername(ctx, friendID)
 	if err != nil {
-		s.l.Error("Failed to check friendship", zap.Error(err))
-		return errors.New("failed to check friendship")
+		return errors.New("friend user not found")
+	}
+
+	areFriends := s.friendRepo.CheckFriendship(ctx, userID, userFriend.ID)
+	if !areFriends {
+		s.l.Error("Failed to remove friend", zap.Error(errors.New("users are not friends")))
+		return errors.New("users are not friends")
 	}
 
 	if !areFriends {
 		return errors.New("users are not friends")
 	}
 
-	err = s.friendRepo.RemoveFriend(ctx, userID, friendID)
+	err = s.friendRepo.RemoveFriend(ctx, userID, userFriend.ID)
 	if err != nil {
 		s.l.Error("Failed to remove friend", zap.Error(err))
 		return errors.New("failed to remove friend")
@@ -109,5 +105,14 @@ func (s *friendService) GetFriends(ctx context.Context, userID uint64) ([]*entit
 }
 
 func (s *friendService) CheckFriendship(ctx context.Context, userID uint64, friendID string) (bool, error) {
-	return s.friendRepo.CheckFriendship(ctx, userID, friendID)
+	userFriend, err := s.userRepo.FindByUsername(ctx, friendID)
+	if err != nil {
+		return false, fmt.Errorf("failed to check friendship: %v", err)
+	}
+
+	if ok := s.friendRepo.CheckFriendship(ctx, userID, userFriend.ID); !ok {
+		return false, fmt.Errorf("failed to check friendship: %v", ok)
+	}
+
+	return true, nil
 }

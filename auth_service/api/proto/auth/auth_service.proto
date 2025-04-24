@@ -4,100 +4,38 @@ package auth;
 
 option go_package = ".;auth";
 
-import "api/google/api/annotations.proto";
+
 import "google/protobuf/timestamp.proto";
 
 service AuthService {
   // Auth
-  rpc Register (RegisterRequest) returns (RegisterResponse) {
-    option(google.api.http) = {
-      post: "/v1/users/register"
-      body: "*"
-    };
-  }
+  rpc Register (RegisterRequest) returns (RegisterResponse) {}
 
-  rpc Login (LoginRequest) returns (LoginResponse) {
-    option(google.api.http) = {
-      post: "/v1/users/login"
-      body: "*"
-    };
-  }
-  
-  rpc Logout (LogoutRequest) returns (LogoutResponse) {
-    option(google.api.http) = {
-      post: "/v1/users/logout"
-      body: "*"
-    };
-  }
-  rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse) {
-    option(google.api.http) = {
-      post: "/v1/users/validate"
-      body: "*"
-    };
-  }
+  rpc Login (LoginRequest) returns (LoginResponse) {}
+
+  rpc Logout (LogoutRequest) returns (LogoutResponse) {}
+  rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse) {}
   
   // Users
-  rpc GetMe (GetMeRequest) returns (UserResponse) {
-    option(google.api.http) = {
-      get: "/v1/users/me"
-    };
-  }
+  rpc GetMe (GetMeRequest) returns (UserResponse) {}
 
-  rpc GetUser (GetUserRequest) returns (UserResponse) {
-    option(google.api.http) = {
-      get: "/v1/users/{user_id}"
-    };
-  }
+  rpc GetUser (GetUserRequest) returns (UserResponse) {}
 
-  rpc UpdateMe (UpdateMeRequest) returns (UserResponse) {
-    option (google.api.http) = {
-      patch: "/v1/users/me"
-      body: "*"
-    };
-  }
+  rpc UpdateMe (UpdateMeRequest) returns (UserResponse) {}
   
   // Friends
-  rpc AddFriend (AddFriendRequest) returns (FriendResponse) {
-    option (google.api.http) = {
-      post: "/v1/users/friends/add"
-      body: "*"
-    };
-  }
+  rpc AddFriend (AddFriendRequest) returns (FriendResponse) {}
 
-  rpc RemoveFriend (RemoveFriendRequest) returns (FriendResponse) {
-    option (google.api.http) = {
-      post: "/v1/users/friends/remove"
-      body: "*"
-    };
-  }
+  rpc RemoveFriend (RemoveFriendRequest) returns (FriendResponse) {}
 
-  rpc GetFriends (GetFriendsRequest) returns (FriendsListResponse) {
-    option (google.api.http) = {
-      post: "/v1/user/friends"
-      body: "*"
-    };
-  }
+  rpc GetFriends (GetFriendsRequest) returns (FriendsListResponse) {}
 
   // Quizzez
-  rpc AddFavoriteQuiz (AddFavoriteQuizRequest) returns (FavoriteQuizResponse) {
-    option(google.api.http) = {
-      post: "/v1/users/favorites/quizzes/add"
-      body: "*"
-    };
-  }
+  rpc AddFavoriteQuiz (AddFavoriteQuizRequest) returns (FavoriteQuizResponse) {}
 
-  rpc GetFavoriteQuizzes (GetFavoriteQuizzesRequest) returns (FavoriteQuizzesResponse) {
-    option(google.api.http) = {
-      get: "/v1/users/favorites/quizzes"
-    };
-  }
+  rpc GetFavoriteQuizzes (GetFavoriteQuizzesRequest) returns (FavoriteQuizzesResponse) {}
 
-  rpc RemoveFavoriteQuiz (RemoveFavoriteQuizRequest) returns (FavoriteQuizResponse) {
-    option(google.api.http) = {
-      post: "/v1/users/favorites/quizzes/remove"
-      body: "*"
-    };
-  }
+  rpc RemoveFavoriteQuiz (RemoveFavoriteQuizRequest) returns (FavoriteQuizResponse) {}
 }
 
 // Messages for Favorites quizzes
