@@ -3,80 +3,89 @@
 ---
 ## Table Of Contents
 
-1. [About](#about)
-2. [Architechture](#architechture)
-3. [Stack](#stack)
-4. [Microservices APIs](#microservices-apis)
-   1. [Authentification service](#authentification-service)
-   2. [Quiz service](#quiz-service)
-   3. [Statistics service](#statistics-service)
-5. [Deployment](#deployment)
-6. [Development Setup](#development-setup)
-7. [Monitoring](#monitoring)
-8. [Testing](#testing)
+
+1. [О проекте](#о-проекте)
+2. [Архитектура](#архитектура)
+3. [Технологический стек](#технологический-стек)
+4. [Микросервисы](#микросервисы)
+   1. [Сервис аутентификации](#сервис-аутентификации)
+   2. [Сервис квизов](#сервис-квизов)
+   3. [Сервис статистики](#сервис-статистики)
+5. [Развертывание](#развертывание)
+6. [Настройка для разработки](#настройка-для-разработки)
+7. [Мониторинг](#мониторинг)
+8. [Тестирование](#тестирование)
 9. [CI/CD Pipeline](#cicd-pipeline)
 
 ---
-## About
+## О проекте
 
-This is a social network for quiz lovers. Here you can take quizzes from other users or create your own, find friends, compete in the overall rating of authors or players.
+Платформа для любителей квизов. Пользователи могут:
+- Проходить квизы других пользователей
+- Создавать собственные квизы
+- Добавлять друзей
+- Соревноваться в рейтингах авторов и игроков
 
-## Architechture 
+## Архитектура
 
-Ну типа
 ```mermaid
-graph TD
-    A[Client] --> B[API Gateway]
-    B --> C[Auth Service]
-    B --> D[Quiz Service]
-    B --> E[Statistics Service]
-    C --> F[(User DB)]
-    D --> G[(Quiz DB)]
-    E --> H[(Stats DB)]
+graph LR
+    A[Frontend+Nginx] -->|HTTP| B[API Gateway]
+    B -->|gRPC| C[Auth Service]
+    B -->|gRPC| D[Quiz Service]
+    B -->|gRPC| E[Stat Service]
+    C --> F[Auth PostgreSQL]
+    D --> G[Quiz PostgreSQL]
+    E --> H[Stat PostgreSQL]
+    C --> I[Redis]
 ```
 
-## Stack
+## Технологический стек
 
-- Backend: Golang, Protobuf  
-- Frontend: Vue.js
-- DB: PostgreSQL, Redis
-- DevOps: Docker
+- Технологический стек
+- Бэкенд: Golang, Protobuf/gRPC
 
-## Microservices APIs
+- Фронтенд: Vue.js 3
 
-### Authentification service
+- Базы данных: PostgreSQL, Redis
 
-Read more on [Authentification service](/auth_service/README.md)
+- Инфраструктура: Docker, Docker Compose
 
-#### Methods
+## Микросервисы
 
-- **Register**: Creates a new user account
+### Сервис-аутентификации
 
-- **Login**: Authenticates a user and returns JWT token
+Больше информации в [Сервисе аутентификации](/auth_service/README.md)
 
-- **Logout**: Invalidates user session token
+#### Методы
 
-- **ValidateToken**: Verifies JWT token validity
+- **Register**: Создает аккаунт
 
-- **GetMe**: Retrieves current user profile
+- **Login**: Вход в аккаунт и возвращение jwt токена
 
-- **UpdateMe**: Updates user profile information
+- **Logout**: Выход из аккаунта
 
-- **AddFriend**: Adds another user to friends list
+- **ValidateToken**: Валидация jwt токена
 
-- **RemoveFriend**: Removes user from friends list
+- **GetMe**: Получение информации о пользователе
 
-- **AddFavoriteQuiz**: Adds quiz to user favorites
+- **UpdateMe**: Обновление информации о пользователе
 
-- **GetFavoriteQuizzes**: Lists user's favorite quizzes
+- **AddFriend**: Добавление в список друзей
 
-- **RemoveFavoriteQuiz**: Removes quiz from favorites
+- **RemoveFriend**: Удаление из списка друзей
 
-### Quiz service
+- **AddFavoriteQuiz**: Добавление квиза в избранное
 
-Read more on [Quiz service](/quiz_service/README.md)
+- **GetFavoriteQuizzes**: Получение всех квизов из избранного
 
-#### Methods
+- **RemoveFavoriteQuiz**: Удаление квиза из списка избранного
+
+### Сервис квизов
+
+Больше информации в [Сервисе квизов](/quiz_service/README.md)
+
+#### Методы
 
 - **CreateQuiz**: Creation of new quiz
 
