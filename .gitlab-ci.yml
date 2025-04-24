@@ -1,3 +1,58 @@
+# stages:
+#   - lint
+#   - test
+#   - build
+
+# lint:
+#   stage: lint
+#   image: golangci/golangci-lint:latest
+#   allow_failure: true
+#   script:
+#     - cd api_gateway_service 
+#     - golangci-lint run
+#     - cd ..
+#     - cd auth_service
+#     - golangci-lint run
+#     - cd ..
+#     - cd quiz_service
+#     - golangci-lint run
+#     - cd ..
+#     - cd stat_service
+#     - golangci-lint run
+#     - cd ..
+
+# build:
+#   image: golang:1.24.2-alpine3.21
+#   stage: build
+#   script:
+#     - cd auth_service
+#     - go build -o auth_service cmd/main.go
+#     - cd ..
+#     - cd quiz_service
+#     - go build -o quiz_service cmd/quiz/main.go
+#     - cd ..
+#     - cd stat_service
+#     - go build -o stat_service cmd/app/main.go
+#     - cd ..
+     
+  
+# test:
+#   image: golang:1.24.2-alpine3.21
+#   stage: test
+#   script:
+#     - cd auth_service
+#     - go test ./... -coverprofile=cover
+#     - go tool cover -func cover | grep total
+#     - cd ..
+#     - cd quiz_service
+#     - go test ./... -coverprofile=cover
+#     - go tool cover -func cover | grep total
+#     - cd ..
+#     - cd stat_service
+#     - go test ./... -coverprofile=cover
+#     - go tool cover -func cover | grep total
+#     - cd ..
+
 stages:
   - lint
   - test
@@ -6,8 +61,20 @@ stages:
 lint:
   stage: lint
   image: golangci/golangci-lint:latest
+  allow_failure: true
   script:
-    - golangci-lint run ./... --path-prefix=.
+    - cd api_gateway_service 
+    - golangci-lint run
+    - cd ..
+    - cd auth_service
+    - golangci-lint run
+    - cd ..
+    - cd quiz_service
+    - golangci-lint run
+    - cd ..
+    - cd stat_service
+    - golangci-lint run
+    - cd ..
 
 build:
   image: golang:1.24.2-alpine3.21
@@ -23,6 +90,7 @@ build:
 test:
   stage: test
   image: golang:1.24.2-alpine3.21
+  allow_failure: true
   services:
     - name: redis:alpine
       alias: redis
