@@ -81,7 +81,7 @@ service AuthService {
 
   rpc GetFavoriteQuizzes (GetFavoriteQuizzesRequest) returns (FavoriteQuizzesResponse) {
     option(google.api.http) = {
-      post: "/v1/users/favorites/quizzes"
+      get: "/v1/users/favorites/quizzes"
     };
   }
 
