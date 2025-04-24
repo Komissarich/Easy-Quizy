@@ -22,6 +22,11 @@ service QuizService{
       get: "/v1/quiz/author/{author}"
     };
   }
+  rpc ListAll (ListAllRequest) returns (ListAllResponse){
+    option(google.api.http) = {
+      get: "/v1/quiz/orderby"
+    };
+  }
 }
 message CreateQuizRequest{
   string name = 1;
@@ -63,4 +68,9 @@ message GetQuizzes{
 }
 message GetQuizByAuthorResponse{
   repeated GetQuizzes author_quizzes = 1;
+}
+message ListAllRequest{
+}
+message ListAllResponse{
+  repeated GetQuizResponse quizzes = 1;
 }

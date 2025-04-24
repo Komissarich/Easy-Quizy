@@ -3,6 +3,7 @@
     <router-link to="/play" class="navbar-brand">Easy-quizy</router-link>
     <div class="navbar-actions">
       <button class = "btn play" @click="$router.push('/play')">Играть </button>
+      <button class = "btn play" @click="$router.push('/quizzes')">Квизы</button>
       <button class="btn create-test" @click="$router.push('/create-test')">Создать тест</button>
       <button class="btn login" @click="goToProfile">Профиль</button>
      
@@ -14,7 +15,7 @@
         {{ authState.isLoggedIn ? 'Выйти' : 'Войти' }}
       </button>
 
-    </div>
+    </div>  
   </nav>
 </template>
 

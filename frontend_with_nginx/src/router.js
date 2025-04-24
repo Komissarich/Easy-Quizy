@@ -11,6 +11,7 @@ import Quiz from "./components/Quiz.vue";
 import Result from "./components/Result.vue";
 import ShowQuiz from "./components/ShowQuiz.vue";
 import OtherProfile from "./components/OtherProfile.vue";
+import QuizHolder from "./components/QuizHolder.vue";
 
 
 const router = createRouter( {
@@ -28,6 +29,7 @@ const router = createRouter( {
         {path: '/profile/me', name: 'Profile', component: Profile, meta: {requireAuth: true}},
         {path: '/profile/:username', name: 'OtherProfile', component: OtherProfile, meta: {requireAuth: true}},
         {path: '/quiz/:quiz_id', name: 'ShowQuiz', component: ShowQuiz, meta: {requireAuth: true}},
+        {path: '/quizzes', name: 'ShowQuiz', component: QuizHolder, meta: {requireAuth: false}},
     ]
 })
 

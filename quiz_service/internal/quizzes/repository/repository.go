@@ -308,3 +308,21 @@ func (r *Repository) GetQuizByAuthor(
 	res = append(res, favouritequizzes)
 	return &v1.GetQuizByAuthorResponse{AuthorQuizzes: res}, nil
 }
+func (r *Repository) ListAll(ctx context.Context) (*v1.ListAllResponse, error) {
+	rows, err := r.pool.Query(ctx, `SELECT Quiz_ID FROM quizzes`)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get ids: %w", err)
+	}
+	defer rows.Close()
+	var quizzes []*v1.GetQuizResponse
+	for rows.Next() {
+		var quizID string
+		err = rows.Scan(&quizID)
+		quiz, err := r.GetQuiz(ctx, quizID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get quiz: %w", err)
+		}
+		quizzes = append(quizzes, quiz)
+	}
+	return &v1.ListAllResponse{Quizzes: quizzes}, nil
+}

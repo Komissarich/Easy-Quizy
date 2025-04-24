@@ -134,6 +134,7 @@ func (r *Repository) GetQuizStat(ctx context.Context, quiz_id string) (*api.Quiz
 	err := r.pg.QueryRow(ctx, quiz_stat_query, quiz_id).Scan(&author_id, &num_sessions, &avg_rate)
 	if err != nil {
 		if err == pgx.ErrNoRows {
+<<<<<<< HEAD
 			if err.Error() == "no rows in result set" {
 				return &api.QuizStat{
 					UserId:      user_id,
@@ -143,6 +144,14 @@ func (r *Repository) GetQuizStat(ctx context.Context, quiz_id string) (*api.Quiz
 					NumSessions: 0,
 				}, nil
 			}
+=======
+			return &api.QuizStat{
+				QuizId:      quiz_id,
+				AuthorId:    "",
+				NumSessions: 0,
+				AvgRate:     0,
+			}, nil
+>>>>>>> a6504fcd1740986d53766c00606b7aa4b9ebc120
 		}
 		return nil, fmt.Errorf("unable to get quiz statistics: %w", err)
 	}
@@ -220,7 +229,11 @@ func (r *Repository) GetPlayerStat(ctx context.Context, user_id string) (*api.Pl
 
 	err := r.pg.QueryRow(ctx, player_stat_query, user_id).Scan(&total_score, &best_score, &avg_score, &num_sessions)
 	if err != nil {
+<<<<<<< HEAD
 		if err.Error() == "no rows in result set" {
+=======
+		if err == pgx.ErrNoRows {
+>>>>>>> a6504fcd1740986d53766c00606b7aa4b9ebc120
 			return &api.PlayerStat{
 				UserId:      user_id,
 				TotalScore:  0,
@@ -309,7 +322,12 @@ func (r *Repository) GetAuthorStat(ctx context.Context, user_id string) (*api.Au
 	err := r.pg.QueryRow(ctx, author_stat_query, user_id).Scan(&num_quizzes, &avg_quiz_rate, &best_quiz_rate)
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, fmt.Errorf("author not found")
+			return &api.AuthorStat{
+				UserId:       user_id,
+				NumQuizzes:   0,
+				AvgQuizRate:  0,
+				BestQuizRate: 0,
+			}, nil
 		}
 		return nil, fmt.Errorf("unable to get author statistics: %w", err)
 	}
