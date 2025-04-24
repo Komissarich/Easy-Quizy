@@ -48,8 +48,8 @@ const userAnswers = ref([])
 onMounted(async () => {
   try {
 
-     
-    let data = await axios.get(`http://localhost:8085/v1/quiz/${localStorage.getItem('quizId')}`)
+    const quiz_id = route.params.quiz_id
+    let data = await axios.get(`http://localhost:8085/v1/quiz/${quiz_id}`)
    
     quiz.value = data.data
     console.log(quiz.value.question.length)

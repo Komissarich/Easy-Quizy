@@ -42,17 +42,19 @@ message CreateAnswer{
 }
 message CreateQuizResponse{
   string quiz_id = 1;
-  string message = 2;
+  string short_id = 2;
+  string message = 3;
 }
 message GetQuizRequest{
   string quiz_id = 1;
 }
 message GetQuizResponse{
-  string name = 1;
-  string author = 2;
-  optional string image_id = 3;
-  optional string description = 4;
-  repeated CreateQuestion question = 5;
+  string shortID = 1;
+  string name = 2;
+  string author = 3;
+  optional string image_id = 4;
+  optional string description = 5;
+  repeated CreateQuestion question = 6;
 }
 message GetQuizByAuthorRequest{
   string author = 1;

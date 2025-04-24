@@ -229,6 +229,7 @@ func (r *Repository) GetQuiz(
 		return nil, fmt.Errorf("error iterating questions: %w", rows.Err())
 	}
 	return &v1.GetQuizResponse{
+		ShortID:     quizID,
 		Name:        name,
 		Author:      author,
 		ImageId:     &image_id,
@@ -287,7 +288,6 @@ func (r *Repository) GetQuizByAuthor(
 		return nil, status.Error(codes.Unauthenticated, "invalid auth token format")
 	}
 	meta := metadata.Pairs("authorization", "Bearer "+token)
-	fmt.Println("NICETOKEN", token)
 	ctx = metadata.NewOutgoingContext(context.Background(), meta)
 	a := &pb.GetFavoriteQuizzesRequest{}
 	var quizbyfav []*v1.GetQuizResponse

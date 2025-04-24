@@ -120,29 +120,26 @@
       })
       const loading = ref(true)
       const isFavorite = ref(false)
-      const quiz_id = route.params.id
-  
+      const quiz_id = route.params.quiz_id
+      console.log(quiz_id)
       // Функция загрузки данных квиза
       const fetchQuizData = async () => {
         try {
           // 1. Загрузка основной информации о квизе
           let data = await axios.get(`http://localhost:8085/v1/quiz/${quiz_id}`)
-          quiz.value = quizResponse.data
-  
-          // 2. Загрузка статистики
-          const statsResponse = await axios.get(`http://localhost:8085/v1/stats/quiz/${quiz_id}`)
-          console.log(statsResponse.data)
-          stats.value = statsResponse.data
-  
+          quiz.value = data.data
           // 3. Проверка, находится ли квиз в избранном
           const favoriteResponse = await axios.get(`http://localhost:8085/v1/users/favorites/quizzes`, {
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
           })
-          console.log(favoriteResponse.data)
+          console.log("favorite quizzes", favoriteResponse.data)
           isFavorite.value = favoriteResponse.data.isFavorite
-  
+             // 2. Загрузка статистики
+            const statsResponse = await axios.get(`http://localhost:8085/v1/stats/quiz/${quiz_id}`)
+          console.log(statsResponse.data)
+          stats.value = statsResponse.data
         } catch (error) {
           console.error('Ошибка загрузки данных:', error)
         } finally {

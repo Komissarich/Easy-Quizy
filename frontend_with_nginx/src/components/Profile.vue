@@ -77,7 +77,7 @@
         v-for="quiz in userQuizzes[0].quizzes" 
         :key="quiz.id" 
         class="quiz-card"
-        @click="$router.push(`/quiz/${quiz.id}`)"
+        @click="$router.push(`/quiz/${quiz.shortID}`)"
       >
         <div class="quiz-image-container">
           <img 
@@ -104,7 +104,7 @@
         v-for="quiz in userQuizzes[1].quizzes" 
         :key="quiz.id" 
         class="quiz-card"
-        @click="$router.push(`/quiz/${quiz.id}`)"
+        @click="$router.push(`/quiz/${quiz.shortID}`)"
       >
         <div class="quiz-image-container">
           <img 
