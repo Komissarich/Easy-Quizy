@@ -22,12 +22,11 @@ type AuthController struct {
 	authService    service.AuthService
 	friendService  service.FriendService
 	quizzesService service.QuizzesService
-	jwtService     service.JWTService
 
 	l *logger.Logger
 }
 
-func NewAuthController(authService service.AuthService, friendService service.FriendService, quizzesService service.QuizzesService, jwtService service.JWTService, l *logger.Logger) *AuthController {
+func NewAuthController(authService service.AuthService, friendService service.FriendService, quizzesService service.QuizzesService, l *logger.Logger) *AuthController {
 	return &AuthController{
 		authService:    authService,
 		friendService:  friendService,
@@ -215,6 +214,7 @@ func (c *AuthController) AddFriend(ctx context.Context, req *v1.AddFriendRequest
 			return nil, status.Error(codes.AlreadyExists, "users are already friends")
 		}
 		c.l.Error("Failed to add friend", zap.Error(err))
+
 		return nil, status.Error(codes.Internal, "failed to add friend")
 	}
 
