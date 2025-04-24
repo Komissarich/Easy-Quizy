@@ -18,4 +18,5 @@ build:
   image: golang:1.24.2-alpine3.21
   stage: build
   script:
+    - cd stat_service
     - go build -o /stat_service ./stat_service/cmd/app/main.go 
