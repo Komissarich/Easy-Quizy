@@ -131,7 +131,7 @@ func (c *AuthController) GetUser(ctx context.Context, req *v1.GetUserRequest) (*
 
 	c.l.Info("Trying to get user", zap.String("user_id", req.UserId))
 
-	user, err := c.authService.GetUserByID(ctx, req.UserId)
+	user, err := c.authService.GetUserByUsername(ctx, req.UserId)
 	if err != nil {
 		c.l.Error("Failed to get user", zap.Error(err))
 		return nil, status.Error(codes.NotFound, "user not found")

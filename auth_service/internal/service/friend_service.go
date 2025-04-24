@@ -35,12 +35,8 @@ func NewFriendService(friendRepo repository.FriendRepository, userRepo repositor
 }
 
 func (s *friendService) AddFriend(ctx context.Context, userID uint64, friendID string) error {
-	id, err := strconv.ParseUint(friendID, 10, 64)
-	if err != nil {
-		return errors.New("invalid friend id")
-	}
 
-	_, err = s.userRepo.FindByID(ctx, id)
+	_, err := s.userRepo.FindByUsername(ctx, friendID)
 	if err != nil {
 		return errors.New("friend user not found")
 	}

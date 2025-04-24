@@ -20,6 +20,7 @@ type AuthService interface {
 	ValidateToken(ctx context.Context, token string) (*entity.User, error)
 
 	GetUserByID(ctx context.Context, userID string) (*entity.User, error)
+	GetUserByUsername(ctx context.Context, userID string) (*entity.User, error)
 	UpdateUser(ctx context.Context, user *entity.User) error
 }
 
@@ -83,9 +84,19 @@ func (s *authService) ValidateToken(ctx context.Context, token string) (*entity.
 func (s *authService) GetUserByID(ctx context.Context, id string) (*entity.User, error) {
 	userID, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
-		return nil, fmt.Errorf("can't parse user id: %w", err)
+		return nil, fmt.Errorf("can't parse id: %w", err)
 	}
+
 	user, err := s.userRepo.FindByID(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("can't find user by id: %w", err)
+	}
+
+	return user, nil
+}
+
+func (s *authService) GetUserByUsername(ctx context.Context, userID string) (*entity.User, error) {
+	user, err := s.userRepo.FindByUsername(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("can't find user by id: %w", err)
 	}

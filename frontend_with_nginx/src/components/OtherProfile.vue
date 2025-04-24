@@ -3,8 +3,8 @@
       <!-- Шапка профиля с расширенной статистикой -->
       <div class="profile-header">
         <div class="user-info">
-          <h1 class="username">{{ user.username }}</h1>
-          <p class="user-email">{{ user.email }}</p>
+          <h1 class="username">{{ profileName }}</h1>
+          <p class="user-email">{{ profileEmail }}</p>
         </div>
   
         <!-- Блок статистики автора -->
@@ -33,7 +33,7 @@
           </div>
   
           <div class="stat-card">
-            <div class="stat-value">{{ userQuizzes[0].quizzes.length || 0 }}</div>
+            <div class="stat-value">{{(userQuizzes[0]?.quizzes?.length ?? 0) || 0 }}</div>
             <div class="stat-label">Создано квизов</div>
           </div>
         </div>
@@ -103,23 +103,8 @@
           this.searchResults = [];
         }
         
-    },
-    async addFriend(user) {
-        if (!isFriend){
-            let friend_data = await axios.post(`http://localhost:8085/v1/users/friends/add`, 
-              {
-                token: localStorage.getItem('token'),
-                friend_id: this.user.username
-              },
-               {
-                  headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                  },
-                })
-                console.log(friend_data)
-        }
-      },
-     
+    }
+  
     },
     
     setup() {
@@ -136,6 +121,26 @@
         average_success_rate: 0,
         quizzes_count: 0
       })
+
+      const addFriend = async () => {
+       
+        if (!isFriend.value){
+           
+            let friend_data = await axios.post(`http://localhost:8085/v1/users/friends/add`, 
+              {
+                token: localStorage.getItem('token'),
+                friend_id: profileName.value
+              },
+               {
+                  headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                  },
+                })
+                console.log(friend_data)
+                isFriend = !isFriend
+        }
+      }
+  
         onMounted(async () => {
           try {
             let user_data = await axios.get(`http://localhost:8085/v1/users/${route.params.username}`,
@@ -145,6 +150,8 @@
                   },
                 })
             
+            profileName.value = user_data.data.username
+            profileEmail.value = user_data.data.email
             console.log(user_data.data)
             let data = await axios.get(`http://localhost:8085/v1/quiz/author/${route.params.username}`,  {
                   headers: {
@@ -183,7 +190,10 @@
           quiz,
           loading,
           stats,
-          isFriend
+          isFriend,
+          profileName,
+          profileEmail,
+          addFriend
         }
       }
   }

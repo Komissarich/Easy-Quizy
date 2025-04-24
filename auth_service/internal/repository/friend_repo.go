@@ -61,7 +61,7 @@ func (r *FriendRepository) CheckFriendship(ctx context.Context, userID uint64, f
 	query := `SELECT COUNT(*) FROM friends WHERE user_id = $1 AND friend_id = $2`
 
 	var count int
-
+	fmt.Println(userID, friendID)
 	err := r.db.QueryRowContext(ctx, query, userID, friendID).Scan(&count)
 	if err != nil {
 		return false, fmt.Errorf("can't check friendship: %w", err)
