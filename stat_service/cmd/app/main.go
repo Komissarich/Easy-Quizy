@@ -16,6 +16,7 @@ import (
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 var (
@@ -85,6 +86,26 @@ func main() {
 			log.Fatal(ctx, fmt.Sprintf("failed to serve: %v", zap.Error(err)))
 		}
 	}()
+	service.GetPlayerStat(ctx, &api.GetPlayerStatRequest{UserId: "vanya"})
+
+	go func() {
+		ctx := context.Background()
+
+		cfg, err := config.New()
+		if err != nil {
+			fmt.Println(fmt.Errorf("failed to load config: %v", err))
+		}
+
+		grpcConn, err := grpc.NewClient(fmt.Sprintf("0.0.0.0:%d", cfg.GRPCPort), grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+		if err != nil {
+			fmt.Println(fmt.Errorf("connection error: %v", err))
+		}
+		defer grpcConn.Close()
+
+		cli := api.NewOrderServiceClient(grpcConn)
+	}()
+
 	select {
 	case <-ctx.Done():
 		server.GracefulStop()

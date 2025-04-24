@@ -25,9 +25,6 @@ build:
   image: golang:1.24.2-alpine3.21
   stage: build
   script:
-    - cd api_gateway_service 
-    - go build -o api_gateway_service cmd/main.go
-    - cd ..
     - cd auth_Service
     - go build -o auth_Service cmd/main.go
     - cd ..
