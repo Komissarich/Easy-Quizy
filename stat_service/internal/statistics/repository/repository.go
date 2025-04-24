@@ -8,7 +8,7 @@ import (
 	"quiz_app/pkg/logger"
 	"quiz_app/pkg/postgres"
 
-	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )
