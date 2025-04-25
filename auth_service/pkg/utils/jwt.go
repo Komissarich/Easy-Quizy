@@ -39,6 +39,10 @@ func ParseJWT(tokenString, jwtSecret string) (*Claims, error) {
 }
 
 func GenerateJWT(secret string, userID uint64, email string) (string, error) {
+	if secret == "" {
+		return "", errors.New("empty secret")
+	}
+
 	claims := Claims{
 		UserID: userID,
 		Email:  email,

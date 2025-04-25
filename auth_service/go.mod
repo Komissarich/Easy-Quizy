@@ -29,6 +29,7 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/lib/pq v1.10.9
 	github.com/redis/go-redis/v9 v9.7.3
