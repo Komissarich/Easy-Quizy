@@ -9,15 +9,33 @@ import (
 	"quiz_app/pkg/postgres"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/pashagolub/pgxmock/v2"
 	"go.uber.org/zap"
 )
 
-type Repository struct {
-	pg *pgxpool.Pool
+type PGDatabase interface {
+	Exec(context.Context, string, ...any) (pgconn.CommandTag, error)
+	Close()
+	QueryRow(context.Context, string, ...any) pgx.Row
+	Query(context.Context, string, ...any) (pgx.Rows, error)
 }
 
-func NewRepository(ctx context.Context, config *config.Config) (*Repository, error) {
+type Repository struct {
+	pg PGDatabase
+}
+
+func NewRepository(ctx context.Context, config *config.Config, TestMode ...bool) (*Repository, error) {
+	if len(TestMode) == 1 && TestMode[0] {
+		mock, err := pgxmock.NewPool()
+		if err != nil {
+			logger.GetLoggerFromCtx(ctx).Error(ctx, fmt.Sprint("failed to create repository", zap.Error(err)))
+			return nil, err
+		}
+		return &Repository{
+			pg: mock,
+		}, nil
+	}
 	pg, err := postgres.New(ctx, config.Postgres)
 	if err != nil {
 		logger.GetLoggerFromCtx(ctx).Error(ctx, fmt.Sprint("failed to create repository", zap.Error(err)))
@@ -56,7 +74,7 @@ func (r *Repository) UpdateStats(
 	SET
     	avg_rate = (stats.quizzes.avg_rate * stats.quizzes.num_sessions + $1) / (stats.quizzes.num_sessions + 1),
     	num_sessions = stats.quizzes.num_sessions + 1,
-    	updated_at = CURRENT_TIMESTAMP
+    	updated_at = CURRENT_TIMESTAMP;
 	`
 	author_upd_query := `
 	WITH author_stats AS (
@@ -100,6 +118,9 @@ func (r *Repository) UpdateStats(
     	num_sessions = stats.players.num_sessions + 1,
     	updated_at = CURRENT_TIMESTAMP;
 	`
+	if (len(quiz_id) == 0) || (len(author_id) == 0) || (len(player_id) == 0) || (player_score < 0) || (quiz_rate < 0) || (quiz_rate > 5) {
+		return fmt.Errorf("wrong request format")
+	}
 	_, err := r.pg.Exec(ctx, quiz_upd_query, quiz_rate, quiz_id, author_id)
 	if err != nil {
 		return fmt.Errorf("unable to update quiz statistics: %w", err)
@@ -108,7 +129,6 @@ func (r *Repository) UpdateStats(
 	if err != nil {
 		return fmt.Errorf("unable to update author statistics: %w", err)
 	}
-
 	_, err = r.pg.Exec(ctx, player_upd_query, player_score, player_id)
 	if err != nil {
 		return fmt.Errorf("unable to update player statistics: %w", err)

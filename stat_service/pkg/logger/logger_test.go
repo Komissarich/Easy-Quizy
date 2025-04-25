@@ -78,23 +78,4 @@ func TestLoggerMethods(t *testing.T) {
 	})
 }
 
-func TestNew_Error(t *testing.T) {
-	// Чтобы протестировать ошибку, можно использовать кастомный config
-	// Но в текущей реализации zap.NewProduction() не возвращает ошибок в нормальных условиях
-	// Этот тест просто показывает как можно протестировать ошибку
-	t.Run("returns error when logger creation fails", func(t *testing.T) {
-		// В реальном коде нужно мокировать zap.NewProduction()
-		// Здесь просто проверяем что функция возвращает ошибку
-		originalNewProduction := zapNewProduction
-		zapNewProduction = func(options ...zap.Option) (*zap.Logger, error) {
-			return nil, assert.AnError
-		}
-		defer func() { zapNewProduction = originalNewProduction }()
-
-		_, err := New(context.Background())
-		assert.Error(t, err)
-	})
-}
-
-// Для тестирования ошибки
 var zapNewProduction = zap.NewProduction

@@ -41,35 +41,35 @@ test:
     - go tool cover -html=cover.out -o cover.html
     - cat cover.txt | grep total
   coverage: '/total:\s+\(statements\)\s+(\d+\.\d+)\%/'
-  artifacts:
-    paths:
-      - ${COVERAGE_DIR}/
-    expire_in: 1 week
-
-docker-build:
-  image: docker:cli
-  stage: build
-  services:
-    - docker:dind
-  parallel:
-    matrix:
-      - SERVICE: api_gateway_service
-      - SERVICE: frontend_with_nginx
-      - SERVICE: auth_service
-      - SERVICE: quiz_service
-      - SERVICE: stat_service
-  script:
-    - docker build
 
 
-
-# build:
-#   image: golang:1.24.2-alpine3.21
+# docker-build:
+#   image: docker:cli
 #   stage: build
+#   services:
+#     - docker:dind
+#   parallel:
+#     matrix:
+#       - SERVICE: api_gateway_service
+#       - SERVICE: frontend_with_nginx
+#       - SERVICE: auth_service
+#       - SERVICE: quiz_service
+#       - SERVICE: stat_service
 #   script:
-#     - go build -o bin/auth_service ./auth_service/cmd/main.go
-#     - go build -o bin/quiz_service ./quiz_service/cmd/quiz/main.go
-#     - go build -o bin/stat_service ./stat_service/cmd/app/main.go
-#   artifacts:
-#     paths:
-#       - bin/
+#     - docker build
+
+
+
+build:
+  image: golang:1.24.2-alpine3.21
+  stage: build
+  script:
+    - cd auth_service
+    - go build -o bin/auth_service ./cmd/main.go
+    - cd ..
+    - cd quiz_service
+    - go build -o bin/quiz_service ./cmd/quiz/main.go
+    - cd ..
+    - cd stat_service
+    - go build -o bin/stat_service ./cmd/app/main.go
+    - cd ..
