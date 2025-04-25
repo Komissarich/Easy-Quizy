@@ -63,30 +63,15 @@ lint:
   stage: lint
   image: golangci/golangci-lint:latest
   allow_failure: true
+  parallel:
+    matrix:
+      - SERVICE: api_gateway_service
+      - SERVICE: auth_service
+      - SERVICE: quiz_service
+      - SERVICE: stat_service
   script:
-    - cd api_gateway_service 
+    - cd ${SERVICE} 
     - golangci-lint run
-    - cd ..
-    - cd auth_service
-    - golangci-lint run
-    - cd ..
-    - cd quiz_service
-    - golangci-lint run
-    - cd ..
-    - cd stat_service
-    - golangci-lint run
-    - cd ..
-
-build:
-  image: golang:1.24.2-alpine3.21
-  stage: build
-  script:
-    - go build -o bin/auth_service ./auth_service/cmd/main.go
-    - go build -o bin/quiz_service ./quiz_service/cmd/quiz/main.go
-    - go build -o bin/stat_service ./stat_service/cmd/app/main.go
-  artifacts:
-    paths:
-      - bin/
 
 test:
   stage: test
@@ -114,3 +99,15 @@ test:
     paths:
       - ${COVERAGE_DIR}/
     expire_in: 1 week
+
+
+build:
+  image: golang:1.24.2-alpine3.21
+  stage: build
+  script:
+    - go build -o bin/auth_service ./auth_service/cmd/main.go
+    - go build -o bin/quiz_service ./quiz_service/cmd/quiz/main.go
+    - go build -o bin/stat_service ./stat_service/cmd/app/main.go
+  artifacts:
+    paths:
+      - bin/
