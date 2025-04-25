@@ -87,7 +87,7 @@ import Quiz from './Quiz.vue'
     sessionStorage.removeItem('quizResults')
     userAnswers.value = resultsData.value.userAnswers
     totalQuestions.value = resultsData.value.totalQuestions
-    console.log('Results:', resultsData.value)
+
   } else {
     console.error('No results found')
     
@@ -124,7 +124,7 @@ import Quiz from './Quiz.vue'
            )
 
            localStorage.setItem('author_id', '')
-         console.log(data.data)
+         
   }
   
 
@@ -146,7 +146,7 @@ import Quiz from './Quiz.vue'
            
              
            )
-         console.log(data.data)
+         
      } catch (error) {
        console.error('Ошибка добавления в избранное:', error)
      }

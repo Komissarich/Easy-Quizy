@@ -43,7 +43,7 @@ export default {
   methods: {
 
     async startQuiz() {
-      console.log("Current quiz_id:", this.quiz_id)
+
       if (this.quiz_id !== "") {
         this.errorMessage = ''
       try {

@@ -93,10 +93,7 @@
       }
     },
     methods: {
-      editProfile() {
-          // Логика для редактирования профиля
-          console.log('Редактирование профиля')
-      },
+    
       searchFriends() {
         // Здесь будет логика поиска друзей
         if (this.friendSearchQuery.length > 2) {
@@ -146,7 +143,7 @@
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                   },
                 })
-                console.log(friend_data)
+              
                 
         }
       
@@ -187,12 +184,12 @@
                 
                 let player_data = await axios.get(`http://localhost:8085/v1/stats/player/${localStorage.getItem('username')}`)  
 
-                console.log("PLAYER STAT",player_data.data)
+               
                 player_stats.value = player_data.data
 
                 let author_data = await axios.get(`http://localhost:8085/v1/stats/author/${localStorage.getItem('username')}`)  
 
-                console.log("AUTHOR STAT",author_data.data)
+                
                 author_stats.value = author_data
 
   

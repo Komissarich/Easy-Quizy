@@ -14,6 +14,7 @@
       
      
     </div>
+    <div class="button_container">
     <button @click="addQuestion" class="add-question-btn">
         + Добавить вопрос
     </button>
@@ -21,6 +22,7 @@
     <button @click="SendQuiz" class="send-btn">
         Опубликовать квиз
     </button>
+  </div>
   </div>
   </template>
   
@@ -61,7 +63,7 @@ const addQuestion = () => {
   const SendQuiz = async () =>{
 
   try {
-    console.log(questions.value)
+
     const data = await axios.post(
       
       'http://localhost:8085/v1/quiz',
@@ -78,7 +80,7 @@ const addQuestion = () => {
           },
         }
       );
-      console.log(data.data)
+     
       console.log("Succesfully created quiz")
       } catch (error) {
         console.log(error.status, error)
@@ -119,13 +121,18 @@ const addQuestion = () => {
   flex-direction: column;
   gap: 20px;
 }
+.question-container {
+  margin-left: 100px;
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+}
+
 
 .add-question-btn {
   position: absolute;
-  top: 1;
-  right: 0;
-  margin-right: 500px;
-  margin-top: 30px;
+  
+
   padding: 10px 20px;
   background-color: #4CAF50;
   color: white;
@@ -137,11 +144,8 @@ const addQuestion = () => {
 }
 
 .send-btn {
-    position: absolute;
-  top: 1;
-  right: 0;
-  margin-right: 500px;
-  margin-top: 80px;
+  position: absolute;
+  margin-top: 50px;
   padding: 10px 20px;
   background-color: #5cb3ce;
   color: white;

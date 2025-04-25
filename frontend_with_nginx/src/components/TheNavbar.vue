@@ -38,7 +38,7 @@ export default {
     
     const authState = inject('authState')
     const router = useRouter()
-    //Sconsole.log("log", authState.isLoggedIn)
+
     const gotoProfile = () => {
       this.$router.push('/profile/me');
     }

@@ -118,8 +118,8 @@ const uploadToImgBB = async (imageFile) => {
       title: testTitle.value,
       description: testDescription.value
     }
-    console.log('Данные теста:', testData)
-    console.log(data)
+   
+
     router.push({path:'/create-test/questions', query: {
       title: testTitle.value,
       description: testDescription.value,
