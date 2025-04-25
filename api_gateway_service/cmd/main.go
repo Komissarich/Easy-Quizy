@@ -7,7 +7,6 @@ import (
 	logger "api_gateway/pkg"
 	"bytes"
 	"context" // для QuizService
-	"fmt"
 	"io"
 	"log"
 
@@ -46,11 +45,6 @@ func allowCORS(h http.Handler) http.Handler {
 	})
 }
 
-func HealthHeandler(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Fprint(w, "Service is healthy!")
-}
-
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "OPTIONS" {
@@ -72,7 +66,7 @@ func loggingMiddleware(next http.Handler) http.Handler {
 			r.Body = io.NopCloser(bytes.NewBuffer(body))
 
 			// Логируем
-			log.Printf("Raw request body: %s", string(body))
+			log.Printf("Request body: %s", string(body))
 
 			// Проверяем Content-Type
 			if r.Header.Get("Content-Type") != "application/json" {
@@ -80,7 +74,7 @@ func loggingMiddleware(next http.Handler) http.Handler {
 				return
 			}
 		}
-		fmt.Println("nice redirect")
+
 		next.ServeHTTP(w, r)
 	})
 }
@@ -162,24 +156,9 @@ func main() {
 	if err := auth_service.RegisterAuthServiceHandler(ctx, grpcGatewayMux, authConn); err != nil {
 		l.Fatal("failed to register Auth gateway", zap.Error(err))
 	}
-	fmt.Println(authConn.GetState().String())
+
 	rootMux.Handle("/", grpcGatewayMux)
-	// corsHandler := allowCORS(rootMux)
 
-	// 2. Тестовый endpoint без gRPC
-	// rootMux.HandleFunc("/v1/users/register", func(w http.ResponseWriter, r *http.Request) {
-	// 	body, _ := io.ReadAll(r.Body)
-	// 	repaired, _ := repairJSON(body)
-	// 	log.Printf("Raw body: %s", string(body))
-	// 	log.Printf("Repaired body: %s", string(repaired))
-	// 	client := auth_service.NewAuthServiceClient(authConn)
-	// 	resp, err := client.Register(r.Context(), &auth_service.RegisterRequest{
-	// 		Email:    "egorkart1@gmail.com", // Заполните из body
-	// 		Password: "aaaabbbbb",
-	// 	})
-
-	// 	log.Println(resp, err)
-	// })
 	corsHandler := allowCORS(loggingMiddleware(rootMux))
 
 	srv := &http.Server{

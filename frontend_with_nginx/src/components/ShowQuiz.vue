@@ -104,7 +104,7 @@
   export default {
     name: 'ShowQuiz',
     setup() {
-        console.log('hello')
+       
       const route = useRoute()
       const router = useRouter()
       const quiz = ref(null)
@@ -137,7 +137,7 @@
           
              // 2. Загрузка статистики
             const statsResponse = await axios.get(`http://localhost:8085/v1/stats/quiz/${quiz_id}`)
-          console.log(statsResponse.data)
+         
           stats.value = statsResponse.data.quiz
         } catch (error) {
           console.error('Ошибка загрузки данных:', error)

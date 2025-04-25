@@ -187,7 +187,7 @@ import { useRoute } from 'vue-router'
   
   
     async removeFriend(friend) {
-      console.log("REMOVING ", friend.username)
+     
       this.friends = this.friends.filter(f => f.id !== friend.id);
 
       let friend_data = await axios.post(`http://localhost:8085/v1/users/friends/remove`, 
@@ -200,7 +200,7 @@ import { useRoute } from 'vue-router'
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           },
         })
-        console.log(friend_data)
+        
     }
   },
   setup() {
@@ -235,7 +235,7 @@ import { useRoute } from 'vue-router'
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                   },
                 })
-                console.log(friend_data.data) 
+                
                friends.value = friend_data.data.friends
                 
         
@@ -249,12 +249,12 @@ import { useRoute } from 'vue-router'
 
             let player_data = await axios.get(`http://localhost:8085/v1/stats/player/${localStorage.getItem('username')}`)  
 
-            console.log("PLAYER STAT",player_data.data)
+  
             player_stats.value = player_data.data.player
 
             let author_data = await axios.get(`http://localhost:8085/v1/stats/author/${localStorage.getItem('username')}`)  
 
-          console.log("AUTHOR STAT",author_data.data)
+         
           author_stats.value = author_data.data.author
 
         } catch (error) {

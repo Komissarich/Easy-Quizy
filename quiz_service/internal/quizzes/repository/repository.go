@@ -127,7 +127,7 @@ func (r *Repository) CreateQuiz(
 		return "", "", fmt.Errorf("failed to create an id: %w", err)
 	}
 	uuID := uuid.New().String()
-	fmt.Println(questions)
+
 	_, err = tx.Exec(ctx,
 		"INSERT INTO quizzes (Quiz_ID, Name, Author, Image_ID, Description, UUID) VALUES ($1, $2, $3, $4, $5, $6)",
 		quizID, name, author, &image_id, &description, uuID)
@@ -167,7 +167,7 @@ func (r *Repository) GetQuiz(
 	quizID string,
 ) (*v1.GetQuizResponse, error) {
 	var name, author, image_id, description string
-	fmt.Println("GET SOME QUIZ", quizID)
+
 	err := r.pool.QueryRow(ctx,
 		"SELECT Name, Author, Image_ID, Description FROM quizzes WHERE Quiz_ID = $1",
 		quizID).Scan(&name, &author, &image_id, &description)
@@ -242,7 +242,7 @@ func (r *Repository) GetQuizByAuthor(
 	ctx context.Context,
 	author string,
 ) (*v1.GetQuizByAuthorResponse, error) {
-	fmt.Println("HERE WE GO", author)
+
 	rows, err := r.pool.Query(ctx,
 		"SELECT Quiz_ID, Name, Image_ID, Description FROM quizzes WHERE Author = $1", author)
 	if err != nil {
@@ -256,7 +256,7 @@ func (r *Repository) GetQuizByAuthor(
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan quiz: %w", err)
 		}
-		fmt.Println(quiz_ids)
+
 		quiz, err := r.GetQuiz(ctx, quiz_ids)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get quiz: %w", err)

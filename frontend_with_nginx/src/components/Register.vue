@@ -95,7 +95,7 @@ export default {
           );
           console.log("Succesfully registered")
           } catch (error) {
-            console.log("HELLO WORLD", error.status, error)
+           
             if (error.status == 400) {
               this.errorMessage = 'Проверьте почту и пароль; пароль не менее 8 символов'
             }

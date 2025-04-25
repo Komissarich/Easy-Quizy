@@ -53,7 +53,7 @@ onMounted(async () => {
    
     quiz.value = data.data
     localStorage.setItem('author_id', quiz.value.author)
-    console.log(quiz.value.question.length)
+
   } catch (error) {
     console.error('Ошибка загрузки квиза:', error)
   } finally {
