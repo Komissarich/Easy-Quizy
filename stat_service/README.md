@@ -139,7 +139,7 @@ curl "http://localhost:8080/v1/stats/player/player_123"
 
 Lists players sorted by a specified option.
 
-**HTTP Method**: `GET /v1/stats/players`
+**HTTP Method**: `GET /v1/stats/players/{option}`
 
 **gRPC Method**: `Statistics.ListPlayers`
 
@@ -201,7 +201,7 @@ curl "http://localhost:8080/v1/stats/author/author_123"
 
 Lists authors sorted by a specified option.
 
-**HTTP Method**: `GET /v1/stats/authors`
+**HTTP Method**: `GET /v1/stats/authors/{option}`
 
 **gRPC Method**: `Statistics.ListAuthors`
 
