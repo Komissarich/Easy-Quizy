@@ -41,9 +41,9 @@ test:
   artifacts:
     when: always
     paths:
-      - $SERVICE/reports/test_report.xml
+      - /$SERVICE/reports/test_report.xml
     reports:
-      junit: $SERVICE/reports/test_report.xml
+      junit: /$SERVICE/reports/test_report.xml
 
 
 
