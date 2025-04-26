@@ -32,8 +32,6 @@ test:
       - SERVICE: auth_service
       - SERVICE: quiz_service
       - SERVICE: stat_service
-  # before_script:
-  #   - apk add --no-cache git gcc musl-dev
   script:
     - cd ${SERVICE}
     - go test -v ./... -coverprofile=cover.out
@@ -41,6 +39,13 @@ test:
     - go tool cover -html=cover.out -o cover.html
     - cat cover.txt | grep total
   coverage: '/total:\s+\(statements\)\s+(\d+\.\d+)\%/'
+  artifacts:
+    when: always
+    paths:
+      - test_report.xml
+    reports:
+      junit: test_report.xml
+
 
 
 # docker-build:
