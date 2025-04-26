@@ -174,20 +174,23 @@ func local_request_Statistics_GetPlayerStat_0(ctx context.Context, marshaler run
 	return msg, metadata, err
 }
 
-var filter_Statistics_ListPlayers_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-
 func request_Statistics_ListPlayers_0(ctx context.Context, marshaler runtime.Marshaler, client StatisticsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq ListPlayersRequest
 		metadata runtime.ServerMetadata
+		e        int32
+		err      error
 	)
 	io.Copy(io.Discard, req.Body)
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	val, ok := pathParams["option"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "option")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Statistics_ListPlayers_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	e, err = runtime.Enum(val, ListPlayersOption_value)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "option", err)
 	}
+	protoReq.Option = ListPlayersOption(e)
 	msg, err := client.ListPlayers(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -196,13 +199,18 @@ func local_request_Statistics_ListPlayers_0(ctx context.Context, marshaler runti
 	var (
 		protoReq ListPlayersRequest
 		metadata runtime.ServerMetadata
+		e        int32
+		err      error
 	)
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	val, ok := pathParams["option"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "option")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Statistics_ListPlayers_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	e, err = runtime.Enum(val, ListPlayersOption_value)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "option", err)
 	}
+	protoReq.Option = ListPlayersOption(e)
 	msg, err := server.ListPlayers(ctx, &protoReq)
 	return msg, metadata, err
 }
@@ -244,20 +252,23 @@ func local_request_Statistics_GetAuthorStat_0(ctx context.Context, marshaler run
 	return msg, metadata, err
 }
 
-var filter_Statistics_ListAuthors_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-
 func request_Statistics_ListAuthors_0(ctx context.Context, marshaler runtime.Marshaler, client StatisticsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq ListAuthorsRequest
 		metadata runtime.ServerMetadata
+		e        int32
+		err      error
 	)
 	io.Copy(io.Discard, req.Body)
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	val, ok := pathParams["option"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "option")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Statistics_ListAuthors_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	e, err = runtime.Enum(val, ListAuthorsOption_value)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "option", err)
 	}
+	protoReq.Option = ListAuthorsOption(e)
 	msg, err := client.ListAuthors(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -266,13 +277,18 @@ func local_request_Statistics_ListAuthors_0(ctx context.Context, marshaler runti
 	var (
 		protoReq ListAuthorsRequest
 		metadata runtime.ServerMetadata
+		e        int32
+		err      error
 	)
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	val, ok := pathParams["option"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "option")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Statistics_ListAuthors_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	e, err = runtime.Enum(val, ListAuthorsOption_value)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "option", err)
 	}
+	protoReq.Option = ListAuthorsOption(e)
 	msg, err := server.ListAuthors(ctx, &protoReq)
 	return msg, metadata, err
 }
@@ -369,7 +385,7 @@ func RegisterStatisticsHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.Statistics/ListPlayers", runtime.WithHTTPPathPattern("/v1/stats/players"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.Statistics/ListPlayers", runtime.WithHTTPPathPattern("/v1/stats/players/{option}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -409,7 +425,7 @@ func RegisterStatisticsHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.Statistics/ListAuthors", runtime.WithHTTPPathPattern("/v1/stats/authors"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.Statistics/ListAuthors", runtime.WithHTTPPathPattern("/v1/stats/authors/{option}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -535,7 +551,7 @@ func RegisterStatisticsHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/api.Statistics/ListPlayers", runtime.WithHTTPPathPattern("/v1/stats/players"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/api.Statistics/ListPlayers", runtime.WithHTTPPathPattern("/v1/stats/players/{option}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -569,7 +585,7 @@ func RegisterStatisticsHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/api.Statistics/ListAuthors", runtime.WithHTTPPathPattern("/v1/stats/authors"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/api.Statistics/ListAuthors", runtime.WithHTTPPathPattern("/v1/stats/authors/{option}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -590,9 +606,9 @@ var (
 	pattern_Statistics_GetQuizStat_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "stats", "quiz", "quiz_id"}, ""))
 	pattern_Statistics_ListQuizzes_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "stats", "quizzes", "option"}, ""))
 	pattern_Statistics_GetPlayerStat_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "stats", "player", "user_id"}, ""))
-	pattern_Statistics_ListPlayers_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "stats", "players"}, ""))
+	pattern_Statistics_ListPlayers_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "stats", "players", "option"}, ""))
 	pattern_Statistics_GetAuthorStat_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "stats", "author", "user_id"}, ""))
-	pattern_Statistics_ListAuthors_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "stats", "authors"}, ""))
+	pattern_Statistics_ListAuthors_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "stats", "authors", "option"}, ""))
 )
 
 var (

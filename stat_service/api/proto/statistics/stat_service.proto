@@ -38,7 +38,7 @@ service Statistics {
 
     rpc ListPlayers(ListPlayersRequest) returns (ListPlayersResponse) {
         option (google.api.http) = {
-            get: "/v1/stats/players"
+            get: "/v1/stats/players/{option}"
         };
     };
 
@@ -51,7 +51,7 @@ service Statistics {
 
     rpc ListAuthors(ListAuthorsRequest) returns (ListAuthorsResponse) {
         option (google.api.http) = {
-            get: "/v1/stats/authors"
+            get: "/v1/stats/authors/{option}"
         };
     };
 }
