@@ -36,15 +36,14 @@ test:
     - cd ${SERVICE}
     - go test -v ./... -coverprofile=cover.out
     - go tool cover -func=cover.out | tee cover.txt
-    - go tool cover -html=cover.out -o cover.html
     - cat cover.txt | grep total
   coverage: '/total:\s+\(statements\)\s+(\d+\.\d+)\%/'
   artifacts:
     when: always
     paths:
-      - test_report.xml
+      - $SERVICE/reports/test_report.xml
     reports:
-      junit: test_report.xml
+      junit: $SERVICE/reports/test_report.xml
 
 
 
