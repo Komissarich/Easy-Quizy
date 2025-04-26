@@ -205,9 +205,8 @@ make test-integration
 
 ```mermaid
 graph LR
-    A[Code Commit] --> B[Run Tests]
-    B --> C[Build Images]
-    C --> D[Deploy to Staging]
-    D --> E[Manual Approval]
-    E --> F[Deploy to Production]
+    A[Code Commit] --> B[Lint Code Check]
+    B --> C[Run Tests]
+    C --> D[Build Binaries]
+    D --> E[Deploy]
 ```
