@@ -41,9 +41,9 @@ test:
   artifacts:
     when: always
     paths:
-      - /$SERVICE/reports/test_report.xml
+      - /builds/golang/2025/spring/course/projects/go14/easy-quizy/$SERVICE/reports/test_report.xml
     reports:
-      junit: /$SERVICE/reports/test_report.xml
+      junit: /builds/golang/2025/spring/course/projects/go14/easy-quizy/$SERVICE/reports/test_report.xml
 
 
 
