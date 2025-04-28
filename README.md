@@ -212,4 +212,5 @@ graph LR
     D --> E[Deploy]
 ```
 ## Демонстрация
-https://github.com/Komissarich/Easy-Quizy/blob/main/demonstration_video.mp4
+<video src='(https://github.com/Komissarich/Easy-Quizy/blob/main/demonstration_video.mp4)' width=180/>
+
