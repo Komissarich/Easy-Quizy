@@ -16,6 +16,7 @@
 7. [Мониторинг](#мониторинг)
 8. [Тестирование](#тестирование)
 9. [CI/CD Pipeline](#cicd-pipeline)
+10. [Демонстрация](#демонстрация)
 
 ---
 ## О проекте
@@ -210,3 +211,5 @@ graph LR
     C --> D[Build Binaries]
     D --> E[Deploy]
 ```
+## Демонстрация
+https://github.com/Komissarich/Easy-Quizy/blob/main/demonstration_video.mp4
